@@ -1,1 +1,1 @@
-export { cn } from "@internium/ui/lib/utils";
+export { cn } from "cn"

@@ -1,10 +1,10 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import "./globals.css";
-import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Internium",
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
   const content = (
-    <html lang="en" className={cn("h-full", "font-sans", geist.variable)}>
-      <body className="min-h-full bg-white text-black">{children}</body>
+    <html lang="en" className={cn("h-full", "font-sans", inter.variable)}>
+      <body className="min-h-full bg-background text-foreground">{children}</body>
     </html>
   );
 
