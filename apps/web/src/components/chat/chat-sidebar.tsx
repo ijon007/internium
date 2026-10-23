@@ -1,12 +1,12 @@
 "use client";
 
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@internium/ui/components/input-group";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
-  SidebarInput,
   SidebarMenu,
 } from "@internium/ui/components/sidebar";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
@@ -28,15 +28,16 @@ export function ChatSidebar() {
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
       <SidebarHeader className="h-12 justify-center border-b px-2">
-        <div className="relative">
-          <MagnifyingGlassIcon className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-2 size-3.5 text-muted-foreground" />
-          <SidebarInput
+        <InputGroup className="bg-background">
+          <InputGroupAddon>
+            <MagnifyingGlassIcon />
+          </InputGroupAddon>
+          <InputGroupInput
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search chats..."
-            className="pl-7"
           />
-        </div>
+        </InputGroup>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
