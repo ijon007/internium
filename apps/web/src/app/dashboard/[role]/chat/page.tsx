@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { ChatView } from "@/components/chat/chat-view";
 import { CONVERSATION_PARAM, MOCK_CONVERSATIONS } from "@/constants/chat";
 import { isRole } from "@/utils/navigation";
@@ -9,7 +10,15 @@ export const metadata: Metadata = {
   description: "Message the people you work with.",
 };
 
-export default async function ChatPage({ params, searchParams }: PageProps<"/dashboard/[role]/chat">) {
+export default function ChatPage(props: PageProps<"/dashboard/[role]/chat">) {
+  return (
+    <Suspense>
+      <ChatPageContent {...props} />
+    </Suspense>
+  );
+}
+
+async function ChatPageContent({ params, searchParams }: PageProps<"/dashboard/[role]/chat">) {
   const { role } = await params;
   if (!isRole(role)) notFound();
 

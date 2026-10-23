@@ -39,22 +39,27 @@ export function ConversationItem({
   return (
     <ContextMenu>
       <ContextMenuTrigger render={<SidebarMenuItem />}>
-        <SidebarMenuButton size="lg" isActive={isActive} className="h-auto py-2" render={<Link href={href} />}>
-          <Avatar>
+        <SidebarMenuButton
+          size="lg"
+          isActive={isActive}
+          className="h-auto min-w-0 py-2"
+          render={<Link href={href} />}
+        >
+          <Avatar className="shrink-0">
             <AvatarImage src={avatar} alt={name} />
             <AvatarFallback>{getInitials(name)}</AvatarFallback>
           </Avatar>
-          <div className="grid min-w-0 flex-1 gap-0.5">
-            <div className="flex items-center gap-1">
-              <span className="truncate font-medium">{name}</span>
+          <div className="grid min-w-0 flex-1 gap-0.5 overflow-hidden">
+            <div className="flex min-w-0 items-center gap-1">
+              <span className="min-w-0 flex-1 truncate font-medium">{name}</span>
               {pinned && <PushPinIcon weight={ICON_WEIGHT} className="size-3 shrink-0 text-muted-foreground" />}
-              <span className="ml-auto shrink-0 text-muted-foreground text-xs">{lastMessageAt}</span>
+              <span className="shrink-0 text-muted-foreground text-xs">{lastMessageAt}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className={hasUnread ? "truncate text-foreground text-xs" : "truncate text-muted-foreground text-xs"}>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className={hasUnread ? "min-w-0 flex-1 truncate text-foreground text-xs" : "min-w-0 flex-1 truncate text-muted-foreground text-xs"}>
                 {lastMessage}
               </span>
-              {hasUnread && <Badge className="ml-auto shrink-0">{unreadCount}</Badge>}
+              {hasUnread && <Badge className="shrink-0">{unreadCount}</Badge>}
             </div>
           </div>
         </SidebarMenuButton>
