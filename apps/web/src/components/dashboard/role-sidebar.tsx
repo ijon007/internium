@@ -10,8 +10,11 @@ export function RoleSidebar() {
   const role = useCurrentRole();
 
   return (
-    <Sidebar collapsible="none" className="hidden min-w-0 flex-1 overflow-hidden md:flex">
-      <SidebarHeader className="h-12 justify-center border-b px-4">
+    <Sidebar
+      collapsible="none"
+      className="my-2 hidden min-w-0 flex-1 overflow-hidden md:flex [&_[data-sidebar=group]]:px-1"
+    >
+      <SidebarHeader className="h-12 justify-center px-2">
         <span className="font-medium text-foreground text-sm">{ROLE_LABELS[role]}</span>
       </SidebarHeader>
       <SidebarContent>

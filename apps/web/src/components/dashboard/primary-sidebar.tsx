@@ -15,7 +15,10 @@ import { SHARED_NAV } from "@/constants/navigation";
 
 export function PrimarySidebar() {
   return (
-    <Sidebar collapsible="none" className="w-[calc(var(--sidebar-width-icon)+1px)]! border-r">
+    <Sidebar
+      collapsible="none"
+      className="w-[calc(var(--sidebar-width-icon)+1px)]! py-2 [--sidebar:var(--sidebar-rail)] [--sidebar-accent:var(--sidebar-rail-accent)]"
+    >
       <SidebarHeader>
         <SidebarLogo />
       </SidebarHeader>

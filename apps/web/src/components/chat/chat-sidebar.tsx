@@ -26,8 +26,11 @@ export function ChatSidebar() {
   const visible = sortConversations(filterConversations(conversations, query));
 
   return (
-    <Sidebar collapsible="none" className="hidden min-w-0 flex-1 overflow-hidden md:flex">
-      <SidebarHeader className="h-12 justify-center border-b px-2">
+    <Sidebar
+      collapsible="none"
+      className="my-2 hidden min-w-0 flex-1 overflow-hidden md:flex [&_[data-sidebar=group]]:px-1"
+    >
+      <SidebarHeader className="h-12 justify-center px-1">
         <InputGroup className="bg-background">
           <InputGroupAddon>
             <MagnifyingGlassIcon />

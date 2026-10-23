@@ -19,7 +19,7 @@ export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
     <Sidebar
       variant="inset"
       collapsible="icon"
-      className="overflow-hidden *:data-[sidebar=sidebar]:flex-row"
+      className="overflow-hidden p-0 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+1px)] *:data-[sidebar=sidebar]:flex-row"
       {...props}
     >
       <PrimarySidebar />
