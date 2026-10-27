@@ -16,8 +16,8 @@ export function SidebarLogo() {
       className="flex-1 group-data-[collapsible=icon]:size-8!"
       render={<Link href={getRoleHref(role, "")} />}
     >
-      <Image src="/logo.png" alt="" width={32} height={32} className="size-8" />
-      <span className="truncate font-medium">Internium</span>
+      <Image src="/logo.png" alt="" width={20} height={20} className="size-5" />
+      <span className="truncate font-semibold text-base">Internium</span>
     </SidebarMenuButton>
   );
 }
