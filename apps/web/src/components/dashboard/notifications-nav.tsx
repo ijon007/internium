@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@internium/ui/components/sidebar";
-import { BellIcon } from "@phosphor-icons/react";
+import { BellIcon, ChecksIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import { MOCK_NOTIFICATIONS } from "@/constants/notifications";
@@ -51,14 +51,16 @@ export function NotificationsNav() {
         sideOffset={8}
         className="w-80 gap-0 p-0"
       >
-        <PopoverHeader className="flex-row items-center justify-between gap-2 px-2.5 py-2">
-          <PopoverTitle>Notifications</PopoverTitle>
+        <PopoverHeader className="flex-row items-center justify-between gap-2 border-b px-2.5 py-1.5">
+          <PopoverTitle className="text-xs">Notifications</PopoverTitle>
           <Button
             variant="ghost"
             size="sm"
             disabled={!hasUnread}
+            className="text-muted-foreground active:scale-[0.97]"
             onClick={markAllRead}
           >
+            <ChecksIcon data-icon="inline-start" weight={ICON_WEIGHT} />
             Mark as read
           </Button>
         </PopoverHeader>
@@ -80,28 +82,30 @@ export function NotificationsNav() {
 
 function NotificationRow({ notification }: { notification: Notification }) {
   return (
-    <div className="flex gap-2 rounded-md px-2 py-2">
+    <div className="flex gap-2 rounded-md px-2 py-1.5">
       <span
         className={cn(
-          "mt-1.5 size-1.5 shrink-0 rounded-full",
+          "mt-1 size-1.5 shrink-0 rounded-full",
           notification.read ? "bg-transparent" : "bg-primary",
         )}
       />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline justify-between gap-2">
+      <div className="grid min-w-0 flex-1 gap-0.5">
+        <div className="flex min-w-0 items-center gap-2">
           <p
             className={cn(
-              "truncate text-sm",
+              "min-w-0 flex-1 truncate",
               notification.read ? "font-normal" : "font-medium",
             )}
           >
             {notification.title}
           </p>
-          <span className="shrink-0 text-muted-foreground tabular-nums">
+          <span className="shrink-0 text-[0.625rem] text-muted-foreground tabular-nums">
             {notification.time}
           </span>
         </div>
-        <p className="line-clamp-2 text-muted-foreground">{notification.body}</p>
+        <p className="line-clamp-2 text-xs/snug text-muted-foreground">
+          {notification.body}
+        </p>
       </div>
     </div>
   );
