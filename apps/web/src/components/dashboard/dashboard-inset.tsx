@@ -1,11 +1,8 @@
 "use client";
 
-import {
-  SidebarInset,
-  SidebarTrigger,
-  useSidebar,
-} from "@internium/ui/components/sidebar";
+import { SidebarInset, useSidebar } from "@internium/ui/components/sidebar";
 import type { ReactNode } from "react";
+import { SidebarCollapseButton } from "@/components/dashboard/sidebar-collapse-button";
 import { cn } from "@/lib/utils";
 
 export function DashboardInset({ children }: { children: ReactNode }) {
@@ -16,7 +13,7 @@ export function DashboardInset({ children }: { children: ReactNode }) {
     <SidebarInset>
       {showInsetTrigger ? (
         <div className="flex h-8 shrink-0 items-center px-1">
-          <SidebarTrigger />
+          <SidebarCollapseButton />
         </div>
       ) : null}
       <div
