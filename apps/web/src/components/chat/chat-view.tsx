@@ -11,6 +11,7 @@ import { ChatCircleIcon } from "@phosphor-icons/react/ssr";
 import { useCallback, useRef } from "react";
 import { ChatAvatar } from "@/components/chat/chat-avatar";
 import { ChatComposer } from "@/components/chat/chat-composer";
+import { ForwardMessageDialog } from "@/components/chat/forward-message-dialog";
 import { MessageRow } from "@/components/chat/message-row";
 import { useChat } from "@/hooks/use-chat";
 import type { ChatMessage } from "@/types/chat";
@@ -71,6 +72,7 @@ export function ChatView() {
       <div className="shrink-0">
         <ChatComposer conversationId={id} name={name} />
       </div>
+      <ForwardMessageDialog fromConversationId={id} />
     </div>
   );
 }
