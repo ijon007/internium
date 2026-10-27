@@ -9,7 +9,7 @@ import { SHARED_NAV } from "@/constants/navigation";
 
 export function SharedNav() {
   return (
-    <SidebarGroup>
+    <SidebarGroup className="px-1 py-0">
       <SidebarGroupContent>
         <IconNavMenu items={SHARED_NAV} />
       </SidebarGroupContent>

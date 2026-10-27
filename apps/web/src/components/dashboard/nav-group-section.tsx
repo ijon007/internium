@@ -23,7 +23,7 @@ export function NavGroupSection({ role, group }: NavGroupSectionProps) {
   const pathname = usePathname();
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className="px-1 py-0">
       <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
       <SidebarMenu>
         {group.items.map(({ title, path, icon: Icon }) => {

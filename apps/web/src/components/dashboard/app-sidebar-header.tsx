@@ -11,7 +11,7 @@ import { SwitchRoleButton } from "@/components/dashboard/switch-role-button";
 
 export function AppSidebarHeader() {
   return (
-    <SidebarHeader>
+    <SidebarHeader className="p-1">
       <SidebarMenu>
         <SidebarMenuItem className="flex items-center gap-0.5">
           <SidebarLogo />

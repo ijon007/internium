@@ -13,13 +13,13 @@ import { SharedNav } from "@/components/dashboard/shared-nav";
 
 export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar variant="inset" collapsible="icon" {...props}>
+    <Sidebar variant="inset" collapsible="icon" className="p-1" {...props}>
       <AppSidebarHeader />
       <SidebarContent>
         <SharedNav />
         <RoleNav />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="p-1">
         <NavUser />
       </SidebarFooter>
     </Sidebar>
