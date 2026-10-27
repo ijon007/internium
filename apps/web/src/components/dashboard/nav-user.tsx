@@ -34,14 +34,20 @@ export function NavUser() {
       <SidebarMenuItem>
         <SidebarMenuButton
           tooltip="Settings"
+          className="group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
           render={<Link href={getRoleHref(role, "settings")} />}
         >
           <Avatar size="sm">
             <AvatarImage src={MOCK_USER.avatar} alt={MOCK_USER.name} />
             <AvatarFallback>{getInitials(MOCK_USER.name)}</AvatarFallback>
           </Avatar>
-          <span className="truncate">{MOCK_USER.name}</span>
-          <GearIcon weight={ICON_WEIGHT} className="ml-auto" />
+          <span className="truncate group-data-[collapsible=icon]:hidden">
+            {MOCK_USER.name}
+          </span>
+          <GearIcon
+            weight={ICON_WEIGHT}
+            className="ml-auto group-data-[collapsible=icon]:hidden"
+          />
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
