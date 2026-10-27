@@ -17,7 +17,7 @@ export function PrimarySidebar() {
   return (
     <Sidebar
       collapsible="none"
-      className="w-[calc(var(--sidebar-width-icon)+1px)]! py-2 [--sidebar:var(--sidebar-rail)] [--sidebar-accent:var(--sidebar-rail-accent)]"
+      className="w-[calc(var(--sidebar-width-icon)+1px)]! border-sidebar-border border-r py-2"
     >
       <SidebarHeader>
         <SidebarLogo />

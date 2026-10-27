@@ -85,16 +85,16 @@
   --chart-4: #a9bbf2;
   --chart-5: #8a93ab;
   --radius: 0.45rem;
-  --sidebar: color-mix(in oklch, var(--brand) 18%, white);
-  --sidebar-rail: color-mix(in oklch, var(--brand) 52%, white);
-  --sidebar-rail-accent: color-mix(in oklch, var(--brand) 66%, white);
+  --sidebar: oklch(0.97 0 0);
+  --sidebar-rail: oklch(0.97 0 0);
+  --sidebar-rail-accent: oklch(0.922 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: var(--brand);
-  --sidebar-primary-foreground: var(--brand-foreground);
-  --sidebar-accent: color-mix(in oklch, var(--brand) 28%, white);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.922 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: color-mix(in oklch, var(--brand) 24%, white);
-  --sidebar-ring: var(--brand);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
 }
@@ -129,16 +129,16 @@
   --chart-3: #a9bbf2;
   --chart-4: #313749;
   --chart-5: #8a93ab;
-  --sidebar: color-mix(in oklch, var(--brand) 22%, oklch(0.18 0 0));
-  --sidebar-rail: color-mix(in oklch, var(--brand) 52%, oklch(0.14 0 0));
-  --sidebar-rail-accent: color-mix(in oklch, var(--brand) 66%, oklch(0.16 0 0));
+  --sidebar: oklch(0.269 0 0);
+  --sidebar-rail: oklch(0.269 0 0);
+  --sidebar-rail-accent: oklch(0.371 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: var(--brand);
-  --sidebar-primary-foreground: var(--brand-foreground);
-  --sidebar-accent: color-mix(in oklch, var(--brand) 32%, oklch(0.22 0 0));
+  --sidebar-primary: oklch(0.985 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
+  --sidebar-accent: oklch(0.371 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: color-mix(in oklch, var(--brand) 28%, transparent);
-  --sidebar-ring: var(--brand);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
