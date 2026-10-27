@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupTextarea,
-} from "@internium/ui/components/input-group";
+import { Button } from "@internium/ui/components/button";
+import { Textarea } from "@internium/ui/components/textarea";
 import {
   AtIcon,
   PaperPlaneRightIcon,
@@ -40,39 +36,43 @@ export function ChatComposer({ name }: ChatComposerProps) {
 
   return (
     <form className="px-4 pt-1 pb-3" onSubmit={onSubmit}>
-      <InputGroup className="h-auto items-stretch rounded-lg bg-background shadow-none">
-        <InputGroupTextarea
+      <div className="rounded-lg border border-input bg-background focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30">
+        <Textarea
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={onKeyDown}
           placeholder={`Message ${name}`}
           rows={1}
-          className="max-h-40 min-h-10 px-3 py-2.5 text-sm"
+          className="max-h-40 min-h-10 rounded-lg border-0 bg-transparent px-3 py-2.5 text-sm shadow-none focus-visible:border-0 focus-visible:ring-0 dark:bg-transparent"
         />
-        <InputGroupAddon
-          align="block-end"
-          className="justify-between px-1.5 pb-1.5"
-        >
+        <div className="flex items-center justify-between px-1.5 pb-1.5">
           <div className="flex items-center gap-0.5">
-            <InputGroupButton
+            <Button
+              type="button"
               size="icon-xs"
               variant="ghost"
               aria-label="Attach file"
             >
               <PlusIcon />
-            </InputGroupButton>
-            <InputGroupButton size="icon-xs" variant="ghost" aria-label="Emoji">
+            </Button>
+            <Button
+              type="button"
+              size="icon-xs"
+              variant="ghost"
+              aria-label="Emoji"
+            >
               <SmileyIcon />
-            </InputGroupButton>
-            <InputGroupButton
+            </Button>
+            <Button
+              type="button"
               size="icon-xs"
               variant="ghost"
               aria-label="Mention"
             >
               <AtIcon />
-            </InputGroupButton>
+            </Button>
           </div>
-          <InputGroupButton
+          <Button
             type="submit"
             size="icon-xs"
             variant={canSend ? "default" : "ghost"}
@@ -80,9 +80,9 @@ export function ChatComposer({ name }: ChatComposerProps) {
             aria-label="Send"
           >
             <PaperPlaneRightIcon weight="fill" />
-          </InputGroupButton>
-        </InputGroupAddon>
-      </InputGroup>
+          </Button>
+        </div>
+      </div>
     </form>
   );
 }

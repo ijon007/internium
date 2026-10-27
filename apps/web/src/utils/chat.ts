@@ -1,10 +1,4 @@
-import { CHAT_PATH } from "@/constants/chat";
 import type { Conversation } from "@/types/chat";
-
-export function isChatPath(pathname: string): boolean {
-  const segments = pathname.split("/").filter(Boolean);
-  return segments[0] === "dashboard" && segments[2] === CHAT_PATH;
-}
 
 export function getInitials(name: string): string {
   return name

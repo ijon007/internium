@@ -43,7 +43,7 @@ export function ChatView({ conversation }: ChatViewProps) {
         <span className="font-semibold text-sm">{name}</span>
       </div>
       <ScrollArea className="min-h-0 flex-1">
-        <div className="flex min-h-full flex-col justify-end py-2">
+        <div className="py-2">
           <div className="flex items-center px-5 py-2">
             <div className="h-px flex-1 bg-border" />
             <span className="rounded-full border bg-background px-3 py-0.5 font-medium text-xs">
