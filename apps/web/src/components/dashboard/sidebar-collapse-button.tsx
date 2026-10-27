@@ -21,7 +21,7 @@ export function SidebarCollapseButton({
     <SidebarMenuButton
       tooltip="Toggle sidebar"
       className={cn(
-        "size-6! w-6! min-w-6 shrink-0 p-0 [&_svg]:size-3",
+        "size-6! w-6! min-w-6 shrink-0 p-0 [&_svg]:size-4",
         className,
       )}
       onClick={toggleSidebar}
