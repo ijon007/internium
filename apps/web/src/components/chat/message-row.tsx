@@ -6,6 +6,8 @@ import { MessageActions } from "@/components/chat/message-actions";
 import { MessageContent } from "@/components/chat/message-content";
 import { MessageEditForm } from "@/components/chat/message-edit-form";
 import { MessageReactions } from "@/components/chat/message-reactions";
+import { MessageStatusTicks } from "@/components/chat/message-status";
+import { MOCK_USER } from "@/constants/user";
 import { useChat } from "@/hooks/use-chat";
 import type { ChatMessage } from "@/types/chat";
 
@@ -26,6 +28,7 @@ export function MessageRow({
   const [reactOpen, setReactOpen] = useState(false);
   const deleted = Boolean(message.deletedAt);
   const editing = editingMessageId === message.id;
+  const isOwn = message.author === MOCK_USER.name;
 
   const body = deleted ? (
     <p className="text-muted-foreground text-sm italic">Message deleted</p>
@@ -88,8 +91,9 @@ export function MessageRow({
         id={`msg-${message.id}`}
         className="group relative flex gap-2 px-3 py-0.5 transition-colors duration-150 ease-out hover:bg-muted/50"
       >
-        <span className="w-8 shrink-0 pt-0.5 text-center text-[10px] text-transparent tabular-nums group-hover:text-muted-foreground">
+        <span className="flex w-8 shrink-0 flex-col items-center gap-0.5 pt-0.5 text-[10px] text-transparent tabular-nums group-hover:text-muted-foreground">
           {message.sentAt}
+          {isOwn ? <MessageStatusTicks status={message.status} /> : null}
         </span>
         <div className="min-w-0 flex-1">{body}</div>
         {actions}
@@ -109,6 +113,7 @@ export function MessageRow({
           <span className="text-muted-foreground text-xs tabular-nums">
             {message.sentAt}
           </span>
+          {isOwn ? <MessageStatusTicks status={message.status} /> : null}
           {message.pinned ? (
             <span className="text-muted-foreground text-xs">Pinned</span>
           ) : null}

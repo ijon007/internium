@@ -8,17 +8,19 @@ import {
   EmptyTitle,
 } from "@internium/ui/components/empty";
 import { ChatCircleIcon } from "@phosphor-icons/react/ssr";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { ChatAvatar } from "@/components/chat/chat-avatar";
 import { ChatComposer } from "@/components/chat/chat-composer";
 import { ForwardMessageDialog } from "@/components/chat/forward-message-dialog";
 import { MessageRow } from "@/components/chat/message-row";
 import { PinnedMessagesBar } from "@/components/chat/pinned-messages-bar";
+import { TypingIndicator } from "@/components/chat/typing-indicator";
 import { useChat } from "@/hooks/use-chat";
 import type { ChatMessage } from "@/types/chat";
 
 export function ChatView() {
-  const { activeConversation } = useChat();
+  const { activeConversation, peerTyping, setPeerTyping, markAsRead } =
+    useChat();
   const scrollerRef = useRef<HTMLDivElement>(null);
 
   const scrollToMessage = useCallback((id: string) => {
@@ -28,6 +30,22 @@ export function ChatView() {
     el.classList.add("bg-primary/10");
     window.setTimeout(() => el.classList.remove("bg-primary/10"), 1200);
   }, []);
+
+  useEffect(() => {
+    if (!activeConversation) {
+      setPeerTyping(false);
+      return;
+    }
+    markAsRead(activeConversation.id);
+    // ponytail: mock peer typing pulse while thread is open
+    const start = window.setTimeout(() => setPeerTyping(true), 1800);
+    const stop = window.setTimeout(() => setPeerTyping(false), 4200);
+    return () => {
+      window.clearTimeout(start);
+      window.clearTimeout(stop);
+      setPeerTyping(false);
+    };
+  }, [activeConversation?.id, markAsRead, setPeerTyping, activeConversation]);
 
   if (!activeConversation) {
     return (
@@ -73,6 +91,7 @@ export function ChatView() {
               />
             </div>
           ))}
+          {peerTyping ? <TypingIndicator name={name} /> : null}
         </div>
       </div>
       <div className="shrink-0">
