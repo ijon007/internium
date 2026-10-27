@@ -10,17 +10,14 @@ export function DashboardInset({ children }: { children: ReactNode }) {
   const showInsetTrigger = isMobile || state === "collapsed";
 
   return (
-    <SidebarInset>
+    <SidebarInset className="md:peer-data-[variant=inset]:shadow-none">
       {showInsetTrigger ? (
-        <div className="flex h-8 shrink-0 items-center px-1">
+        <div className="absolute top-1 left-1 z-10">
           <SidebarCollapseButton />
         </div>
       ) : null}
       <div
-        className={cn(
-          "flex flex-1 flex-col",
-          showInsetTrigger ? "px-2 pb-2" : "p-4",
-        )}
+        className={cn("flex flex-1 flex-col", showInsetTrigger ? "p-2" : "p-4")}
       >
         {children}
       </div>
