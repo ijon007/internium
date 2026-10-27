@@ -20,7 +20,7 @@ export function SidebarLogo() {
         alt=""
         width={20}
         height={20}
-        className="size-5 shrink-0 object-contain"
+        className="size-5 min-h-5 min-w-5 shrink-0 grow-0 object-contain"
       />
       <span className="truncate text-base group-data-[collapsible=icon]:hidden">
         Internium
