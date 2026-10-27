@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@internium/ui/components/badge";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -79,7 +78,11 @@ export function ConversationItem({
               >
                 {lastMessage}
               </span>
-              {hasUnread && <Badge className="shrink-0">{unreadCount}</Badge>}
+              {hasUnread ? (
+                <span className="size-2 shrink-0 rounded-full bg-primary">
+                  <span className="sr-only">{unreadCount} unread</span>
+                </span>
+              ) : null}
             </div>
           </div>
         </SidebarMenuButton>

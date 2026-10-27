@@ -35,7 +35,7 @@ export function ChatComposer({ name }: ChatComposerProps) {
   };
 
   return (
-    <form className="px-4 pt-1 pb-3" onSubmit={onSubmit}>
+    <form className="px-3 pt-1 pb-2" onSubmit={onSubmit}>
       <div className="rounded-lg border border-input bg-background focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30">
         <Textarea
           value={draft}
@@ -43,13 +43,13 @@ export function ChatComposer({ name }: ChatComposerProps) {
           onKeyDown={onKeyDown}
           placeholder={`Message ${name}`}
           rows={1}
-          className="max-h-40 min-h-10 rounded-lg border-0 bg-transparent px-3 py-2.5 text-sm shadow-none focus-visible:border-0 focus-visible:ring-0 dark:bg-transparent"
+          className="max-h-40 min-h-10 rounded-lg border-0 bg-transparent px-3 py-2 text-sm shadow-none focus-visible:border-0 focus-visible:ring-0 dark:bg-transparent"
         />
         <div className="flex items-center justify-between px-1.5 pb-1.5">
           <div className="flex items-center gap-0.5">
             <Button
               type="button"
-              size="icon-xs"
+              size="icon-sm"
               variant="ghost"
               aria-label="Attach file"
             >
@@ -57,7 +57,7 @@ export function ChatComposer({ name }: ChatComposerProps) {
             </Button>
             <Button
               type="button"
-              size="icon-xs"
+              size="icon-sm"
               variant="ghost"
               aria-label="Emoji"
             >
@@ -65,7 +65,7 @@ export function ChatComposer({ name }: ChatComposerProps) {
             </Button>
             <Button
               type="button"
-              size="icon-xs"
+              size="icon-sm"
               variant="ghost"
               aria-label="Mention"
             >
@@ -74,7 +74,7 @@ export function ChatComposer({ name }: ChatComposerProps) {
           </div>
           <Button
             type="submit"
-            size="icon-xs"
+            size="icon-sm"
             variant={canSend ? "default" : "ghost"}
             disabled={!canSend}
             aria-label="Send"

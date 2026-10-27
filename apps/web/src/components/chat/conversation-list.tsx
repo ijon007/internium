@@ -24,10 +24,10 @@ export function ConversationList() {
   const visible = sortConversations(filterConversations(conversations, query));
 
   return (
-    <div className="flex w-72 shrink-0 flex-col border-r bg-sidebar">
+    <div className="flex w-72 shrink-0 flex-col border-r bg-background">
       <div className="flex items-center gap-1 p-2">
         <SidebarCollapseButton />
-        <InputGroup className="min-w-0 flex-1">
+        <InputGroup className="min-w-0 flex-1 border-border bg-background">
           <InputGroupAddon>
             <MagnifyingGlassIcon />
           </InputGroupAddon>

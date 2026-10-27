@@ -38,13 +38,13 @@ export function ChatView({ conversation }: ChatViewProps) {
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-background">
-      <div className="flex h-12 shrink-0 items-center gap-2.5 border-b px-4">
+      <div className="flex h-11 shrink-0 items-center gap-2.5 border-b px-3">
         <ChatAvatar name={name} src={avatar} size="sm" />
         <span className="font-semibold text-sm">{name}</span>
       </div>
       <ScrollArea className="min-h-0 flex-1">
-        <div className="py-2">
-          <div className="flex items-center px-5 py-2">
+        <div className="py-1.5">
+          <div className="flex items-center px-3 py-2">
             <div className="h-px flex-1 bg-border" />
             <span className="rounded-full border bg-background px-3 py-0.5 font-medium text-xs">
               Today
@@ -78,7 +78,7 @@ function MessageRow({
 }) {
   if (compact) {
     return (
-      <div className="group flex gap-2 px-5 py-0.5 hover:bg-muted/50">
+      <div className="group flex gap-2 px-3 py-0.5 hover:bg-muted/50">
         <span className="w-8 shrink-0 pt-0.5 text-center text-[10px] text-transparent tabular-nums group-hover:text-muted-foreground">
           {message.sentAt}
         </span>
@@ -88,7 +88,7 @@ function MessageRow({
   }
 
   return (
-    <div className="group mt-1.5 flex gap-2 px-5 py-1 hover:bg-muted/50">
+    <div className="group mt-1.5 flex gap-2 px-3 py-1 hover:bg-muted/50">
       <ChatAvatar name={message.author} src={message.avatar} />
       <div className="min-w-0">
         <div className="flex items-baseline gap-2">
