@@ -49,7 +49,7 @@ export function ConversationItem({
         <SidebarMenuButton
           size="lg"
           isActive={isActive}
-          className="h-auto min-w-0 py-2"
+          className="h-auto min-w-0 py-1.5"
           render={<Link href={href} />}
         >
           <ChatAvatar name={name} src={avatar} />
@@ -64,7 +64,7 @@ export function ConversationItem({
                   className="size-3 shrink-0 text-muted-foreground"
                 />
               )}
-              <span className="shrink-0 text-muted-foreground text-xs">
+              <span className="shrink-0 text-[0.625rem] text-muted-foreground">
                 {lastMessageAt}
               </span>
             </div>

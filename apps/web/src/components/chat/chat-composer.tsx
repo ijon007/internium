@@ -49,7 +49,7 @@ export function ChatComposer({ name }: ChatComposerProps) {
           <div className="flex items-center gap-0.5">
             <Button
               type="button"
-              size="icon"
+              size="icon-lg"
               variant="ghost"
               aria-label="Attach file"
             >
@@ -57,7 +57,7 @@ export function ChatComposer({ name }: ChatComposerProps) {
             </Button>
             <Button
               type="button"
-              size="icon"
+              size="icon-lg"
               variant="ghost"
               aria-label="Emoji"
             >
@@ -65,7 +65,7 @@ export function ChatComposer({ name }: ChatComposerProps) {
             </Button>
             <Button
               type="button"
-              size="icon"
+              size="icon-lg"
               variant="ghost"
               aria-label="Mention"
             >
@@ -74,7 +74,7 @@ export function ChatComposer({ name }: ChatComposerProps) {
           </div>
           <Button
             type="submit"
-            size="icon"
+            size="icon-lg"
             variant={canSend ? "default" : "ghost"}
             disabled={!canSend}
             aria-label="Send"
