@@ -10,7 +10,7 @@ export function DashboardInset({ children }: { children: ReactNode }) {
   const showInsetTrigger = isMobile || state === "collapsed";
 
   return (
-    <SidebarInset className="has-[.chat-workspace]:[&_.dashboard-inset-trigger]:hidden md:peer-data-[variant=inset]:shadow-none md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0">
+    <SidebarInset className="overflow-hidden has-[.chat-workspace]:[&_.dashboard-inset-trigger]:hidden md:peer-data-[variant=inset]:shadow-none md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0">
       {showInsetTrigger ? (
         <div className="dashboard-inset-trigger absolute top-1 left-1 z-10">
           <SidebarCollapseButton />
