@@ -10,32 +10,13 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@internium/ui/components/item";
-import {
-  BuildingsIcon,
-  CaretRightIcon,
-  ChalkboardTeacherIcon,
-  ShieldCheckIcon,
-  StudentIcon,
-  UsersThreeIcon,
-} from "@phosphor-icons/react";
+import { CaretRightIcon } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { ICON_WEIGHT } from "@/constants/navigation";
-import {
-  ROLE_DESCRIPTIONS,
-  ROLE_LABELS,
-  ROLE_PICKER_ORDER,
-  type Role,
-} from "@/constants/roles";
+import { ROLE_ICONS } from "@/constants/role-icons";
+import { ROLE_DESCRIPTIONS, ROLE_LABELS, ROLE_PICKER_ORDER } from "@/constants/roles";
 import { getRoleHref } from "@/utils/navigation";
-
-const ROLE_ICONS: Record<Role, typeof StudentIcon> = {
-  student: StudentIcon,
-  teacher: ChalkboardTeacherIcon,
-  coordinator: UsersThreeIcon,
-  admin: ShieldCheckIcon,
-  "business-mentor": BuildingsIcon,
-};
 
 export function RolePicker() {
   return (

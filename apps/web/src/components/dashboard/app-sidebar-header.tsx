@@ -1,0 +1,19 @@
+"use client";
+
+import { SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarTrigger } from "@internium/ui/components/sidebar";
+import { SidebarLogo } from "@/components/dashboard/sidebar-logo";
+import { SwitchRoleButton } from "@/components/dashboard/switch-role-button";
+
+export function AppSidebarHeader() {
+  return (
+    <SidebarHeader>
+      <SidebarMenu>
+        <SidebarMenuItem className="flex items-center gap-0.5 group-data-[collapsible=icon]:flex-col">
+          <SidebarLogo />
+          <SwitchRoleButton />
+          <SidebarTrigger className="size-8 shrink-0 group-data-[collapsible=icon]:hidden" />
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarHeader>
+  );
+}
