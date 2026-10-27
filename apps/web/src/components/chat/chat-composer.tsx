@@ -17,7 +17,9 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import { type FormEvent, type KeyboardEvent, useState } from "react";
+import { ReplyQuote } from "@/components/chat/reply-quote";
 import { REACTION_EMOJIS } from "@/constants/chat";
+import { ICON_WEIGHT } from "@/constants/navigation";
 import { useChat } from "@/hooks/use-chat";
 import type { ChatAttachment } from "@/types/chat";
 
@@ -86,27 +88,6 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
 
   return (
     <form className="p-3" onSubmit={onSubmit}>
-      {replyTarget ? (
-        <div className="mb-2 flex items-start gap-2 rounded-md border border-border bg-muted/40 px-2.5 py-2">
-          <div className="min-w-0 flex-1 border-primary border-l-2 pl-2">
-            <p className="font-medium text-primary text-xs">
-              Replying to {replyTarget.author}
-            </p>
-            <p className="truncate text-muted-foreground text-xs">
-              {replyTarget.body}
-            </p>
-          </div>
-          <Button
-            type="button"
-            size="icon-sm"
-            variant="ghost"
-            aria-label="Cancel reply"
-            onClick={() => setReplyTarget(null)}
-          >
-            <XIcon />
-          </Button>
-        </div>
-      ) : null}
       {attachments.length > 0 ? (
         <ul className="mb-2 flex flex-wrap gap-1.5">
           {attachments.map((file) => (
@@ -118,7 +99,7 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
               <button
                 type="button"
                 aria-label={`Remove ${file.name}`}
-                className="text-muted-foreground transition-colors hover:text-foreground"
+                className="cursor-pointer text-muted-foreground transition-colors duration-150 ease-out-strong hover:text-foreground"
                 onClick={() =>
                   setAttachments((prev) =>
                     prev.filter((a) => a.name !== file.name),
@@ -131,7 +112,17 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
           ))}
         </ul>
       ) : null}
-      <div className="rounded-lg border border-input bg-background transition-[box-shadow,border-color] duration-150 ease-out focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30">
+      <div className="rounded-lg border border-input bg-background transition-[box-shadow,border-color] duration-150 ease-out-strong focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30">
+        {replyTarget ? (
+          <div className="px-3 pt-2">
+            <ReplyQuote
+              author={replyTarget.author}
+              body={replyTarget.body}
+              onDismiss={() => setReplyTarget(null)}
+              className="mb-0"
+            />
+          </div>
+        ) : null}
         <Textarea
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
@@ -153,18 +144,19 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
                   />
                 }
               >
-                <PlusIcon />
+                <PlusIcon weight={ICON_WEIGHT} />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
                 {MOCK_FILES.map((file) => (
                   <DropdownMenuItem
                     key={file.id}
+                    className="cursor-pointer"
                     onClick={() => addAttachment(file)}
                   >
                     {file.kind === "pdf" ? (
-                      <FilePdfIcon />
+                      <FilePdfIcon weight={ICON_WEIGHT} />
                     ) : (
-                      <MicrosoftExcelLogoIcon />
+                      <MicrosoftExcelLogoIcon weight={ICON_WEIGHT} />
                     )}
                     {file.name}
                   </DropdownMenuItem>
@@ -182,14 +174,14 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
                   />
                 }
               >
-                <SmileyIcon />
+                <SmileyIcon weight={ICON_WEIGHT} />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="min-w-0 p-1.5">
                 <div className="flex gap-0.5">
                   {REACTION_EMOJIS.map((emoji) => (
                     <DropdownMenuItem
                       key={emoji}
-                      className="size-8 justify-center p-0 text-base"
+                      className="size-8 cursor-pointer justify-center p-0 text-base"
                       onClick={() => insertEmoji(emoji)}
                     >
                       {emoji}
@@ -205,9 +197,9 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
             variant={canSend ? "default" : "ghost"}
             disabled={!canSend}
             aria-label="Send"
-            className="transition-transform duration-150 ease-out active:scale-[0.97]"
+            className="transition-transform duration-150 ease-out-strong active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
           >
-            <PaperPlaneRightIcon weight="fill" />
+            <PaperPlaneRightIcon weight={ICON_WEIGHT} />
           </Button>
         </div>
       </div>
