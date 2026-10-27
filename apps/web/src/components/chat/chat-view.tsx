@@ -13,6 +13,7 @@ import { ChatAvatar } from "@/components/chat/chat-avatar";
 import { ChatComposer } from "@/components/chat/chat-composer";
 import { ForwardMessageDialog } from "@/components/chat/forward-message-dialog";
 import { MessageRow } from "@/components/chat/message-row";
+import { PinnedMessagesBar } from "@/components/chat/pinned-messages-bar";
 import { useChat } from "@/hooks/use-chat";
 import type { ChatMessage } from "@/types/chat";
 
@@ -52,6 +53,11 @@ export function ChatView() {
         <ChatAvatar name={name} src={avatar} size="sm" />
         <span className="font-semibold text-sm">{name}</span>
       </div>
+      <PinnedMessagesBar
+        conversationId={id}
+        messages={messages}
+        onJump={scrollToMessage}
+      />
       <div ref={scrollerRef} className="h-0 min-h-0 flex-1 overflow-y-auto">
         <div className="py-3">
           {messages.map((message, index) => (
