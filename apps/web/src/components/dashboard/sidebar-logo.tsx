@@ -12,10 +12,16 @@ export function SidebarLogo() {
   return (
     <SidebarMenuButton
       tooltip="Internium"
-      className="h-8 flex-1 px-2 py-0 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0!"
+      className="h-8 flex-1 px-2 py-0 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:flex-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0!"
       render={<Link href={getRoleHref(role, "")} />}
     >
-      <Image src="/logo.png" alt="" width={20} height={20} className="size-5" />
+      <Image
+        src="/logo.png"
+        alt=""
+        width={20}
+        height={20}
+        className="size-5 shrink-0 object-contain"
+      />
       <span className="truncate text-base group-data-[collapsible=icon]:hidden">
         Internium
       </span>
