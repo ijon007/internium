@@ -63,7 +63,6 @@ export function MessageRow({
         body={message.body}
         editedAt={message.editedAt}
         attachments={message.attachments}
-        markdown={false}
       />
       <MessageReactions
         conversationId={conversationId}
