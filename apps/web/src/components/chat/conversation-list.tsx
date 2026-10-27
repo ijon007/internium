@@ -8,17 +8,21 @@ import {
 import { SidebarMenu } from "@internium/ui/components/sidebar";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ConversationItem } from "@/components/chat/conversation-item";
 import { CONVERSATION_PARAM } from "@/constants/chat";
-import { useConversations } from "@/hooks/use-conversations";
+import { useChat } from "@/hooks/use-chat";
 import { filterConversations, sortConversations } from "@/utils/chat";
 
 export function ConversationList() {
   const pathname = usePathname();
   const activeId = useSearchParams().get(CONVERSATION_PARAM);
   const [query, setQuery] = useState("");
-  const { conversations, togglePin, markAsRead, remove } = useConversations();
+  const { conversations, togglePin, markAsRead, setActiveId } = useChat();
+
+  useEffect(() => {
+    setActiveId(activeId);
+  }, [activeId, setActiveId]);
 
   const visible = sortConversations(filterConversations(conversations, query));
 
@@ -51,7 +55,6 @@ export function ConversationList() {
                 isActive={conversation.id === activeId}
                 onTogglePin={() => togglePin(conversation.id)}
                 onMarkAsRead={() => markAsRead(conversation.id)}
-                onDelete={() => remove(conversation.id)}
               />
             ))}
           </SidebarMenu>

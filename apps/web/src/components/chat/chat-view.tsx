@@ -10,14 +10,13 @@ import {
 import { ChatCircleIcon } from "@phosphor-icons/react/ssr";
 import { ChatAvatar } from "@/components/chat/chat-avatar";
 import { ChatComposer } from "@/components/chat/chat-composer";
-import type { ChatMessage, Conversation } from "@/types/chat";
+import { useChat } from "@/hooks/use-chat";
+import type { ChatMessage } from "@/types/chat";
 
-type ChatViewProps = {
-  conversation: Conversation | undefined;
-};
+export function ChatView() {
+  const { activeConversation } = useChat();
 
-export function ChatView({ conversation }: ChatViewProps) {
-  if (!conversation) {
+  if (!activeConversation) {
     return (
       <Empty className="min-h-0 flex-1">
         <EmptyHeader>
@@ -33,7 +32,7 @@ export function ChatView({ conversation }: ChatViewProps) {
     );
   }
 
-  const { name, avatar, messages } = conversation;
+  const { id, name, avatar, messages } = activeConversation;
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background">
@@ -57,7 +56,7 @@ export function ChatView({ conversation }: ChatViewProps) {
         </div>
       </div>
       <div className="shrink-0">
-        <ChatComposer name={name} />
+        <ChatComposer conversationId={id} name={name} />
       </div>
     </div>
   );
@@ -88,7 +87,7 @@ function MessageRow({
 }) {
   if (compact) {
     return (
-      <div className="group flex gap-2 px-3 py-0.5 hover:bg-muted/50">
+      <div className="group flex gap-2 px-3 py-0.5 transition-colors duration-150 ease-out hover:bg-muted/50">
         <span className="w-8 shrink-0 pt-0.5 text-center text-[10px] text-transparent tabular-nums group-hover:text-muted-foreground">
           {message.sentAt}
         </span>
@@ -98,7 +97,7 @@ function MessageRow({
   }
 
   return (
-    <div className="group mt-1.5 flex gap-2 px-3 py-1 hover:bg-muted/50">
+    <div className="group mt-1.5 flex gap-2 px-3 py-1 transition-colors duration-150 ease-out hover:bg-muted/50">
       <ChatAvatar name={message.author} src={message.avatar} />
       <div className="min-w-0">
         <div className="flex items-baseline gap-2">
