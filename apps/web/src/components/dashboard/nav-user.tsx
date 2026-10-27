@@ -1,6 +1,10 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@internium/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@internium/ui/components/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +14,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@internium/ui/components/dropdown-menu";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@internium/ui/components/sidebar";
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@internium/ui/components/sidebar";
 import { CaretUpIcon, SignOutIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { ACCOUNT_NAV, ICON_WEIGHT } from "@/constants/navigation";
@@ -46,14 +55,21 @@ export function NavUser() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger
-            render={<SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />}
+            render={
+              <SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />
+            }
           >
             <UserAvatar />
             <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{MOCK_USER.name}</span>
-              <span className="truncate text-muted-foreground text-xs">{ROLE_LABELS[role]}</span>
+              <span className="truncate text-muted-foreground text-xs">
+                {ROLE_LABELS[role]}
+              </span>
             </div>
-            <CaretUpIcon weight={ICON_WEIGHT} className="ml-auto size-4" />
+            <CaretUpIcon
+              weight={ICON_WEIGHT}
+              className="ml-auto size-4 group-data-[collapsible=icon]:hidden"
+            />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="min-w-56 rounded-lg"
@@ -66,7 +82,9 @@ export function NavUser() {
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <UserAvatar />
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{MOCK_USER.name}</span>
+                    <span className="truncate font-medium">
+                      {MOCK_USER.name}
+                    </span>
                     <span className="truncate text-xs">{MOCK_USER.email}</span>
                   </div>
                 </div>
@@ -75,7 +93,10 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               {ACCOUNT_NAV.map(({ title, path, icon: Icon }) => (
-                <DropdownMenuItem key={title} render={<Link href={getRoleHref(role, path)} />}>
+                <DropdownMenuItem
+                  key={title}
+                  render={<Link href={getRoleHref(role, path)} />}
+                >
                   <Icon weight={ICON_WEIGHT} />
                   {title}
                 </DropdownMenuItem>

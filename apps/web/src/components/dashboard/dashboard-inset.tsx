@@ -1,6 +1,10 @@
 "use client";
 
-import { SidebarInset, SidebarTrigger, useSidebar } from "@internium/ui/components/sidebar";
+import {
+  SidebarInset,
+  SidebarTrigger,
+  useSidebar,
+} from "@internium/ui/components/sidebar";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +19,14 @@ export function DashboardInset({ children }: { children: ReactNode }) {
           <SidebarTrigger />
         </div>
       ) : null}
-      <div className={cn("flex flex-1 flex-col", showInsetTrigger ? "px-2 pb-2" : "p-4")}>{children}</div>
+      <div
+        className={cn(
+          "flex flex-1 flex-col",
+          showInsetTrigger ? "px-2 pb-2" : "p-4",
+        )}
+      >
+        {children}
+      </div>
     </SidebarInset>
   );
 }

@@ -1,7 +1,11 @@
 "use client";
 
-import { Sidebar, SidebarContent, SidebarFooter } from "@internium/ui/components/sidebar";
-import { type ComponentProps } from "react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+} from "@internium/ui/components/sidebar";
+import type { ComponentProps } from "react";
 import { AppSidebarHeader } from "@/components/dashboard/app-sidebar-header";
 import { NavUser } from "@/components/dashboard/nav-user";
 import { RoleNav } from "@/components/dashboard/role-nav";

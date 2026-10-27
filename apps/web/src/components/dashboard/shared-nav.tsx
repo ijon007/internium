@@ -1,6 +1,9 @@
 "use client";
 
-import { SidebarGroup, SidebarGroupContent } from "@internium/ui/components/sidebar";
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+} from "@internium/ui/components/sidebar";
 import { IconNavMenu } from "@/components/dashboard/icon-nav-menu";
 import { SHARED_NAV } from "@/constants/navigation";
 

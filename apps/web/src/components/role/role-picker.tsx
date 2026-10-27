@@ -15,7 +15,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import { ROLE_ICONS } from "@/constants/role-icons";
-import { ROLE_DESCRIPTIONS, ROLE_LABELS, ROLE_PICKER_ORDER } from "@/constants/roles";
+import {
+  ROLE_DESCRIPTIONS,
+  ROLE_LABELS,
+  ROLE_PICKER_ORDER,
+} from "@/constants/roles";
 import { getRoleHref } from "@/utils/navigation";
 
 export function RolePicker() {
