@@ -95,7 +95,7 @@ export function MessageActions({
             />
           }
         >
-          <SmileyIcon weight={ICON_WEIGHT} />
+          <SmileyIcon weight="bold" />
         </PopoverTrigger>
         <PopoverContent align="end" side="top" className="w-auto p-1.5">
           <ReactionPicker onPick={react} />
@@ -107,7 +107,7 @@ export function MessageActions({
           size="icon-sm"
           variant="ghost"
           aria-label="Reply"
-          className={TOOLBAR_BTN}
+          className={`${TOOLBAR_BTN} transition-transform duration-100 ease-out-strong active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100`}
           onClick={startReply}
         >
           <ArrowBendUpLeftIcon weight={ICON_WEIGHT} />

@@ -9,7 +9,6 @@ import {
 import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { ChatAvatar } from "@/components/chat/chat-avatar";
-import { ICON_WEIGHT } from "@/constants/navigation";
 import { cn } from "@/lib/utils";
 import type { Conversation } from "@/types/chat";
 
@@ -68,16 +67,16 @@ export function ChatHeader({
       <div className="flex shrink-0 items-center justify-end gap-1">
         <div
           className={cn(
-            "grid overflow-hidden transition-[grid-template-columns,opacity] duration-200 ease-out-strong motion-reduce:transition-none",
+            "grid overflow-hidden transition-[grid-template-columns,opacity] duration-200 ease-out-strong motion-reduce:transition-[opacity] motion-reduce:duration-150",
             searchOpen
-              ? "grid-cols-[minmax(0,13rem)] opacity-100"
-              : "grid-cols-[0fr] opacity-0",
+              ? "grid-cols-[13rem] opacity-100"
+              : "grid-cols-[0rem] opacity-0",
           )}
         >
           <div className="min-w-0 overflow-hidden">
-            <InputGroup className="h-8 min-w-0 border-border bg-background">
+            <InputGroup className="h-8 w-[13rem] border-border bg-background">
               <InputGroupAddon>
-                <MagnifyingGlassIcon />
+                <MagnifyingGlassIcon weight="bold" />
               </InputGroupAddon>
               <InputGroupInput
                 ref={inputRef}
@@ -113,7 +112,7 @@ export function ChatHeader({
             className="size-7 [&_svg:not([class*='size-'])]:size-4"
             onClick={() => setSearchOpen(true)}
           >
-            <MagnifyingGlassIcon weight={ICON_WEIGHT} />
+            <MagnifyingGlassIcon weight="bold" />
           </Button>
         )}
       </div>

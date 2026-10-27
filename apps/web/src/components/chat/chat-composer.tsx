@@ -16,12 +16,13 @@ import {
   SmileyIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { type FormEvent, type KeyboardEvent, useState } from "react";
+import { type FormEvent, type KeyboardEvent, useEffect, useState } from "react";
 import { ReplyQuote } from "@/components/chat/reply-quote";
 import { REACTION_EMOJIS } from "@/constants/chat";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import { useChat } from "@/hooks/use-chat";
-import type { ChatAttachment } from "@/types/chat";
+import { cn } from "@/lib/utils";
+import type { ChatAttachment, ChatReplyRef } from "@/types/chat";
 
 type ChatComposerProps = {
   conversationId: string;
@@ -45,6 +46,7 @@ const MOCK_FILES: ChatAttachment[] = [
 
 export function ChatComposer({ conversationId, name }: ChatComposerProps) {
   const { replyTarget, setReplyTarget, sendMessage } = useChat();
+  const shownReply = useExitingReply(replyTarget);
   const [draft, setDraft] = useState("");
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const canSend = draft.trim().length > 0 || attachments.length > 0;
@@ -113,16 +115,32 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
         </ul>
       ) : null}
       <div className="rounded-lg border border-input bg-background transition-[box-shadow,border-color] duration-150 ease-out-strong focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30">
-        {replyTarget ? (
-          <div className="px-3 pt-2">
-            <ReplyQuote
-              author={replyTarget.author}
-              body={replyTarget.body}
-              onDismiss={() => setReplyTarget(null)}
-              className="mb-0"
-            />
+        <div
+          className={cn(
+            "grid transition-[grid-template-rows] duration-200 ease-out-strong motion-reduce:transition-none",
+            replyTarget ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+          )}
+        >
+          <div className="min-h-0 overflow-hidden">
+            {shownReply ? (
+              <div
+                className={cn(
+                  "px-3 pt-2 transition-[opacity,transform] duration-200 ease-out-strong motion-reduce:transform-none motion-reduce:transition-opacity",
+                  replyTarget
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-1 opacity-0",
+                )}
+              >
+                <ReplyQuote
+                  author={shownReply.author}
+                  body={shownReply.body}
+                  onDismiss={() => setReplyTarget(null)}
+                  className="mb-0"
+                />
+              </div>
+            ) : null}
           </div>
-        ) : null}
+        </div>
         <Textarea
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
@@ -144,7 +162,7 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
                   />
                 }
               >
-                <PlusIcon weight={ICON_WEIGHT} />
+                <PlusIcon weight="bold" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
                 {MOCK_FILES.map((file) => (
@@ -174,7 +192,7 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
                   />
                 }
               >
-                <SmileyIcon weight={ICON_WEIGHT} />
+                <SmileyIcon weight="bold" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="min-w-0 p-1.5">
                 <div className="flex gap-0.5">
@@ -205,4 +223,19 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
       </div>
     </form>
   );
+}
+
+function useExitingReply(replyTarget: ChatReplyRef | null) {
+  const [shown, setShown] = useState(replyTarget);
+
+  useEffect(() => {
+    if (replyTarget) {
+      setShown(replyTarget);
+      return;
+    }
+    const id = window.setTimeout(() => setShown(null), 200);
+    return () => window.clearTimeout(id);
+  }, [replyTarget]);
+
+  return shown;
 }
