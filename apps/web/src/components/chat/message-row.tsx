@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { ChatAvatar } from "@/components/chat/chat-avatar";
 import { MessageActions } from "@/components/chat/message-actions";
+import { MessageEditForm } from "@/components/chat/message-edit-form";
 import { MessageReactions } from "@/components/chat/message-reactions";
+import { useChat } from "@/hooks/use-chat";
 import type { ChatMessage } from "@/types/chat";
 
 type MessageRowProps = {
@@ -19,11 +21,19 @@ export function MessageRow({
   compact,
   onScrollToMessage,
 }: MessageRowProps) {
+  const { editingMessageId } = useChat();
   const [reactOpen, setReactOpen] = useState(false);
   const deleted = Boolean(message.deletedAt);
+  const editing = editingMessageId === message.id;
 
   const body = deleted ? (
     <p className="text-muted-foreground text-sm italic">Message deleted</p>
+  ) : editing ? (
+    <MessageEditForm
+      conversationId={conversationId}
+      messageId={message.id}
+      initialBody={message.body}
+    />
   ) : (
     <>
       {message.forwardedFrom ? (
@@ -65,13 +75,14 @@ export function MessageRow({
     </>
   );
 
-  const actions = deleted ? null : (
-    <MessageActions
-      conversationId={conversationId}
-      message={message}
-      onReactOpen={() => setReactOpen(true)}
-    />
-  );
+  const actions =
+    deleted || editing ? null : (
+      <MessageActions
+        conversationId={conversationId}
+        message={message}
+        onReactOpen={() => setReactOpen(true)}
+      />
+    );
 
   if (compact) {
     return (
