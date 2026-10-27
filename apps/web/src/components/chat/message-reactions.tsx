@@ -8,7 +8,7 @@ import {
 } from "@internium/ui/components/popover";
 import { PlusIcon } from "@phosphor-icons/react";
 import { useState } from "react";
-import { REACTION_EMOJIS } from "@/constants/chat";
+import { ReactionPicker } from "@/components/chat/reaction-picker";
 import { MOCK_USER } from "@/constants/user";
 import { useChat } from "@/hooks/use-chat";
 import { cn } from "@/lib/utils";
@@ -17,23 +17,17 @@ import type { ChatMessage } from "@/types/chat";
 type MessageReactionsProps = {
   conversationId: string;
   message: ChatMessage;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
 };
 
 export function MessageReactions({
   conversationId,
   message,
-  open,
-  onOpenChange,
 }: MessageReactionsProps) {
   const { toggleReaction } = useChat();
-  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
-  const isOpen = open ?? uncontrolledOpen;
-  const setOpen = onOpenChange ?? setUncontrolledOpen;
+  const [open, setOpen] = useState(false);
   const reactions = message.reactions ?? [];
 
-  if (message.deletedAt) return null;
+  if (message.deletedAt || reactions.length === 0) return null;
 
   const react = (emoji: string) => {
     toggleReaction(conversationId, message.id, emoji);
@@ -50,7 +44,7 @@ export function MessageReactions({
             type="button"
             onClick={() => react(reaction.emoji)}
             className={cn(
-              "inline-flex h-6 items-center gap-1 rounded-full border px-1.5 text-xs transition-transform duration-150 ease-out active:scale-[0.97]",
+              "inline-flex h-6 cursor-pointer items-center gap-1 rounded-full border px-1.5 text-xs transition-[background-color,border-color,transform] duration-150 ease-out-strong active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100",
               mine
                 ? "border-primary/40 bg-primary/10"
                 : "border-border bg-muted/40 hover:bg-muted",
@@ -64,7 +58,7 @@ export function MessageReactions({
           </button>
         );
       })}
-      <Popover open={isOpen} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
           render={
             <Button
@@ -72,30 +66,14 @@ export function MessageReactions({
               size="icon-sm"
               variant="ghost"
               aria-label="Add reaction"
-              className={cn(
-                "size-6 rounded-full",
-                reactions.length === 0 &&
-                  "opacity-0 transition-opacity duration-150 group-hover:opacity-100",
-              )}
+              className="size-6 rounded-full"
             />
           }
         >
-          <PlusIcon className="size-3" />
+          <PlusIcon className="size-3.5" />
         </PopoverTrigger>
-        <PopoverContent align="start" className="w-auto p-1.5">
-          <div className="flex gap-0.5">
-            {REACTION_EMOJIS.map((emoji) => (
-              <button
-                key={emoji}
-                type="button"
-                onClick={() => react(emoji)}
-                className="flex size-8 items-center justify-center rounded-md text-base transition-colors duration-150 ease-out hover:bg-muted active:scale-[0.97]"
-                aria-label={`React with ${emoji}`}
-              >
-                {emoji}
-              </button>
-            ))}
-          </div>
+        <PopoverContent align="start" side="top" className="w-auto p-1.5">
+          <ReactionPicker onPick={react} />
         </PopoverContent>
       </Popover>
     </div>
