@@ -4,6 +4,7 @@ export type ChatMessage = {
   avatar: string;
   body: string;
   sentAt: string;
+  day: string;
 };
 
 export type Conversation = {

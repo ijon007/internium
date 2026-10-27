@@ -7,7 +7,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@internium/ui/components/empty";
-import { ScrollArea } from "@internium/ui/components/scroll-area";
 import { ChatCircleIcon } from "@phosphor-icons/react/ssr";
 import { ChatAvatar } from "@/components/chat/chat-avatar";
 import { ChatComposer } from "@/components/chat/chat-composer";
@@ -37,36 +36,47 @@ export function ChatView({ conversation }: ChatViewProps) {
   const { name, avatar, messages } = conversation;
 
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-background">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background">
       <div className="flex h-11 shrink-0 items-center gap-2.5 border-b px-3">
         <ChatAvatar name={name} src={avatar} size="sm" />
         <span className="font-semibold text-sm">{name}</span>
       </div>
-      <ScrollArea className="min-h-0 flex-1">
+      <div className="h-0 min-h-0 flex-1 overflow-y-auto">
         <div className="py-3">
-          <div className="flex items-center px-3 py-2">
-            <div className="h-px flex-1 bg-primary" />
-            <span className="rounded-full bg-primary px-3 py-0.5 font-medium text-white text-xs">
-              Today
-            </span>
-            <div className="h-px flex-1 bg-primary" />
-          </div>
           {messages.map((message, index) => (
-            <MessageRow
-              key={message.id}
-              message={message}
-              compact={isCompact(messages[index - 1], message)}
-            />
+            <div key={message.id}>
+              {message.day !== messages[index - 1]?.day ? (
+                <DayDivider label={message.day} />
+              ) : null}
+              <MessageRow
+                message={message}
+                compact={isCompact(messages[index - 1], message)}
+              />
+            </div>
           ))}
         </div>
-      </ScrollArea>
-      <ChatComposer name={name} />
+      </div>
+      <div className="shrink-0">
+        <ChatComposer name={name} />
+      </div>
     </div>
   );
 }
 
 function isCompact(previous: ChatMessage | undefined, current: ChatMessage) {
-  return previous?.author === current.author;
+  return previous?.author === current.author && previous?.day === current.day;
+}
+
+function DayDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center px-3 py-2">
+      <div className="h-px flex-1 bg-primary" />
+      <span className="rounded-full bg-primary px-3 py-0.5 font-medium text-white text-xs">
+        {label}
+      </span>
+      <div className="h-px flex-1 bg-primary" />
+    </div>
+  );
 }
 
 function MessageRow({
