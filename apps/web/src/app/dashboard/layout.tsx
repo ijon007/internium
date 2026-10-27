@@ -4,7 +4,9 @@ import { Suspense } from "react";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { DashboardInset } from "@/components/dashboard/dashboard-inset";
 
-export default function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
+export default function DashboardLayout({
+  children,
+}: LayoutProps<"/dashboard">) {
   return (
     <TooltipProvider>
       <SidebarProvider>

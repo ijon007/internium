@@ -1,6 +1,10 @@
 "use client";
 
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@internium/ui/components/sidebar";
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@internium/ui/components/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ICON_WEIGHT } from "@/constants/navigation";
