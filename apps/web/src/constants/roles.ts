@@ -11,3 +11,5 @@ export const ROLE_LABELS: Record<Role, string> = {
 };
 
 export const DASHBOARD_PATH = "/dashboard";
+
+export const ROLE_PATH = "/role";
