@@ -6,6 +6,7 @@ import {
   PaperPlaneRightIcon,
   PlusIcon,
   SmileyIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 import { type FormEvent, type KeyboardEvent, useState } from "react";
 import { useChat } from "@/hooks/use-chat";
@@ -16,13 +17,16 @@ type ChatComposerProps = {
 };
 
 export function ChatComposer({ conversationId, name }: ChatComposerProps) {
-  const { sendMessage } = useChat();
+  const { replyTarget, setReplyTarget, sendMessage } = useChat();
   const [draft, setDraft] = useState("");
   const canSend = draft.trim().length > 0;
 
   const submit = () => {
     if (!canSend) return;
-    sendMessage(conversationId, { body: draft });
+    sendMessage(conversationId, {
+      body: draft,
+      replyTo: replyTarget ?? undefined,
+    });
     setDraft("");
   };
 
@@ -39,6 +43,27 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
 
   return (
     <form className="p-3" onSubmit={onSubmit}>
+      {replyTarget ? (
+        <div className="mb-2 flex items-start gap-2 rounded-md border border-border bg-muted/40 px-2.5 py-2">
+          <div className="min-w-0 flex-1 border-primary border-l-2 pl-2">
+            <p className="font-medium text-primary text-xs">
+              Replying to {replyTarget.author}
+            </p>
+            <p className="truncate text-muted-foreground text-xs">
+              {replyTarget.body}
+            </p>
+          </div>
+          <Button
+            type="button"
+            size="icon-sm"
+            variant="ghost"
+            aria-label="Cancel reply"
+            onClick={() => setReplyTarget(null)}
+          >
+            <XIcon />
+          </Button>
+        </div>
+      ) : null}
       <div className="rounded-lg border border-input bg-background transition-[box-shadow,border-color] duration-150 ease-out focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30">
         <Textarea
           value={draft}

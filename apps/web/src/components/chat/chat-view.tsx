@@ -8,13 +8,24 @@ import {
   EmptyTitle,
 } from "@internium/ui/components/empty";
 import { ChatCircleIcon } from "@phosphor-icons/react/ssr";
+import { useCallback, useRef } from "react";
 import { ChatAvatar } from "@/components/chat/chat-avatar";
 import { ChatComposer } from "@/components/chat/chat-composer";
+import { MessageRow } from "@/components/chat/message-row";
 import { useChat } from "@/hooks/use-chat";
 import type { ChatMessage } from "@/types/chat";
 
 export function ChatView() {
   const { activeConversation } = useChat();
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToMessage = useCallback((id: string) => {
+    const el = document.getElementById(`msg-${id}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("bg-primary/10");
+    window.setTimeout(() => el.classList.remove("bg-primary/10"), 1200);
+  }, []);
 
   if (!activeConversation) {
     return (
@@ -40,7 +51,7 @@ export function ChatView() {
         <ChatAvatar name={name} src={avatar} size="sm" />
         <span className="font-semibold text-sm">{name}</span>
       </div>
-      <div className="h-0 min-h-0 flex-1 overflow-y-auto">
+      <div ref={scrollerRef} className="h-0 min-h-0 flex-1 overflow-y-auto">
         <div className="py-3">
           {messages.map((message, index) => (
             <div key={message.id}>
@@ -48,8 +59,10 @@ export function ChatView() {
                 <DayDivider label={message.day} />
               ) : null}
               <MessageRow
+                conversationId={id}
                 message={message}
                 compact={isCompact(messages[index - 1], message)}
+                onScrollToMessage={scrollToMessage}
               />
             </div>
           ))}
@@ -74,40 +87,6 @@ function DayDivider({ label }: { label: string }) {
         {label}
       </span>
       <div className="h-px flex-1 bg-primary" />
-    </div>
-  );
-}
-
-function MessageRow({
-  message,
-  compact,
-}: {
-  message: ChatMessage;
-  compact: boolean;
-}) {
-  if (compact) {
-    return (
-      <div className="group flex gap-2 px-3 py-0.5 transition-colors duration-150 ease-out hover:bg-muted/50">
-        <span className="w-8 shrink-0 pt-0.5 text-center text-[10px] text-transparent tabular-nums group-hover:text-muted-foreground">
-          {message.sentAt}
-        </span>
-        <p className="min-w-0 text-sm leading-relaxed">{message.body}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="group mt-1.5 flex gap-2 px-3 py-1 transition-colors duration-150 ease-out hover:bg-muted/50">
-      <ChatAvatar name={message.author} src={message.avatar} />
-      <div className="min-w-0">
-        <div className="flex items-baseline gap-2">
-          <span className="font-semibold text-sm">{message.author}</span>
-          <span className="text-muted-foreground text-xs tabular-nums">
-            {message.sentAt}
-          </span>
-        </div>
-        <p className="text-sm leading-relaxed">{message.body}</p>
-      </div>
     </div>
   );
 }
