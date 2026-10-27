@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { ChatAvatar } from "@/components/chat/chat-avatar";
 import { MessageActions } from "@/components/chat/message-actions";
+import { MessageReactions } from "@/components/chat/message-reactions";
 import type { ChatMessage } from "@/types/chat";
 
 type MessageRowProps = {
@@ -17,6 +19,7 @@ export function MessageRow({
   compact,
   onScrollToMessage,
 }: MessageRowProps) {
+  const [reactOpen, setReactOpen] = useState(false);
   const deleted = Boolean(message.deletedAt);
 
   const body = deleted ? (
@@ -53,11 +56,21 @@ export function MessageRow({
           ) : null}
         </p>
       ) : null}
+      <MessageReactions
+        conversationId={conversationId}
+        message={message}
+        open={reactOpen}
+        onOpenChange={setReactOpen}
+      />
     </>
   );
 
   const actions = deleted ? null : (
-    <MessageActions conversationId={conversationId} message={message} />
+    <MessageActions
+      conversationId={conversationId}
+      message={message}
+      onReactOpen={() => setReactOpen(true)}
+    />
   );
 
   if (compact) {
