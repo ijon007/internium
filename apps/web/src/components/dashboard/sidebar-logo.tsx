@@ -1,7 +1,6 @@
 "use client";
 
 import { SidebarMenuButton } from "@internium/ui/components/sidebar";
-import Image from "next/image";
 import Link from "next/link";
 import { useCurrentRole } from "@/hooks/use-current-role";
 import { getRoleHref } from "@/utils/navigation";
@@ -12,15 +11,17 @@ export function SidebarLogo() {
   return (
     <SidebarMenuButton
       tooltip="Internium"
-      className="h-8 flex-1 px-2 py-0 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:flex-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0!"
+      className="h-8 flex-1 overflow-visible px-2 py-0 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:flex-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:overflow-visible group-data-[collapsible=icon]:p-0!"
       render={<Link href={getRoleHref(role, "")} />}
     >
-      <Image
+      {/* ponytail: skip next/image — it was emitting 20×16 from the PNG aspect */}
+      {/* biome-ignore lint/performance/noImgElement: CSS box must stay a 20px square */}
+      <img
         src="/logo.png"
         alt=""
         width={20}
         height={20}
-        className="size-5 min-h-5 min-w-5 shrink-0 grow-0 object-contain"
+        className="size-5 shrink-0 object-cover object-center"
       />
       <span className="truncate text-base group-data-[collapsible=icon]:hidden">
         Internium
