@@ -125,13 +125,15 @@ function AttachmentChip({ attachment }: { attachment: ChatAttachment }) {
         : FileIcon;
 
   return (
-    <div className="inline-flex max-w-sm items-center gap-2 rounded-lg border bg-background px-2.5 py-2 shadow-sm ring-1 ring-foreground/5">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+    <div className="inline-flex max-w-xs items-center gap-2 rounded-md border border-border/80 bg-muted/40 px-2 py-1.5">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-sm bg-background text-muted-foreground">
         <Icon className="size-4" weight="fill" />
       </span>
       <div className="min-w-0">
-        <p className="truncate font-medium text-xs">{attachment.name}</p>
-        <p className="text-muted-foreground text-[0.65rem]">
+        <p className="truncate font-medium text-xs leading-tight">
+          {attachment.name}
+        </p>
+        <p className="text-muted-foreground text-[0.65rem] leading-tight">
           {attachment.sizeLabel}
         </p>
       </div>
