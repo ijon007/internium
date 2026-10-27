@@ -11,9 +11,10 @@ import {
   DropdownMenuTrigger,
 } from "@internium/ui/components/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@internium/ui/components/sidebar";
-import { SignOutIcon } from "@phosphor-icons/react";
+import { CaretUpIcon, SignOutIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { ACCOUNT_NAV, ICON_WEIGHT } from "@/constants/navigation";
+import { ROLE_LABELS } from "@/constants/roles";
 import { MOCK_USER } from "@/constants/user";
 import { useCurrentRole } from "@/hooks/use-current-role";
 import { getRoleHref } from "@/utils/navigation";
@@ -45,14 +46,19 @@ export function NavUser() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger
-            render={<SidebarMenuButton size="lg" className="aria-expanded:bg-muted md:h-8 md:p-0" />}
+            render={<SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />}
           >
             <UserAvatar />
+            <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-medium">{MOCK_USER.name}</span>
+              <span className="truncate text-muted-foreground text-xs">{ROLE_LABELS[role]}</span>
+            </div>
+            <CaretUpIcon weight={ICON_WEIGHT} className="ml-auto size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
+            side={isMobile ? "bottom" : "top"}
+            align="start"
             sideOffset={4}
           >
             <DropdownMenuGroup>
