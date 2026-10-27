@@ -17,7 +17,7 @@ export function RoleNav() {
 
   return (
     <SidebarGroup className="px-1 pt-3 pb-0">
-      <SidebarGroupLabel>
+      <SidebarGroupLabel className="gap-2">
         <RoleIcon weight={ICON_WEIGHT} />
         {ROLE_LABELS[role]}
       </SidebarGroupLabel>
