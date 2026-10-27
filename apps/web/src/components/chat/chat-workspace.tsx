@@ -8,7 +8,7 @@ type ChatWorkspaceProps = {
 
 export function ChatWorkspace({ conversation }: ChatWorkspaceProps) {
   return (
-    <div className="flex min-h-0 flex-1 overflow-hidden rounded-lg border">
+    <div className="flex min-h-0 flex-1 overflow-hidden">
       <ConversationList />
       <ChatView conversation={conversation} />
     </div>

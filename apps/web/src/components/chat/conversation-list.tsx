@@ -10,6 +10,7 @@ import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { ConversationItem } from "@/components/chat/conversation-item";
+import { SidebarCollapseButton } from "@/components/dashboard/sidebar-collapse-button";
 import { CONVERSATION_PARAM } from "@/constants/chat";
 import { useConversations } from "@/hooks/use-conversations";
 import { filterConversations, sortConversations } from "@/utils/chat";
@@ -23,9 +24,10 @@ export function ConversationList() {
   const visible = sortConversations(filterConversations(conversations, query));
 
   return (
-    <div className="flex w-72 shrink-0 flex-col border-r">
-      <div className="p-2">
-        <InputGroup>
+    <div className="flex w-72 shrink-0 flex-col border-r bg-sidebar">
+      <div className="flex items-center gap-1 p-2">
+        <SidebarCollapseButton />
+        <InputGroup className="min-w-0 flex-1">
           <InputGroupAddon>
             <MagnifyingGlassIcon />
           </InputGroupAddon>
