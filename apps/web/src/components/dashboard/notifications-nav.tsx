@@ -22,7 +22,8 @@ import type { Notification } from "@/types/notifications";
 export function NotificationsNav() {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState(MOCK_NOTIFICATIONS);
-  const hasUnread = items.some((item) => !item.read);
+  const unreadCount = items.filter((item) => !item.read).length;
+  const hasUnread = unreadCount > 0;
 
   function markAllRead() {
     setItems((current) => current.map((item) => ({ ...item, read: true })));
@@ -49,25 +50,32 @@ export function NotificationsNav() {
         align="start"
         side="right"
         sideOffset={8}
-        className="w-80 gap-0 p-0"
+        className="w-80 gap-0 rounded-xl p-1 shadow-lg"
       >
-        <PopoverHeader className="flex-row items-center justify-between gap-2 border-b px-2.5 py-1.5">
-          <PopoverTitle className="text-xs">Notifications</PopoverTitle>
+        <PopoverHeader className="flex-row items-center justify-between gap-2 py-1 pr-1 pl-2.5">
+          <PopoverTitle className="flex items-center gap-1.5 text-xs font-semibold">
+            Notifications
+            {unreadCount > 0 ? (
+              <span className="rounded-full bg-primary/15 px-1.5 text-[0.625rem] font-medium text-foreground tabular-nums">
+                {unreadCount}
+              </span>
+            ) : null}
+          </PopoverTitle>
           <Button
             variant="ghost"
             size="sm"
             disabled={!hasUnread}
-            className="text-muted-foreground active:scale-[0.97]"
+            className="text-muted-foreground transition-[transform,background-color,color] duration-100 active:scale-[0.97]"
             onClick={markAllRead}
           >
-            <ChecksIcon data-icon="inline-start" weight={ICON_WEIGHT} />
-            Mark as read
+            <ChecksIcon data-icon="inline-start" weight="bold" />
+            Mark all read
           </Button>
         </PopoverHeader>
-        <div className="max-h-80 overflow-y-auto p-1">
+        <div className="flex max-h-96 flex-col gap-px overflow-y-auto">
           {items.length === 0 ? (
-            <p className="px-2 py-6 text-center text-muted-foreground">
-              No notifications
+            <p className="px-2 py-8 text-center text-muted-foreground">
+              You're all caught up
             </p>
           ) : (
             items.map((item) => (
@@ -82,31 +90,31 @@ export function NotificationsNav() {
 
 function NotificationRow({ notification }: { notification: Notification }) {
   return (
-    <div className="flex gap-2 rounded-md px-2 py-1.5">
-      <span
-        className={cn(
-          "mt-1 size-1.5 shrink-0 rounded-full",
-          notification.read ? "bg-transparent" : "bg-primary",
-        )}
-      />
-      <div className="grid min-w-0 flex-1 gap-0.5">
-        <div className="flex min-w-0 items-center gap-2">
-          <p
-            className={cn(
-              "min-w-0 flex-1 truncate",
-              notification.read ? "font-normal" : "font-medium",
-            )}
-          >
-            {notification.title}
-          </p>
-          <span className="shrink-0 text-[0.625rem] text-muted-foreground tabular-nums">
-            {notification.time}
-          </span>
-        </div>
-        <p className="line-clamp-2 text-xs/snug text-muted-foreground">
-          {notification.body}
+    <div className="grid gap-0.5 rounded-lg px-2.5 py-2 transition-colors duration-100 hover:bg-muted">
+      <div className="flex min-w-0 items-center gap-2">
+        <p
+          className={cn(
+            "min-w-0 flex-1 truncate",
+            notification.read
+              ? "text-muted-foreground"
+              : "font-medium text-foreground",
+          )}
+        >
+          {notification.title}
         </p>
+        <span className="shrink-0 text-[0.625rem] text-muted-foreground tabular-nums">
+          {notification.time}
+        </span>
+        <span
+          className={cn(
+            "size-1.5 shrink-0 rounded-full transition-colors duration-200",
+            notification.read ? "bg-transparent" : "bg-primary",
+          )}
+        />
       </div>
+      <p className="line-clamp-2 pr-3.5 text-muted-foreground/80">
+        {notification.body}
+      </p>
     </div>
   );
 }
