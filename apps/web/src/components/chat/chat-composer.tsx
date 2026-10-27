@@ -35,7 +35,7 @@ export function ChatComposer({ name }: ChatComposerProps) {
   };
 
   return (
-    <form className="px-3 pt-1 pb-2" onSubmit={onSubmit}>
+    <form className="p-3" onSubmit={onSubmit}>
       <div className="rounded-lg border border-input bg-background focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30">
         <Textarea
           value={draft}

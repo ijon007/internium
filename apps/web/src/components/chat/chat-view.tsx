@@ -43,13 +43,13 @@ export function ChatView({ conversation }: ChatViewProps) {
         <span className="font-semibold text-sm">{name}</span>
       </div>
       <ScrollArea className="min-h-0 flex-1">
-        <div className="py-1.5">
+        <div className="py-3">
           <div className="flex items-center px-3 py-2">
-            <div className="h-px flex-1 bg-border" />
-            <span className="rounded-full border bg-background px-3 py-0.5 font-medium text-xs">
+            <div className="h-px flex-1 bg-primary" />
+            <span className="rounded-full bg-primary px-3 py-0.5 font-medium text-white text-xs">
               Today
             </span>
-            <div className="h-px flex-1 bg-border" />
+            <div className="h-px flex-1 bg-primary" />
           </div>
           {messages.map((message, index) => (
             <MessageRow
