@@ -1,3 +1,11 @@
+export type ChatMessage = {
+  id: string;
+  author: string;
+  avatar: string;
+  body: string;
+  sentAt: string;
+};
+
 export type Conversation = {
   id: string;
   name: string;
@@ -6,4 +14,5 @@ export type Conversation = {
   lastMessageAt: string;
   unreadCount: number;
   pinned: boolean;
+  messages: ChatMessage[];
 };

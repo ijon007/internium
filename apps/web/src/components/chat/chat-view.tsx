@@ -1,8 +1,5 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@internium/ui/components/avatar";
+"use client";
+
 import {
   Empty,
   EmptyDescription,
@@ -10,17 +7,11 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@internium/ui/components/empty";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@internium/ui/components/input-group";
 import { ScrollArea } from "@internium/ui/components/scroll-area";
-import { Separator } from "@internium/ui/components/separator";
-import { ChatCircleIcon, PaperPlaneRightIcon } from "@phosphor-icons/react/ssr";
-import type { Conversation } from "@/types/chat";
-import { getInitials } from "@/utils/chat";
+import { ChatCircleIcon } from "@phosphor-icons/react/ssr";
+import { ChatAvatar } from "@/components/chat/chat-avatar";
+import { ChatComposer } from "@/components/chat/chat-composer";
+import type { ChatMessage, Conversation } from "@/types/chat";
 
 type ChatViewProps = {
   conversation: Conversation | undefined;
@@ -43,38 +34,70 @@ export function ChatView({ conversation }: ChatViewProps) {
     );
   }
 
-  const { name, avatar, lastMessage, lastMessageAt } = conversation;
+  const { name, avatar, messages } = conversation;
 
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-      <div className="flex items-center gap-3 p-3">
-        <Avatar>
-          <AvatarImage src={avatar} alt={name} />
-          <AvatarFallback>{getInitials(name)}</AvatarFallback>
-        </Avatar>
-        <span className="font-medium text-sm">{name}</span>
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-background">
+      <div className="flex h-12 shrink-0 items-center gap-2.5 border-b px-4">
+        <ChatAvatar name={name} src={avatar} size="sm" />
+        <span className="font-semibold text-sm">{name}</span>
       </div>
-      <Separator />
-      <ScrollArea className="flex-1 p-3">
-        <div className="flex max-w-[75%] flex-col gap-1 rounded-lg bg-muted px-3 py-2">
-          <p className="text-sm">{lastMessage}</p>
-          <span className="text-muted-foreground text-xs">{lastMessageAt}</span>
+      <ScrollArea className="min-h-0 flex-1">
+        <div className="flex min-h-full flex-col justify-end py-2">
+          <div className="flex items-center px-5 py-2">
+            <div className="h-px flex-1 bg-border" />
+            <span className="rounded-full border bg-background px-3 py-0.5 font-medium text-xs">
+              Today
+            </span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+          {messages.map((message, index) => (
+            <MessageRow
+              key={message.id}
+              message={message}
+              compact={isCompact(messages[index - 1], message)}
+            />
+          ))}
         </div>
       </ScrollArea>
-      <Separator />
-      <div className="p-3">
-        <InputGroup>
-          <InputGroupInput placeholder={`Message ${name}...`} />
-          <InputGroupAddon align="inline-end">
-            <InputGroupButton
-              size="icon-xs"
-              variant="default"
-              aria-label="Send"
-            >
-              <PaperPlaneRightIcon weight="fill" />
-            </InputGroupButton>
-          </InputGroupAddon>
-        </InputGroup>
+      <ChatComposer name={name} />
+    </div>
+  );
+}
+
+function isCompact(previous: ChatMessage | undefined, current: ChatMessage) {
+  return previous?.author === current.author;
+}
+
+function MessageRow({
+  message,
+  compact,
+}: {
+  message: ChatMessage;
+  compact: boolean;
+}) {
+  if (compact) {
+    return (
+      <div className="group flex gap-2 px-5 py-0.5 hover:bg-muted/50">
+        <span className="w-8 shrink-0 pt-0.5 text-center text-[10px] text-transparent tabular-nums group-hover:text-muted-foreground">
+          {message.sentAt}
+        </span>
+        <p className="min-w-0 text-sm leading-relaxed">{message.body}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="group mt-1.5 flex gap-2 px-5 py-1 hover:bg-muted/50">
+      <ChatAvatar name={message.author} src={message.avatar} />
+      <div className="min-w-0">
+        <div className="flex items-baseline gap-2">
+          <span className="font-semibold text-sm">{message.author}</span>
+          <span className="text-muted-foreground text-xs tabular-nums">
+            {message.sentAt}
+          </span>
+        </div>
+        <p className="text-sm leading-relaxed">{message.body}</p>
       </div>
     </div>
   );

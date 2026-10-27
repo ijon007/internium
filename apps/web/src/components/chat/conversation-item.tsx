@@ -1,10 +1,5 @@
 "use client";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@internium/ui/components/avatar";
 import { Badge } from "@internium/ui/components/badge";
 import {
   ContextMenu,
@@ -24,9 +19,9 @@ import {
   TrashIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { ChatAvatar } from "@/components/chat/chat-avatar";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import type { Conversation } from "@/types/chat";
-import { getInitials } from "@/utils/chat";
 
 type ConversationItemProps = {
   conversation: Conversation;
@@ -58,10 +53,7 @@ export function ConversationItem({
           className="h-auto min-w-0 py-2"
           render={<Link href={href} />}
         >
-          <Avatar className="shrink-0">
-            <AvatarImage src={avatar} alt={name} />
-            <AvatarFallback>{getInitials(name)}</AvatarFallback>
-          </Avatar>
+          <ChatAvatar name={name} src={avatar} />
           <div className="grid min-w-0 flex-1 gap-0.5 overflow-hidden">
             <div className="flex min-w-0 items-center gap-1">
               <span className="min-w-0 flex-1 truncate font-medium">

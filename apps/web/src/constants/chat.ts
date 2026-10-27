@@ -1,62 +1,108 @@
-import type { Conversation } from "@/types/chat";
+import { MOCK_USER } from "@/constants/user";
+import type { ChatMessage, Conversation } from "@/types/chat";
 
 export const CHAT_PATH = "chat";
 
 export const CONVERSATION_PARAM = "c";
 
+function msg(
+  id: string,
+  author: string,
+  body: string,
+  sentAt: string,
+): ChatMessage {
+  return { id, author, avatar: "", body, sentAt };
+}
+
+function conversation(
+  id: string,
+  name: string,
+  unreadCount: number,
+  messages: ChatMessage[],
+): Conversation {
+  const last = messages[messages.length - 1];
+  return {
+    id,
+    name,
+    avatar: "",
+    lastMessage: last?.body ?? "",
+    lastMessageAt: last?.sentAt ?? "",
+    unreadCount,
+    pinned: false,
+    messages,
+  };
+}
+
+const me = MOCK_USER.name;
+
 export const MOCK_CONVERSATIONS: Conversation[] = [
-  {
-    id: "1",
-    name: "Maria Popescu",
-    avatar: "",
-    lastMessage: "Can you review my weekly report before Friday? I added the new section on the database migration.",
-    lastMessageAt: "10:42",
-    unreadCount: 2,
-    pinned: false,
-  },
-  {
-    id: "2",
-    name: "Andrei Ionescu",
-    avatar: "",
-    lastMessage: "Thanks, see you tomorrow at the office!",
-    lastMessageAt: "09:15",
-    unreadCount: 0,
-    pinned: false,
-  },
-  {
-    id: "3",
-    name: "Elena Dumitru",
-    avatar: "",
-    lastMessage: "The attendance sheet for this week has been uploaded.",
-    lastMessageAt: "Yesterday",
-    unreadCount: 1,
-    pinned: false,
-  },
-  {
-    id: "4",
-    name: "Mihai Stan",
-    avatar: "",
-    lastMessage: "I'll be absent on Monday, I sent the medical note to the coordinator.",
-    lastMessageAt: "Yesterday",
-    unreadCount: 0,
-    pinned: false,
-  },
-  {
-    id: "5",
-    name: "Ioana Georgescu",
-    avatar: "",
-    lastMessage: "Great work on the presentation, the client loved it.",
-    lastMessageAt: "Mon",
-    unreadCount: 0,
-    pinned: false,
-  },
-  {
-    id: "6",
-    name: "Radu Constantin",
-    avatar: "",
-    lastMessage: "Do we have a template for the internship agreement?",
-    lastMessageAt: "Oct 18",
-    unreadCount: 0,
-    pinned: false,
-  },
+  conversation("1", "Maria Popescu", 2, [
+    msg(
+      "1-1",
+      "Maria Popescu",
+      "Hi Jane, I finished the weekly report draft.",
+      "09:18",
+    ),
+    msg(
+      "1-2",
+      "Maria Popescu",
+      "I added a section on the database migration — could you take a look before Friday?",
+      "09:19",
+    ),
+    msg(
+      "1-3",
+      me,
+      "Sure, send it over and I'll review it this afternoon.",
+      "09:41",
+    ),
+    msg(
+      "1-4",
+      "Maria Popescu",
+      "Can you review my weekly report before Friday? I added the new section on the database migration.",
+      "10:42",
+    ),
+  ]),
+  conversation("2", "Andrei Ionescu", 0, [
+    msg("2-1", me, "Are you coming to the office tomorrow?", "08:50"),
+    msg(
+      "2-2",
+      "Andrei Ionescu",
+      "Thanks, see you tomorrow at the office!",
+      "09:15",
+    ),
+  ]),
+  conversation("3", "Elena Dumitru", 1, [
+    msg(
+      "3-1",
+      "Elena Dumitru",
+      "The attendance sheet for this week has been uploaded.",
+      "Yesterday",
+    ),
+  ]),
+  conversation("4", "Mihai Stan", 0, [
+    msg(
+      "4-1",
+      "Mihai Stan",
+      "I'll be absent on Monday, I sent the medical note to the coordinator.",
+      "Yesterday",
+    ),
+    msg("4-2", me, "Got it, I'll mark it on the sheet.", "Yesterday"),
+  ]),
+  conversation("5", "Ioana Georgescu", 0, [
+    msg("5-1", me, "How did the client meeting go?", "Mon"),
+    msg(
+      "5-2",
+      "Ioana Georgescu",
+      "Great work on the presentation, the client loved it.",
+      "Mon",
+    ),
+  ]),
+  conversation("6", "Radu Constantin", 0, [
+    msg(
+      "6-1",
+      "Radu Constantin",
+      "Do we have a template for the internship agreement?",
+      "Oct 18",
+    ),
+  ]),
 ];
