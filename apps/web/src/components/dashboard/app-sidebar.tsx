@@ -16,7 +16,7 @@ export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
     <Sidebar
       variant="inset"
       collapsible="icon"
-      className="p-1 group-data-[collapsible=icon]:[&_[data-sidebar=menu-item]]:flex group-data-[collapsible=icon]:[&_[data-sidebar=menu-item]]:justify-center"
+      className="p-1 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:[&_[data-sidebar=menu-item]]:flex group-data-[collapsible=icon]:[&_[data-sidebar=menu-item]]:justify-center"
       {...props}
     >
       <AppSidebarHeader />
