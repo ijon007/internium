@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RolePicker } from "@/components/role/role-picker";
 
 export const metadata: Metadata = {
   title: "Choose Role",
@@ -6,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function RolePage() {
-  return <p>Role Page</p>;
+  return <RolePicker />;
 }
