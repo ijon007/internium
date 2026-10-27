@@ -49,7 +49,7 @@ export function NotificationsNav() {
         align="start"
         side="right"
         sideOffset={8}
-        className="w-80 gap-0 bg-popover/80 p-0 backdrop-blur-xl saturate-150"
+        className="w-80 gap-0 p-0"
       >
         <PopoverHeader className="flex-row items-center justify-between gap-2 px-2.5 py-2">
           <PopoverTitle>Notifications</PopoverTitle>
