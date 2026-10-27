@@ -21,11 +21,21 @@ import { cn } from "@/lib/utils";
 import type { ChatMessage } from "@/types/chat";
 
 export function ChatView() {
-  const { activeConversation, peerTyping, setPeerTyping, markAsRead } =
-    useChat();
+  const {
+    conversations,
+    activeConversation,
+    peerTyping,
+    setPeerTyping,
+    markAsRead,
+  } = useChat();
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const conversationsRef = useRef(conversations);
+  conversationsRef.current = conversations;
   const [searchQuery, setSearchQuery] = useState("");
   const [showJump, setShowJump] = useState(false);
+  // Snapshot unread anchor when opening a thread (markAsRead clears store).
+  const [unreadAnchorId, setUnreadAnchorId] = useState<string | null>(null);
+  const activeId = activeConversation?.id ?? null;
 
   const scrollToMessage = useCallback((id: string) => {
     const el = document.getElementById(`msg-${id}`);
@@ -35,15 +45,13 @@ export function ChatView() {
     window.setTimeout(() => el.classList.remove("bg-primary/10"), 1200);
   }, []);
 
-  const firstUnreadId = activeConversation?.firstUnreadMessageId ?? null;
-
   const onScroll = useCallback(() => {
     const root = scrollerRef.current;
-    if (!root || !firstUnreadId) {
+    if (!root || !unreadAnchorId) {
       setShowJump(false);
       return;
     }
-    const target = document.getElementById(`msg-${firstUnreadId}`);
+    const target = document.getElementById(`msg-${unreadAnchorId}`);
     if (!target) {
       setShowJump(false);
       return;
@@ -52,19 +60,19 @@ export function ChatView() {
     const targetRect = target.getBoundingClientRect();
     const below = targetRect.top > rootRect.bottom - 40;
     setShowJump(below);
-  }, [firstUnreadId]);
+  }, [unreadAnchorId]);
 
   useEffect(() => {
     setSearchQuery("");
     setShowJump(false);
-  }, [activeConversation?.id]);
-
-  useEffect(() => {
-    if (!activeConversation) {
+    if (!activeId) {
+      setUnreadAnchorId(null);
       setPeerTyping(false);
       return;
     }
-    markAsRead(activeConversation.id);
+    const opened = conversationsRef.current.find((c) => c.id === activeId);
+    setUnreadAnchorId(opened?.firstUnreadMessageId ?? null);
+    markAsRead(activeId);
     const start = window.setTimeout(() => setPeerTyping(true), 1800);
     const stop = window.setTimeout(() => setPeerTyping(false), 4200);
     return () => {
@@ -72,7 +80,7 @@ export function ChatView() {
       window.clearTimeout(stop);
       setPeerTyping(false);
     };
-  }, [activeConversation?.id, markAsRead, setPeerTyping, activeConversation]);
+  }, [activeId, markAsRead, setPeerTyping]);
 
   useEffect(() => {
     const root = scrollerRef.current;
@@ -80,7 +88,7 @@ export function ChatView() {
     onScroll();
     root.addEventListener("scroll", onScroll, { passive: true });
     return () => root.removeEventListener("scroll", onScroll);
-  }, [onScroll, activeConversation?.id]);
+  }, [onScroll]);
 
   const filteredMessages = useMemo(() => {
     if (!activeConversation) return [];
@@ -134,8 +142,8 @@ export function ChatView() {
               const prev = list[index - 1];
               const showUnread =
                 !searching &&
-                firstUnreadId === message.id &&
-                Boolean(firstUnreadId);
+                unreadAnchorId === message.id &&
+                Boolean(unreadAnchorId);
               return (
                 <div key={message.id}>
                   {showUnread ? <UnreadDivider /> : null}
@@ -166,13 +174,13 @@ export function ChatView() {
           {peerTyping && !searching ? <TypingIndicator name={name} /> : null}
         </div>
       </div>
-      {showJump && firstUnreadId && !searching ? (
+      {showJump && unreadAnchorId && !searching ? (
         <div className="pointer-events-none absolute right-4 bottom-24 z-10">
           <Button
             type="button"
             size="sm"
             className="pointer-events-auto shadow-md transition-transform duration-150 ease-out active:scale-[0.97]"
-            onClick={() => scrollToMessage(firstUnreadId)}
+            onClick={() => scrollToMessage(unreadAnchorId)}
           >
             Jump to unread
           </Button>
