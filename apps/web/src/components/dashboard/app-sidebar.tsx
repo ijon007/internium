@@ -1,35 +1,30 @@
 "use client";
 
-import { Sidebar } from "@internium/ui/components/sidebar";
-import { usePathname } from "next/navigation";
-import { type ComponentProps, Suspense } from "react";
-import { ChatSidebar } from "@/components/chat/chat-sidebar";
-import { PrimarySidebar } from "@/components/dashboard/primary-sidebar";
-import { RoleSidebar } from "@/components/dashboard/role-sidebar";
-import { CHAT_PATH } from "@/constants/chat";
-import { useCurrentRole } from "@/hooks/use-current-role";
-import { getRoleHref } from "@/utils/navigation";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+} from "@internium/ui/components/sidebar";
+import { type ComponentProps } from "react";
+import { NavUser } from "@/components/dashboard/nav-user";
+import { RoleNav } from "@/components/dashboard/role-nav";
+import { SharedNav } from "@/components/dashboard/shared-nav";
+import { SidebarLogo } from "@/components/dashboard/sidebar-logo";
 
 export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname();
-  const role = useCurrentRole();
-  const isChat = pathname === getRoleHref(role, CHAT_PATH);
-
   return (
-    <Sidebar
-      variant="inset"
-      collapsible="icon"
-      className="overflow-hidden p-0 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+1px)] *:data-[sidebar=sidebar]:flex-row"
-      {...props}
-    >
-      <PrimarySidebar />
-      {isChat ? (
-        <Suspense>
-          <ChatSidebar />
-        </Suspense>
-      ) : (
-        <RoleSidebar />
-      )}
+    <Sidebar variant="inset" collapsible="icon" {...props}>
+      <SidebarHeader>
+        <SidebarLogo />
+      </SidebarHeader>
+      <SidebarContent>
+        <SharedNav />
+        <RoleNav />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
     </Sidebar>
   );
 }

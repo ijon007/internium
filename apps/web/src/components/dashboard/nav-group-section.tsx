@@ -30,7 +30,11 @@ export function NavGroupSection({ role, group }: NavGroupSectionProps) {
           const href = getRoleHref(role, path);
           return (
             <SidebarMenuItem key={title}>
-              <SidebarMenuButton isActive={isActivePath(pathname, href)} render={<Link href={href} />}>
+              <SidebarMenuButton
+                tooltip={title}
+                isActive={isActivePath(pathname, href)}
+                render={<Link href={href} />}
+              >
                 <Icon weight={ICON_WEIGHT} />
                 <span>{title}</span>
               </SidebarMenuButton>

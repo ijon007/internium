@@ -23,9 +23,8 @@ export function IconNavMenu({ items }: IconNavMenuProps) {
         return (
           <SidebarMenuItem key={title}>
             <SidebarMenuButton
-              tooltip={{ children: title, hidden: false }}
+              tooltip={title}
               isActive={isActivePath(pathname, href)}
-              className="px-2.5 md:px-2"
               render={<Link href={href} />}
             >
               <Icon weight={ICON_WEIGHT} />
