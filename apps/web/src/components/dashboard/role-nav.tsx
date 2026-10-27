@@ -1,19 +1,27 @@
 "use client";
 
-import { SidebarSeparator } from "@internium/ui/components/sidebar";
-import { NavGroupSection } from "@/components/dashboard/nav-group-section";
-import { ROLE_NAV } from "@/constants/navigation";
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+} from "@internium/ui/components/sidebar";
+import { IconNavMenu } from "@/components/dashboard/icon-nav-menu";
+import { ICON_WEIGHT, ROLE_NAV } from "@/constants/navigation";
+import { ROLE_ICONS } from "@/constants/role-icons";
+import { ROLE_LABELS } from "@/constants/roles";
 import { useCurrentRole } from "@/hooks/use-current-role";
 
 export function RoleNav() {
   const role = useCurrentRole();
+  const RoleIcon = ROLE_ICONS[role];
+  const items = ROLE_NAV[role].flatMap((group) => group.items);
 
   return (
-    <>
-      <SidebarSeparator />
-      {ROLE_NAV[role].map((group) => (
-        <NavGroupSection key={group.label} role={role} group={group} />
-      ))}
-    </>
+    <SidebarGroup className="px-1 pt-3 pb-0">
+      <SidebarGroupLabel>
+        <RoleIcon weight={ICON_WEIGHT} />
+        {ROLE_LABELS[role]}
+      </SidebarGroupLabel>
+      <IconNavMenu items={items} />
+    </SidebarGroup>
   );
 }
