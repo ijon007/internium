@@ -14,8 +14,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
   const content = (
-    <html lang="en" className={cn("h-full", "font-sans", inter.variable)}>
-      <body className="min-h-full bg-background text-foreground">{children}</body>
+    <html
+      lang="en"
+      className={cn("h-full", "font-sans", inter.variable)}
+      suppressHydrationWarning
+    >
+      <body className="min-h-full bg-background text-foreground" suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 
