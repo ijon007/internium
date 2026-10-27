@@ -6,20 +6,19 @@ import { SidebarCollapseButton } from "@/components/dashboard/sidebar-collapse-b
 import { cn } from "@/lib/utils";
 
 export function DashboardInset({ children }: { children: ReactNode }) {
-  const { isMobile, state } = useSidebar();
-  const showInsetTrigger = isMobile || state === "collapsed";
+  const { isMobile } = useSidebar();
 
   return (
-    <SidebarInset className="overflow-hidden has-[.chat-workspace]:[&_.dashboard-inset-trigger]:hidden md:peer-data-[variant=inset]:shadow-none md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0">
-      {showInsetTrigger ? (
-        <div className="dashboard-inset-trigger absolute top-1 left-1 z-10">
+    <SidebarInset className="overflow-hidden md:peer-data-[variant=inset]:shadow-none md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0">
+      {isMobile ? (
+        <div className="absolute top-1 left-1 z-10">
           <SidebarCollapseButton />
         </div>
       ) : null}
       <div
         className={cn(
           "flex min-h-0 flex-1 flex-col has-[.chat-workspace]:overflow-hidden has-[.chat-workspace]:p-0",
-          showInsetTrigger ? "p-2 pl-8" : "p-4",
+          isMobile ? "p-2 pl-8" : "p-4",
         )}
       >
         {children}
