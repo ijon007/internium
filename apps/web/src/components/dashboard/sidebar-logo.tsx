@@ -11,9 +11,8 @@ export function SidebarLogo() {
 
   return (
     <SidebarMenuButton
-      size="lg"
       tooltip="Internium"
-      className="flex-1 group-data-[collapsible=icon]:size-8!"
+      className="h-8 flex-1 px-2 py-0 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2!"
       render={<Link href={getRoleHref(role, "")} />}
     >
       <Image src="/logo.png" alt="" width={20} height={20} className="size-5" />
