@@ -5,7 +5,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@internium/ui/components/input-group";
-import { SidebarMenu } from "@internium/ui/components/sidebar";
+import { SidebarMenu, useSidebar } from "@internium/ui/components/sidebar";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -18,15 +18,17 @@ import { filterConversations, sortConversations } from "@/utils/chat";
 export function ConversationList() {
   const pathname = usePathname();
   const activeId = useSearchParams().get(CONVERSATION_PARAM);
+  const { isMobile, state } = useSidebar();
   const [query, setQuery] = useState("");
   const { conversations, togglePin, markAsRead, remove } = useConversations();
+  const showSidebarTrigger = isMobile || state === "collapsed";
 
   const visible = sortConversations(filterConversations(conversations, query));
 
   return (
     <div className="flex w-72 shrink-0 flex-col border-r bg-background">
       <div className="flex items-center gap-1 p-2">
-        <SidebarCollapseButton />
+        {showSidebarTrigger ? <SidebarCollapseButton /> : null}
         <InputGroup className="min-w-0 flex-1 border-border bg-background">
           <InputGroupAddon>
             <MagnifyingGlassIcon />

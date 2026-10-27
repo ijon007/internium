@@ -19,7 +19,6 @@ export function SidebarCollapseButton({
 
   return (
     <SidebarMenuButton
-      tooltip="Toggle sidebar"
       aria-label="Toggle sidebar"
       className={cn(
         "size-6! w-6! min-w-6 shrink-0 justify-center gap-0 p-0 [&_svg]:size-4",
