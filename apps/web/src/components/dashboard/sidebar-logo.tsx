@@ -16,7 +16,7 @@ export function SidebarLogo() {
       render={<Link href={getRoleHref(role, "")} />}
     >
       <Image src="/logo.png" alt="" width={20} height={20} className="size-5" />
-      <span className="truncate font-semibold text-base group-data-[collapsible=icon]:hidden">
+      <span className="truncate text-base group-data-[collapsible=icon]:hidden">
         Internium
       </span>
     </SidebarMenuButton>
