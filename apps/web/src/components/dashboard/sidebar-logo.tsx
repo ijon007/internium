@@ -10,7 +10,6 @@ export function SidebarLogo() {
 
   return (
     <SidebarMenuButton
-      tooltip="Internium"
       className="h-8 flex-1 overflow-visible px-2 py-0 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:flex-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:overflow-visible group-data-[collapsible=icon]:p-0!"
       render={<Link href={getRoleHref(role, "")} />}
     >
