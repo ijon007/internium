@@ -1,6 +1,5 @@
 import {
   ArchiveIcon,
-  BellIcon,
   BuildingsIcon,
   CalendarCheckIcon,
   ChalkboardTeacherIcon,
@@ -31,7 +30,6 @@ export const ICON_WEIGHT = "fill";
 
 export const SHARED_NAV: NavItem[] = [
   { title: "Chat", path: "chat", icon: ChatCircleIcon },
-  { title: "Notifications", path: "notifications", icon: BellIcon },
 ];
 
 export const ACCOUNT_NAV: NavItem[] = [

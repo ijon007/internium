@@ -9,15 +9,21 @@ export function getInitials(name: string): string {
     .toUpperCase();
 }
 
-export function filterConversations(conversations: Conversation[], query: string): Conversation[] {
+export function filterConversations(
+  conversations: Conversation[],
+  query: string,
+): Conversation[] {
   const normalized = query.trim().toLowerCase();
   if (!normalized) return conversations;
   return conversations.filter(
     ({ name, lastMessage }) =>
-      name.toLowerCase().includes(normalized) || lastMessage.toLowerCase().includes(normalized),
+      name.toLowerCase().includes(normalized) ||
+      lastMessage.toLowerCase().includes(normalized),
   );
 }
 
-export function sortConversations(conversations: Conversation[]): Conversation[] {
+export function sortConversations(
+  conversations: Conversation[],
+): Conversation[] {
   return [...conversations].sort((a, b) => Number(b.pinned) - Number(a.pinned));
 }

@@ -1,16 +1,22 @@
+"use client";
+
+import { useSearchParams } from "next/navigation";
 import { ChatView } from "@/components/chat/chat-view";
 import { ConversationList } from "@/components/chat/conversation-list";
-import type { Conversation } from "@/types/chat";
+import { CollapseAppSidebar } from "@/components/dashboard/collapse-app-sidebar";
+import { CONVERSATION_PARAM } from "@/constants/chat";
+import { ChatProvider } from "@/hooks/use-chat";
 
-type ChatWorkspaceProps = {
-  conversation: Conversation | undefined;
-};
+export function ChatWorkspace() {
+  const initialActiveId = useSearchParams().get(CONVERSATION_PARAM);
 
-export function ChatWorkspace({ conversation }: ChatWorkspaceProps) {
   return (
-    <div className="flex min-h-0 flex-1 overflow-hidden rounded-lg border">
-      <ConversationList />
-      <ChatView conversation={conversation} />
-    </div>
+    <ChatProvider initialActiveId={initialActiveId}>
+      <div className="chat-workspace flex h-full min-h-0 flex-1 overflow-hidden">
+        <CollapseAppSidebar />
+        <ConversationList />
+        <ChatView />
+      </div>
+    </ChatProvider>
   );
 }

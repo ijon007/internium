@@ -1,16 +1,9 @@
 "use client";
 
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@internium/ui/components/avatar";
-import { Badge } from "@internium/ui/components/badge";
-import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@internium/ui/components/context-menu";
 import {
@@ -21,12 +14,11 @@ import {
   CheckIcon,
   PushPinIcon,
   PushPinSlashIcon,
-  TrashIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { ChatAvatar } from "@/components/chat/chat-avatar";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import type { Conversation } from "@/types/chat";
-import { getInitials } from "@/utils/chat";
 
 type ConversationItemProps = {
   conversation: Conversation;
@@ -34,7 +26,6 @@ type ConversationItemProps = {
   isActive: boolean;
   onTogglePin: () => void;
   onMarkAsRead: () => void;
-  onDelete: () => void;
 };
 
 export function ConversationItem({
@@ -43,7 +34,6 @@ export function ConversationItem({
   isActive,
   onTogglePin,
   onMarkAsRead,
-  onDelete,
 }: ConversationItemProps) {
   const { name, avatar, lastMessage, lastMessageAt, unreadCount, pinned } =
     conversation;
@@ -55,25 +45,22 @@ export function ConversationItem({
         <SidebarMenuButton
           size="lg"
           isActive={isActive}
-          className="h-auto min-w-0 py-2"
+          className="h-auto min-w-0 py-1.5"
           render={<Link href={href} />}
         >
-          <Avatar className="shrink-0">
-            <AvatarImage src={avatar} alt={name} />
-            <AvatarFallback>{getInitials(name)}</AvatarFallback>
-          </Avatar>
+          <ChatAvatar name={name} src={avatar} />
           <div className="grid min-w-0 flex-1 gap-0.5 overflow-hidden">
             <div className="flex min-w-0 items-center gap-1">
               <span className="min-w-0 flex-1 truncate font-medium">
                 {name}
               </span>
-              {pinned && (
+              {pinned ? (
                 <PushPinIcon
                   weight={ICON_WEIGHT}
                   className="size-3 shrink-0 text-muted-foreground"
                 />
-              )}
-              <span className="shrink-0 text-muted-foreground text-xs">
+              ) : null}
+              <span className="shrink-0 text-[0.625rem] text-muted-foreground">
                 {lastMessageAt}
               </span>
             </div>
@@ -87,7 +74,11 @@ export function ConversationItem({
               >
                 {lastMessage}
               </span>
-              {hasUnread && <Badge className="shrink-0">{unreadCount}</Badge>}
+              {hasUnread ? (
+                <span className="size-2 shrink-0 rounded-full bg-primary">
+                  <span className="sr-only">{unreadCount} unread</span>
+                </span>
+              ) : null}
             </div>
           </div>
         </SidebarMenuButton>
@@ -100,11 +91,6 @@ export function ConversationItem({
         <ContextMenuItem onClick={onMarkAsRead} disabled={!hasUnread}>
           <CheckIcon />
           Mark as Read
-        </ContextMenuItem>
-        <ContextMenuSeparator />
-        <ContextMenuItem variant="destructive" onClick={onDelete}>
-          <TrashIcon />
-          Delete
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
