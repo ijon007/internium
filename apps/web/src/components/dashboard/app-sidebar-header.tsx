@@ -15,8 +15,8 @@ export function AppSidebarHeader() {
       <SidebarMenu>
         <SidebarMenuItem className="flex items-center gap-0.5 group-data-[collapsible=icon]:flex-col">
           <SidebarLogo />
-          <SwitchRoleButton className="size-8 shrink-0" />
-          <SidebarCollapseButton className="size-8 shrink-0 group-data-[collapsible=icon]:hidden" />
+          <SwitchRoleButton />
+          <SidebarCollapseButton className="group-data-[collapsible=icon]:hidden" />
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>

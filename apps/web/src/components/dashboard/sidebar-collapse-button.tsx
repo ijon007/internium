@@ -6,6 +6,7 @@ import {
 } from "@internium/ui/components/sidebar";
 import { SidebarIcon } from "@phosphor-icons/react";
 import { ICON_WEIGHT } from "@/constants/navigation";
+import { cn } from "@/lib/utils";
 
 type SidebarCollapseButtonProps = {
   className?: string;
@@ -19,7 +20,10 @@ export function SidebarCollapseButton({
   return (
     <SidebarMenuButton
       tooltip="Toggle sidebar"
-      className={className}
+      className={cn(
+        "size-6! w-6! min-w-6 shrink-0 p-0 [&_svg]:size-3",
+        className,
+      )}
       onClick={toggleSidebar}
     >
       <SidebarIcon weight={ICON_WEIGHT} />
