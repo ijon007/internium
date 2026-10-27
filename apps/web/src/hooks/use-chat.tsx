@@ -146,7 +146,6 @@ export function ChatProvider({
         day: "Today",
         replyTo: payload.replyTo,
         attachments: payload.attachments,
-        status: "sent",
       };
 
       setConversations((prev) =>
@@ -160,28 +159,6 @@ export function ChatProvider({
         })),
       );
       setReplyTarget(null);
-
-      // Mock delivery → read after a beat.
-      window.setTimeout(() => {
-        setConversations((prev) =>
-          patchConversation(prev, conversationId, (c) => ({
-            ...c,
-            messages: c.messages.map((m) =>
-              m.id === message.id ? { ...m, status: "delivered" } : m,
-            ),
-          })),
-        );
-      }, 400);
-      window.setTimeout(() => {
-        setConversations((prev) =>
-          patchConversation(prev, conversationId, (c) => ({
-            ...c,
-            messages: c.messages.map((m) =>
-              m.id === message.id ? { ...m, status: "read" } : m,
-            ),
-          })),
-        );
-      }, 1200);
     },
     [],
   );
@@ -308,7 +285,6 @@ export function ChatProvider({
         sentAt: nowTime(),
         day: "Today",
         attachments: source.attachments,
-        status: "sent",
         forwardedFrom: fromName,
       };
 

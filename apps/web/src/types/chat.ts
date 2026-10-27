@@ -1,5 +1,3 @@
-export type MessageStatus = "sent" | "delivered" | "read";
-
 export type ChatAttachment = {
   id: string;
   name: string;
@@ -31,7 +29,6 @@ export type ChatMessage = {
   deletedAt?: string;
   pinned?: boolean;
   attachments?: ChatAttachment[];
-  status?: MessageStatus;
   forwardedFrom?: string;
 };
 

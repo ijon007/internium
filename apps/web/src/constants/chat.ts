@@ -70,7 +70,6 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
         "Hey! How did it go? I couldn't stay for the last part.",
         "14:12",
         "Mon, Oct 20",
-        { status: "read" },
       ),
       msg(
         "1-3",
@@ -93,7 +92,6 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
         "Okay, I'll keep Thursday in mind. I can draft that note tomorrow.",
         "14:28",
         "Mon, Oct 20",
-        { status: "read" },
       ),
       msg(
         "1-6",
@@ -122,7 +120,6 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
         "I think Radu has a template. I'll ask him and send it over.",
         "10:03",
         "Wed, Oct 22",
-        { status: "read" },
       ),
       msg(
         "1-9",
@@ -138,7 +135,6 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
         "16:44",
         "Wed, Oct 22",
         {
-          status: "read",
           attachments: [
             {
               id: "a-1",
@@ -175,7 +171,6 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
         "Nice. Did Mihai send his medical note yet?",
         "11:33",
         "Yesterday",
-        { status: "read" },
       ),
       msg(
         "1-14",
@@ -192,7 +187,7 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
         "Yesterday",
         { pinned: true },
       ),
-      msg("1-16", me, "Sounds good.", "11:41", "Yesterday", { status: "read" }),
+      msg("1-16", me, "Sounds good.", "11:41", "Yesterday"),
       msg(
         "1-17",
         maria,
@@ -211,7 +206,6 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
         "Sure, send it over and I'll review it this afternoon.",
         "09:41",
         "Today",
-        { status: "read" },
       ),
       msg(
         "1-20",
@@ -225,7 +219,7 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
         "Looking now. The migration section is clear — I'll tighten the timeline.",
         "10:21",
         "Today",
-        { status: "read", editedAt: "10:22" },
+        { editedAt: "10:22" },
       ),
       msg(
         "1-22",
@@ -251,9 +245,6 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
         "Are you coming to the office tomorrow?",
         "08:50",
         "Today",
-        {
-          status: "read",
-        },
       ),
       msg(
         "2-2",
@@ -311,9 +302,6 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
         "Got it, I'll mark it on the sheet.",
         "Yesterday",
         "Yesterday",
-        {
-          status: "delivered",
-        },
       ),
     ],
     { presence: "offline", lastSeenAt: "Yesterday" },
@@ -323,9 +311,7 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
     "Ioana Georgescu",
     0,
     [
-      msg("5-1", me, "How did the client meeting go?", "Mon", "Mon", {
-        status: "read",
-      }),
+      msg("5-1", me, "How did the client meeting go?", "Mon", "Mon"),
       msg(
         "5-2",
         "Ioana Georgescu",
