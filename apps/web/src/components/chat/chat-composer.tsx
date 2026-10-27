@@ -1,33 +1,66 @@
 "use client";
 
 import { Button } from "@internium/ui/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@internium/ui/components/dropdown-menu";
 import { Textarea } from "@internium/ui/components/textarea";
 import {
+  FilePdfIcon,
+  MicrosoftExcelLogoIcon,
   PaperPlaneRightIcon,
   PlusIcon,
   SmileyIcon,
   XIcon,
 } from "@phosphor-icons/react";
 import { type FormEvent, type KeyboardEvent, useState } from "react";
+import { REACTION_EMOJIS } from "@/constants/chat";
 import { useChat } from "@/hooks/use-chat";
+import type { ChatAttachment } from "@/types/chat";
 
 type ChatComposerProps = {
   conversationId: string;
   name: string;
 };
 
+const MOCK_FILES: ChatAttachment[] = [
+  {
+    id: "mock-pdf",
+    name: "Weekly-report.pdf",
+    kind: "pdf",
+    sizeLabel: "312 KB",
+  },
+  {
+    id: "mock-sheet",
+    name: "Attendance.xlsx",
+    kind: "sheet",
+    sizeLabel: "48 KB",
+  },
+];
+
 export function ChatComposer({ conversationId, name }: ChatComposerProps) {
   const { replyTarget, setReplyTarget, sendMessage } = useChat();
   const [draft, setDraft] = useState("");
-  const canSend = draft.trim().length > 0;
+  const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
+  const canSend = draft.trim().length > 0 || attachments.length > 0;
 
   const submit = () => {
     if (!canSend) return;
     sendMessage(conversationId, {
       body: draft,
       replyTo: replyTarget ?? undefined,
+      attachments: attachments.length
+        ? attachments.map((a) => ({
+            ...a,
+            id: `${a.id}-${Date.now()}`,
+          }))
+        : undefined,
     });
     setDraft("");
+    setAttachments([]);
   };
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -39,6 +72,16 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
     if (event.key !== "Enter" || event.shiftKey) return;
     event.preventDefault();
     submit();
+  };
+
+  const addAttachment = (file: ChatAttachment) => {
+    setAttachments((prev) =>
+      prev.some((a) => a.name === file.name) ? prev : [...prev, file],
+    );
+  };
+
+  const insertEmoji = (emoji: string) => {
+    setDraft((prev) => `${prev}${emoji}`);
   };
 
   return (
@@ -64,6 +107,30 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
           </Button>
         </div>
       ) : null}
+      {attachments.length > 0 ? (
+        <ul className="mb-2 flex flex-wrap gap-1.5">
+          {attachments.map((file) => (
+            <li
+              key={file.name}
+              className="inline-flex items-center gap-1.5 rounded-md border bg-muted/40 px-2 py-1 text-xs"
+            >
+              <span className="truncate">{file.name}</span>
+              <button
+                type="button"
+                aria-label={`Remove ${file.name}`}
+                className="text-muted-foreground transition-colors hover:text-foreground"
+                onClick={() =>
+                  setAttachments((prev) =>
+                    prev.filter((a) => a.name !== file.name),
+                  )
+                }
+              >
+                <XIcon className="size-3" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
       <div className="rounded-lg border border-input bg-background transition-[box-shadow,border-color] duration-150 ease-out focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30">
         <Textarea
           value={draft}
@@ -75,22 +142,62 @@ export function ChatComposer({ conversationId, name }: ChatComposerProps) {
         />
         <div className="flex items-center justify-between px-1.5 pb-1.5">
           <div className="flex items-center gap-0.5">
-            <Button
-              type="button"
-              size="icon-lg"
-              variant="ghost"
-              aria-label="Attach file"
-            >
-              <PlusIcon />
-            </Button>
-            <Button
-              type="button"
-              size="icon-lg"
-              variant="ghost"
-              aria-label="Emoji"
-            >
-              <SmileyIcon />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    type="button"
+                    size="icon-lg"
+                    variant="ghost"
+                    aria-label="Attach file"
+                  />
+                }
+              >
+                <PlusIcon />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {MOCK_FILES.map((file) => (
+                  <DropdownMenuItem
+                    key={file.id}
+                    onClick={() => addAttachment(file)}
+                  >
+                    {file.kind === "pdf" ? (
+                      <FilePdfIcon />
+                    ) : (
+                      <MicrosoftExcelLogoIcon />
+                    )}
+                    {file.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    type="button"
+                    size="icon-lg"
+                    variant="ghost"
+                    aria-label="Emoji"
+                  />
+                }
+              >
+                <SmileyIcon />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="min-w-0 p-1.5">
+                <div className="flex gap-0.5">
+                  {REACTION_EMOJIS.map((emoji) => (
+                    <DropdownMenuItem
+                      key={emoji}
+                      className="size-8 justify-center p-0 text-base"
+                      onClick={() => insertEmoji(emoji)}
+                    >
+                      {emoji}
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <Button
             type="submit"

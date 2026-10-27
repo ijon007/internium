@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChatAvatar } from "@/components/chat/chat-avatar";
 import { MessageActions } from "@/components/chat/message-actions";
+import { MessageContent } from "@/components/chat/message-content";
 import { MessageEditForm } from "@/components/chat/message-edit-form";
 import { MessageReactions } from "@/components/chat/message-reactions";
 import { useChat } from "@/hooks/use-chat";
@@ -58,14 +59,12 @@ export function MessageRow({
           </p>
         </button>
       ) : null}
-      {message.body ? (
-        <p className="text-sm leading-relaxed">
-          {message.body}
-          {message.editedAt ? (
-            <span className="ml-1 text-muted-foreground text-xs">(edited)</span>
-          ) : null}
-        </p>
-      ) : null}
+      <MessageContent
+        body={message.body}
+        editedAt={message.editedAt}
+        attachments={message.attachments}
+        markdown={false}
+      />
       <MessageReactions
         conversationId={conversationId}
         message={message}
