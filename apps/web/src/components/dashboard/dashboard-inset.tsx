@@ -1,21 +1,19 @@
 "use client";
 
 import { SidebarInset, useSidebar } from "@internium/ui/components/sidebar";
-import { usePathname } from "next/navigation";
-import { type ReactNode, useEffect } from "react";
+import type { ReactNode } from "react";
 import { SidebarCollapseButton } from "@/components/dashboard/sidebar-collapse-button";
 import { cn } from "@/lib/utils";
-import { isChatPath } from "@/utils/chat";
 
-export function DashboardInset({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  const { isMobile, setOpen, state } = useSidebar();
-  const isChat = isChatPath(pathname);
+export function DashboardInset({
+  children,
+  isChat,
+}: {
+  children: ReactNode;
+  isChat: boolean;
+}) {
+  const { isMobile, state } = useSidebar();
   const showInsetTrigger = !isChat && (isMobile || state === "collapsed");
-
-  useEffect(() => {
-    if (isChat) setOpen(false);
-  }, [isChat, setOpen]);
 
   return (
     <SidebarInset className="md:peer-data-[variant=inset]:shadow-none md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0">
