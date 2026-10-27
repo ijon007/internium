@@ -17,7 +17,10 @@ export function DashboardInset({ children }: { children: ReactNode }) {
         </div>
       ) : null}
       <div
-        className={cn("flex flex-1 flex-col", showInsetTrigger ? "p-2" : "p-4")}
+        className={cn(
+          "flex flex-1 flex-col",
+          showInsetTrigger ? "p-2 pl-8" : "p-4",
+        )}
       >
         {children}
       </div>
