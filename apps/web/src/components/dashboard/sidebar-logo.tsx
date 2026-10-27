@@ -1,22 +1,31 @@
 "use client";
 
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@internium/ui/components/sidebar";
-import { GraduationCapIcon } from "@phosphor-icons/react";
+import { SidebarMenuButton } from "@internium/ui/components/sidebar";
 import Link from "next/link";
-import { ICON_WEIGHT } from "@/constants/navigation";
-import { DASHBOARD_PATH } from "@/constants/roles";
+import { useCurrentRole } from "@/hooks/use-current-role";
+import { getRoleHref } from "@/utils/navigation";
 
 export function SidebarLogo() {
+  const role = useCurrentRole();
+
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton size="lg" className="md:h-8 md:p-0" render={<Link href={DASHBOARD_PATH} />}>
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <GraduationCapIcon weight={ICON_WEIGHT} className="size-4" />
-          </div>
-          <span className="truncate font-medium">Internium</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    <SidebarMenuButton
+      tooltip="Internium"
+      className="h-8 flex-1 overflow-visible px-2 py-0 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:flex-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:overflow-visible group-data-[collapsible=icon]:p-0!"
+      render={<Link href={getRoleHref(role, "")} />}
+    >
+      {/* ponytail: skip next/image — it was emitting 20×16 from the PNG aspect */}
+      {/* biome-ignore lint/performance/noImgElement: CSS box must stay a 20px square */}
+      <img
+        src="/logo.png"
+        alt=""
+        width={20}
+        height={20}
+        className="size-5 shrink-0 object-cover object-center"
+      />
+      <span className="truncate text-base group-data-[collapsible=icon]:hidden">
+        Internium
+      </span>
+    </SidebarMenuButton>
   );
 }
