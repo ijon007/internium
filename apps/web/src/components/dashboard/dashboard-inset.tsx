@@ -9,7 +9,7 @@ export function DashboardInset({ children }: { children: ReactNode }) {
   const { isMobile } = useSidebar();
 
   return (
-    <SidebarInset className="overflow-hidden md:peer-data-[variant=inset]:shadow-none md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0">
+    <SidebarInset className="min-h-0 max-h-svh overflow-hidden md:max-h-[calc(100svh-1rem)] md:peer-data-[variant=inset]:shadow-none md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0">
       {isMobile ? (
         <div className="absolute top-1 left-1 z-10">
           <SidebarCollapseButton />

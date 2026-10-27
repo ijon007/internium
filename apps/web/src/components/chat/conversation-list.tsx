@@ -23,7 +23,7 @@ export function ConversationList() {
   const visible = sortConversations(filterConversations(conversations, query));
 
   return (
-    <div className="flex w-60 shrink-0 flex-col border-r bg-background">
+    <div className="flex h-full w-60 min-h-0 shrink-0 flex-col border-r bg-background">
       <div className="p-2">
         <InputGroup className="min-w-0 border-border bg-background">
           <InputGroupAddon>
