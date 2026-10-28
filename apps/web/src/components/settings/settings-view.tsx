@@ -8,6 +8,7 @@ import {
 } from "@internium/ui/components/tabs";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { AccountSettings } from "@/components/settings/account-settings";
 import { SettingsPlaceholder } from "@/components/settings/settings-placeholder";
 import {
   parseSettingsTab,
@@ -51,10 +52,14 @@ export function SettingsView() {
           value={item.slug}
           className="animate-settings-pane motion-reduce:animate-none"
         >
-          <SettingsPlaceholder
-            title={item.title}
-            description={item.description}
-          />
+          {item.slug === "account" ? (
+            <AccountSettings description={item.description} />
+          ) : (
+            <SettingsPlaceholder
+              title={item.title}
+              description={item.description}
+            />
+          )}
         </TabsContent>
       ))}
     </Tabs>
