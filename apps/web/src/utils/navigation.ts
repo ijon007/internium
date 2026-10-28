@@ -6,7 +6,7 @@ import {
   SETTINGS_PATH,
 } from "@/constants/roles";
 
-export function isRole(value: string | undefined): value is Role {
+export function isRole(value: string | null | undefined): value is Role {
   return ROLES.includes(value as Role);
 }
 
@@ -38,7 +38,7 @@ export function isActivePath(pathname: string, href: string): boolean {
 export function readLastRole(): Role {
   try {
     const value = sessionStorage.getItem(LAST_ROLE_STORAGE_KEY);
-    if (isRole(value ?? undefined)) return value;
+    if (isRole(value)) return value;
   } catch {
     // ponytail: sessionStorage throws in some private-mode browsers
   }

@@ -1,1 +1,16 @@
 @import "@internium/ui/globals.css";
+
+@keyframes settings-pane {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--settings-from, 10px), 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@theme inline {
+  --animate-settings-pane: settings-pane 0.35s var(--ease-out-strong) both;
+}
