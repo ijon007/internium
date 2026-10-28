@@ -1,8 +1,8 @@
 "use client";
 
-import { FieldGroup, FieldSeparator } from "@internium/ui/components/field";
 import { useState } from "react";
 import {
+  SettingsList,
   SettingsPane,
   SettingsSection,
 } from "@/components/settings/settings-section";
@@ -28,11 +28,7 @@ const INITIAL: NotificationPrefs = {
   quietHours: false,
 };
 
-export function NotificationsSettings({
-  description,
-}: {
-  description: string;
-}) {
+export function NotificationsSettings() {
   const [prefs, setPrefs] = useState(INITIAL);
 
   function toggle(key: keyof NotificationPrefs) {
@@ -40,77 +36,75 @@ export function NotificationsSettings({
   }
 
   return (
-    <SettingsPane description={description}>
+    <SettingsPane>
       <SettingsSection
         title="In the app"
-        description="Banners in the sidebar while you are signed in."
+        caption="Banners while you are signed in."
+        flush
       >
-        <FieldGroup>
+        <SettingsList>
           <SettingsSwitchField
             id="notify-app-documents"
             label="Documents"
-            description="A file needs a signature, review, or upload."
+            description="Signature, review, or upload."
             checked={prefs.inAppDocuments}
             onCheckedChange={() => toggle("inAppDocuments")}
           />
-          <FieldSeparator />
           <SettingsSwitchField
             id="notify-app-absences"
             label="Absences"
-            description="A request is submitted, approved, or declined."
+            description="Submitted, approved, or declined."
             checked={prefs.inAppAbsences}
             onCheckedChange={() => toggle("inAppAbsences")}
           />
-          <FieldSeparator />
           <SettingsSwitchField
             id="notify-app-chat"
             label="Chat"
-            description="A new message in a conversation you follow."
+            description="New message in a thread you follow."
             checked={prefs.inAppChat}
             onCheckedChange={() => toggle("inAppChat")}
           />
-        </FieldGroup>
+        </SettingsList>
       </SettingsSection>
 
       <SettingsSection
         title="Email"
-        description="Sent to the address on your account. Chat stays off by default."
+        caption="Sent to the address on your account."
+        flush
       >
-        <FieldGroup>
+        <SettingsList>
           <SettingsSwitchField
             id="notify-email-documents"
             label="Documents"
-            description="Daily digest when something is waiting on you."
+            description="Daily digest of what is waiting."
             checked={prefs.emailDocuments}
             onCheckedChange={() => toggle("emailDocuments")}
           />
-          <FieldSeparator />
           <SettingsSwitchField
             id="notify-email-absences"
             label="Absences"
-            description="Only when a request changes status."
+            description="Only when status changes."
             checked={prefs.emailAbsences}
             onCheckedChange={() => toggle("emailAbsences")}
           />
-          <FieldSeparator />
           <SettingsSwitchField
             id="notify-email-chat"
             label="Chat"
-            description="A summary if you missed messages overnight."
+            description="Overnight summary if you missed messages."
             checked={prefs.emailChat}
             onCheckedChange={() => toggle("emailChat")}
           />
-        </FieldGroup>
+        </SettingsList>
       </SettingsSection>
 
       <SettingsSection
         title="Quiet hours"
-        description="Pause banners and email from 21:00 to 07:00, local time. Absences that need same-day action still come through."
+        caption="Pauses banners and email from 21:00 to 07:00. Same-day absences still come through."
+        flush
       >
         <SettingsSwitchField
           id="notify-quiet-hours"
           label="Use quiet hours"
-          description="Applies on this account, on every device."
           checked={prefs.quietHours}
           onCheckedChange={() => toggle("quietHours")}
         />

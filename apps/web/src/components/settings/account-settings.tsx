@@ -7,16 +7,13 @@ import {
 } from "@internium/ui/components/avatar";
 import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@internium/ui/components/field";
 import { Input } from "@internium/ui/components/input";
+import { CameraIcon } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import {
+  SettingsFieldRow,
+  SettingsList,
   SettingsPane,
   SettingsSection,
 } from "@/components/settings/settings-section";
@@ -25,7 +22,10 @@ import { MOCK_USER } from "@/constants/user";
 import { useCurrentRole } from "@/hooks/use-current-role";
 import { getInitials } from "@/utils/chat";
 
-export function AccountSettings({ description }: { description: string }) {
+const ROW_INPUT =
+  "h-8 border-0 bg-transparent px-0 text-xs shadow-none focus-visible:ring-0 md:text-xs";
+
+export function AccountSettings() {
   const role = useCurrentRole();
   const fileRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(MOCK_USER.name);
@@ -37,10 +37,11 @@ export function AccountSettings({ description }: { description: string }) {
     avatar !== MOCK_USER.avatar;
 
   return (
-    <SettingsPane description={description}>
+    <SettingsPane>
       <SettingsSection
         title="Profile"
-        description="This is what people see in chat, documents, and the sidebar."
+        caption="Shown in chat, documents, and the sidebar."
+        flush
         footer={
           <Button
             type="button"
@@ -51,102 +52,100 @@ export function AccountSettings({ description }: { description: string }) {
           </Button>
         }
       >
-        <div className="flex items-center gap-4">
-          <Avatar className="size-14" size="lg">
-            <AvatarImage src={avatar} alt={name} />
-            <AvatarFallback>
-              {getInitials(name || MOCK_USER.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex min-w-0 flex-1 flex-col gap-2">
-            <div className="flex flex-wrap gap-2">
+        <SettingsList>
+          <div className="flex items-center gap-3 px-3 py-2">
+            <div className="relative shrink-0">
+              <Avatar className="size-10" size="lg">
+                <AvatarImage src={avatar} alt={name} />
+                <AvatarFallback>
+                  {getInitials(name || MOCK_USER.name)}
+                </AvatarFallback>
+              </Avatar>
               <Button
                 type="button"
+                size="icon-xs"
                 variant="outline"
+                className="absolute -right-1 -bottom-1 rounded-full bg-background"
                 onClick={() => fileRef.current?.click()}
               >
-                Change photo
+                <CameraIcon />
+                <span className="sr-only">Change photo</span>
               </Button>
-              {avatar ? (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setAvatar("")}
-                >
-                  Remove
-                </Button>
-              ) : null}
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  event.target.value = "";
+                  if (!file) return;
+                  setAvatar(URL.createObjectURL(file));
+                }}
+              />
             </div>
-            <p className="text-xs/relaxed text-muted-foreground">
-              JPG or PNG. Shown as a circle.
-            </p>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="sr-only"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                event.target.value = "";
-                if (!file) return;
-                setAvatar(URL.createObjectURL(file));
-              }}
-            />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-medium">
+                {name || "Your name"}
+              </p>
+              <p className="truncate text-[11px] leading-snug text-muted-foreground">
+                {MOCK_USER.email}
+              </p>
+            </div>
+            {avatar ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setAvatar("")}
+              >
+                Remove
+              </Button>
+            ) : null}
           </div>
-        </div>
-        <FieldGroup>
-          <Field>
-            <FieldLabel htmlFor="account-name">Name</FieldLabel>
+          <SettingsFieldRow id="account-name" label="Name">
             <Input
               id="account-name"
               value={name}
               autoComplete="name"
+              className={ROW_INPUT}
               onChange={(event) => setName(event.target.value)}
             />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="account-phone">Phone</FieldLabel>
+          </SettingsFieldRow>
+          <SettingsFieldRow id="account-phone" label="Phone">
             <Input
               id="account-phone"
               type="tel"
               value={phone}
               autoComplete="tel"
               placeholder="Optional"
+              className={ROW_INPUT}
               onChange={(event) => setPhone(event.target.value)}
             />
-            <FieldDescription>
-              Mentors and coordinators can use this if they need to reach you.
-            </FieldDescription>
-          </Field>
-        </FieldGroup>
+          </SettingsFieldRow>
+        </SettingsList>
       </SettingsSection>
 
       <SettingsSection
         title="Sign-in"
-        description="Your email and role come from the school directory."
+        caption="Email and role come from the school directory."
+        flush
       >
-        <FieldGroup>
-          <Field>
-            <FieldLabel htmlFor="account-email">Email</FieldLabel>
-            <Input
+        <SettingsList>
+          <SettingsFieldRow id="account-email" label="Email">
+            <p
               id="account-email"
-              type="email"
-              value={MOCK_USER.email}
-              readOnly
-              disabled
-            />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="account-role">Role</FieldLabel>
-            <div id="account-role">
+              className="truncate text-xs text-muted-foreground"
+            >
+              {MOCK_USER.email}
+            </p>
+          </SettingsFieldRow>
+          <SettingsFieldRow id="account-role" label="Role">
+            <div id="account-role" className="flex justify-end">
               <Badge variant="secondary">{ROLE_LABELS[role]}</Badge>
             </div>
-            <FieldDescription>
-              Switch roles from the picker if your school assigned more than
-              one.
-            </FieldDescription>
-          </Field>
-        </FieldGroup>
+          </SettingsFieldRow>
+        </SettingsList>
       </SettingsSection>
     </SettingsPane>
   );

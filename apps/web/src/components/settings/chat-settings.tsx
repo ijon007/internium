@@ -1,120 +1,145 @@
 "use client";
 
 import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
-  FieldTitle,
-} from "@internium/ui/components/field";
-import {
   RadioGroup,
   RadioGroupItem,
 } from "@internium/ui/components/radio-group";
+import {
+  BriefcaseIcon,
+  BuildingsIcon,
+  CheckIcon,
+  type Icon,
+  LockSimpleIcon,
+} from "@phosphor-icons/react";
 import { useState } from "react";
 import {
+  SettingsList,
   SettingsPane,
   SettingsSection,
 } from "@/components/settings/settings-section";
 import { SettingsSwitchField } from "@/components/settings/settings-switch-field";
+import { cn } from "@/lib/utils";
 
 const MESSAGE_POLICIES = [
   {
     value: "school",
     title: "Anyone at my school",
-    description: "Teachers, coordinators, and students on the same campus.",
+    icon: BuildingsIcon,
   },
   {
     value: "placement",
     title: "People on my placement",
-    description: "Your mentor, coordinating teacher, and class group.",
+    icon: BriefcaseIcon,
   },
   {
     value: "nobody",
-    title: "Only people I already chat with",
-    description: "New conversations have to be started by a coordinator.",
+    title: "People I already chat with",
+    icon: LockSimpleIcon,
   },
 ] as const;
 
 type MessagePolicy = (typeof MESSAGE_POLICIES)[number]["value"];
 
-export function ChatSettings({ description }: { description: string }) {
+function MessagePolicyOption({
+  value,
+  title,
+  icon: Icon,
+  selected,
+}: {
+  value: MessagePolicy;
+  title: string;
+  icon: Icon;
+  selected: boolean;
+}) {
+  const id = `chat-policy-${value}`;
+  return (
+    <label
+      htmlFor={id}
+      className={cn(
+        "flex cursor-pointer items-center gap-2.5 px-3 py-2 transition-transform duration-100 ease-out",
+        "active:scale-[0.99]",
+        "has-[:focus-visible]:bg-muted/60",
+      )}
+    >
+      <Icon
+        className="size-4 shrink-0 text-muted-foreground"
+        weight={selected ? "fill" : "regular"}
+      />
+      <span className="min-w-0 flex-1 text-xs leading-none font-medium">
+        {title}
+      </span>
+      <span
+        className={cn(
+          "flex size-4 items-center justify-center text-primary",
+          selected ? "opacity-100" : "opacity-0",
+        )}
+        aria-hidden
+      >
+        <CheckIcon className="size-3.5" weight="bold" />
+      </span>
+      <RadioGroupItem id={id} value={value} className="sr-only" />
+    </label>
+  );
+}
+
+export function ChatSettings() {
   const [sound, setSound] = useState(true);
   const [enterToSend, setEnterToSend] = useState(true);
   const [readReceipts, setReadReceipts] = useState(true);
   const [policy, setPolicy] = useState<MessagePolicy>("placement");
 
   return (
-    <SettingsPane description={description}>
-      <SettingsSection
-        title="Messages"
-        description="How chat behaves while you are in a conversation."
-      >
-        <FieldGroup>
+    <SettingsPane>
+      <SettingsSection title="Messages" flush>
+        <SettingsList>
           <SettingsSwitchField
             id="chat-sound"
             label="Message sound"
-            description="A short tone for new messages in the open thread."
             checked={sound}
             onCheckedChange={setSound}
           />
-          <FieldSeparator />
           <SettingsSwitchField
             id="chat-enter"
             label="Enter to send"
-            description="Shift + Enter still adds a new line."
+            description="Shift + Enter adds a line."
             checked={enterToSend}
             onCheckedChange={setEnterToSend}
           />
-          <FieldSeparator />
           <SettingsSwitchField
             id="chat-receipts"
             label="Read receipts"
-            description="Others can see when you have read their messages."
             checked={readReceipts}
             onCheckedChange={setReadReceipts}
           />
-        </FieldGroup>
+        </SettingsList>
       </SettingsSection>
 
       <SettingsSection
         title="Who can message you"
-        description="Coordinators can always reach you."
+        caption="Coordinators can always reach you."
+        flush
       >
-        <FieldSet>
-          <FieldLegend className="sr-only">Who can start a chat</FieldLegend>
-          <RadioGroup
-            value={policy}
-            onValueChange={(value) => {
-              if (MESSAGE_POLICIES.some((item) => item.value === value)) {
-                setPolicy(value as MessagePolicy);
-              }
-            }}
-            className="gap-4"
-          >
+        <RadioGroup
+          value={policy}
+          onValueChange={(value) => {
+            if (MESSAGE_POLICIES.some((item) => item.value === value)) {
+              setPolicy(value as MessagePolicy);
+            }
+          }}
+          className="gap-0"
+        >
+          <SettingsList>
             {MESSAGE_POLICIES.map((item) => (
-              <FieldLabel
+              <MessagePolicyOption
                 key={item.value}
-                htmlFor={`chat-policy-${item.value}`}
-              >
-                <Field orientation="horizontal">
-                  <RadioGroupItem
-                    id={`chat-policy-${item.value}`}
-                    value={item.value}
-                  />
-                  <FieldContent>
-                    <FieldTitle>{item.title}</FieldTitle>
-                    <FieldDescription>{item.description}</FieldDescription>
-                  </FieldContent>
-                </Field>
-              </FieldLabel>
+                value={item.value}
+                title={item.title}
+                icon={item.icon}
+                selected={policy === item.value}
+              />
             ))}
-          </RadioGroup>
-        </FieldSet>
+          </SettingsList>
+        </RadioGroup>
       </SettingsSection>
     </SettingsPane>
   );

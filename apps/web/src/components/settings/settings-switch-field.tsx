@@ -1,9 +1,3 @@
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldLabel,
-} from "@internium/ui/components/field";
 import { Switch } from "@internium/ui/components/switch";
 
 export function SettingsSwitchField({
@@ -15,17 +9,28 @@ export function SettingsSwitchField({
 }: {
   id: string;
   label: string;
-  description: string;
+  description?: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
 }) {
   return (
-    <Field orientation="horizontal">
-      <FieldContent>
-        <FieldLabel htmlFor={id}>{label}</FieldLabel>
-        <FieldDescription>{description}</FieldDescription>
-      </FieldContent>
-      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
-    </Field>
+    <div className="flex items-center gap-3 px-3 py-2">
+      <div className="min-w-0 flex-1">
+        <label htmlFor={id} className="text-xs leading-none font-medium">
+          {label}
+        </label>
+        {description ? (
+          <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+            {description}
+          </p>
+        ) : null}
+      </div>
+      <Switch
+        id={id}
+        size="sm"
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+      />
+    </div>
   );
 }

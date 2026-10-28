@@ -12,5 +12,5 @@
 }
 
 @theme inline {
-  --animate-settings-pane: settings-pane 0.35s var(--ease-out-strong) both;
+  --animate-settings-pane: settings-pane 0.18s var(--ease-out-strong) both;
 }

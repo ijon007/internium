@@ -9,7 +9,6 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AccountSettings } from "@/components/settings/account-settings";
-import { AppearanceSettings } from "@/components/settings/appearance-settings";
 import { ChatSettings } from "@/components/settings/chat-settings";
 import { NotificationsSettings } from "@/components/settings/notifications-settings";
 import { SchoolSettings } from "@/components/settings/school-settings";
@@ -24,7 +23,6 @@ import { getSettingsHref } from "@/utils/navigation";
 
 const SETTINGS_PANES = {
   account: AccountSettings,
-  appearance: AppearanceSettings,
   notifications: NotificationsSettings,
   chat: ChatSettings,
   security: SecuritySettings,
@@ -54,7 +52,7 @@ export function SettingsView() {
     >
       <TabsList>
         {SETTINGS_TABS.map((item) => (
-          <TabsTrigger key={item.slug} value={item.slug} className="px-3">
+          <TabsTrigger key={item.slug} value={item.slug}>
             {item.title}
           </TabsTrigger>
         ))}
@@ -67,7 +65,7 @@ export function SettingsView() {
             value={item.slug}
             className="animate-settings-pane motion-reduce:animate-none"
           >
-            <Pane description={item.description} />
+            <Pane />
           </TabsContent>
         );
       })}
