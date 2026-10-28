@@ -36,7 +36,7 @@ export function SettingsView() {
         setTab(next);
         router.replace(getSettingsHref(next), { scroll: false });
       }}
-      className="gap-5"
+      className="gap-4"
     >
       <TabsList>
         {SETTINGS_TABS.map((item) => (

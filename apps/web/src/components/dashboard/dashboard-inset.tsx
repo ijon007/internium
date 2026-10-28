@@ -18,7 +18,7 @@ export function DashboardInset({ children }: { children: ReactNode }) {
       <div
         className={cn(
           "flex min-h-0 flex-1 flex-col has-[.chat-workspace]:overflow-hidden has-[.chat-workspace]:p-0",
-          isMobile ? "p-4 pl-10" : "p-8",
+          isMobile ? "p-2 pl-8" : "p-4",
         )}
       >
         {children}
