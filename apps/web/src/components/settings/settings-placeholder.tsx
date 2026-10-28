@@ -8,7 +8,7 @@ export function SettingsPlaceholder({
   description,
 }: SettingsPlaceholderProps) {
   return (
-    <section className="px-1 pt-8">
+    <section className="px-1">
       <h2 className="text-[22px] leading-tight font-semibold tracking-[-0.022em]">
         {title}
       </h2>

@@ -1,7 +1,10 @@
-import { redirect } from "next/navigation";
-import { DEFAULT_SETTINGS_CATEGORY } from "@/constants/settings";
-import { getSettingsHref } from "@/utils/navigation";
+import { Suspense } from "react";
+import { SettingsView } from "@/components/settings/settings-view";
 
-export default function SettingsIndexPage() {
-  redirect(getSettingsHref(DEFAULT_SETTINGS_CATEGORY));
+export default function SettingsPage() {
+  return (
+    <Suspense>
+      <SettingsView />
+    </Suspense>
+  );
 }

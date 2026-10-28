@@ -5,6 +5,10 @@ import {
   type Role,
   SETTINGS_PATH,
 } from "@/constants/roles";
+import {
+  DEFAULT_SETTINGS_CATEGORY,
+  SETTINGS_TAB_PARAM,
+} from "@/constants/settings";
 
 export function isRole(value: string | null | undefined): value is Role {
   return ROLES.includes(value as Role);
@@ -24,11 +28,12 @@ export function getRoleHref(role: Role, path: string): string {
 }
 
 export function isSettingsPath(pathname: string): boolean {
-  return pathname === SETTINGS_PATH || pathname.startsWith(`${SETTINGS_PATH}/`);
+  return pathname === SETTINGS_PATH;
 }
 
 export function getSettingsHref(category = ""): string {
-  return [SETTINGS_PATH, category].filter(Boolean).join("/");
+  if (!category || category === DEFAULT_SETTINGS_CATEGORY) return SETTINGS_PATH;
+  return `${SETTINGS_PATH}?${SETTINGS_TAB_PARAM}=${category}`;
 }
 
 export function isActivePath(pathname: string, href: string): boolean {
