@@ -6,16 +6,15 @@ import {
   AlertTitle,
 } from "@internium/ui/components/alert";
 import { Button } from "@internium/ui/components/button";
-import { Input } from "@internium/ui/components/input";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@internium/ui/components/select";
-import { BuildingsIcon } from "@phosphor-icons/react";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@internium/ui/components/dropdown-menu";
+import { Input } from "@internium/ui/components/input";
+import { BuildingsIcon, CaretDownIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -95,30 +94,33 @@ export function SchoolSettings() {
             />
           </SettingsFieldRow>
           <SettingsFieldRow id="school-timezone" label="Time zone">
-            <Select
-              value={timezone}
-              onValueChange={(value) => {
-                if (TIMEZONES.some((item) => item.value === value)) {
-                  setTimezone(value as Timezone);
-                }
-              }}
-            >
-              <SelectTrigger
+            <DropdownMenu>
+              <DropdownMenuTrigger
                 id="school-timezone"
-                className={`${ROW_CONTROL} justify-between`}
+                className="flex h-8 w-full items-center justify-between bg-transparent px-0 text-left text-xs outline-none"
               >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
+                <span className="truncate">
+                  {TIMEZONES.find((item) => item.value === timezone)?.label}
+                </span>
+                <CaretDownIcon className="size-3.5 shrink-0 text-muted-foreground" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-44">
+                <DropdownMenuRadioGroup
+                  value={timezone}
+                  onValueChange={(value) => {
+                    if (TIMEZONES.some((item) => item.value === value)) {
+                      setTimezone(value as Timezone);
+                    }
+                  }}
+                >
                   {TIMEZONES.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
+                    <DropdownMenuRadioItem key={item.value} value={item.value}>
                       {item.label}
-                    </SelectItem>
+                    </DropdownMenuRadioItem>
                   ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SettingsFieldRow>
         </SettingsList>
       </SettingsSection>
