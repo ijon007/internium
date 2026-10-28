@@ -9,7 +9,11 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AccountSettings } from "@/components/settings/account-settings";
-import { SettingsPlaceholder } from "@/components/settings/settings-placeholder";
+import { AppearanceSettings } from "@/components/settings/appearance-settings";
+import { ChatSettings } from "@/components/settings/chat-settings";
+import { NotificationsSettings } from "@/components/settings/notifications-settings";
+import { SchoolSettings } from "@/components/settings/school-settings";
+import { SecuritySettings } from "@/components/settings/security-settings";
 import {
   parseSettingsTab,
   SETTINGS_TAB_PARAM,
@@ -17,6 +21,15 @@ import {
   type SettingsCategory,
 } from "@/constants/settings";
 import { getSettingsHref } from "@/utils/navigation";
+
+const SETTINGS_PANES = {
+  account: AccountSettings,
+  appearance: AppearanceSettings,
+  notifications: NotificationsSettings,
+  chat: ChatSettings,
+  security: SecuritySettings,
+  school: SchoolSettings,
+} as const;
 
 export function SettingsView() {
   const router = useRouter();
@@ -46,22 +59,18 @@ export function SettingsView() {
           </TabsTrigger>
         ))}
       </TabsList>
-      {SETTINGS_TABS.map((item) => (
-        <TabsContent
-          key={item.slug}
-          value={item.slug}
-          className="animate-settings-pane motion-reduce:animate-none"
-        >
-          {item.slug === "account" ? (
-            <AccountSettings description={item.description} />
-          ) : (
-            <SettingsPlaceholder
-              title={item.title}
-              description={item.description}
-            />
-          )}
-        </TabsContent>
-      ))}
+      {SETTINGS_TABS.map((item) => {
+        const Pane = SETTINGS_PANES[item.slug];
+        return (
+          <TabsContent
+            key={item.slug}
+            value={item.slug}
+            className="animate-settings-pane motion-reduce:animate-none"
+          >
+            <Pane description={item.description} />
+          </TabsContent>
+        );
+      })}
     </Tabs>
   );
 }
