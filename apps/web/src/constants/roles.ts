@@ -34,4 +34,8 @@ export const ROLE_PICKER_ORDER: Role[] = [
 
 export const DASHBOARD_PATH = "/dashboard";
 
+export const SETTINGS_PATH = `${DASHBOARD_PATH}/settings`;
+
+export const LAST_ROLE_STORAGE_KEY = "internium:last-role:v1";
+
 export const ROLE_PATH = "/role";

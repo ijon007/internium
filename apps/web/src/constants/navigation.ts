@@ -12,13 +12,11 @@ import {
   FilePlusIcon,
   FilesIcon,
   FileTextIcon,
-  GearIcon,
   HandshakeIcon,
   IdentificationCardIcon,
   KeyIcon,
   SquaresFourIcon,
   StudentIcon,
-  UserCircleIcon,
   UserMinusIcon,
   UsersIcon,
   UsersThreeIcon,
@@ -30,11 +28,6 @@ export const ICON_WEIGHT = "fill";
 
 export const SHARED_NAV: NavItem[] = [
   { title: "Chat", path: "chat", icon: ChatCircleIcon },
-];
-
-export const ACCOUNT_NAV: NavItem[] = [
-  { title: "Settings", path: "settings", icon: GearIcon },
-  { title: "Profile", path: "profile", icon: UserCircleIcon },
 ];
 
 const OVERVIEW_GROUP: NavGroup = {
@@ -56,7 +49,11 @@ export const ROLE_NAV: Record<Role, NavGroup[]> = {
       label: "System",
       items: [
         { title: "Backup", path: "backup", icon: DatabaseIcon },
-        { title: "Activity Log", path: "activity-log", icon: ClockCounterClockwiseIcon },
+        {
+          title: "Activity Log",
+          path: "activity-log",
+          icon: ClockCounterClockwiseIcon,
+        },
       ],
     },
   ],
@@ -81,7 +78,11 @@ export const ROLE_NAV: Record<Role, NavGroup[]> = {
       label: "Documents",
       items: [
         { title: "Documents Overview", path: "documents", icon: FilesIcon },
-        { title: "Generate Documents", path: "generate-documents", icon: FilePlusIcon },
+        {
+          title: "Generate Documents",
+          path: "generate-documents",
+          icon: FilePlusIcon,
+        },
       ],
     },
     {
@@ -98,13 +99,21 @@ export const ROLE_NAV: Record<Role, NavGroup[]> = {
       label: "My Students",
       items: [
         { title: "My Classes", path: "classes", icon: UsersThreeIcon },
-        { title: "Student Profile", path: "students", icon: IdentificationCardIcon },
+        {
+          title: "Student Profile",
+          path: "students",
+          icon: IdentificationCardIcon,
+        },
       ],
     },
     {
       label: "Work",
       items: [
-        { title: "Documents to Review", path: "review", icon: FileMagnifyingGlassIcon },
+        {
+          title: "Documents to Review",
+          path: "review",
+          icon: FileMagnifyingGlassIcon,
+        },
         { title: "Absences", path: "absences", icon: UserMinusIcon },
       ],
     },
@@ -113,7 +122,9 @@ export const ROLE_NAV: Record<Role, NavGroup[]> = {
     OVERVIEW_GROUP,
     {
       label: "Me",
-      items: [{ title: "My Data", path: "my-data", icon: IdentificationCardIcon }],
+      items: [
+        { title: "My Data", path: "my-data", icon: IdentificationCardIcon },
+      ],
     },
     {
       label: "Practice",
@@ -129,12 +140,22 @@ export const ROLE_NAV: Record<Role, NavGroup[]> = {
       label: "Students",
       items: [
         { title: "My Students", path: "students", icon: StudentIcon },
-        { title: "Student Documents", path: "documents", icon: ClipboardTextIcon },
+        {
+          title: "Student Documents",
+          path: "documents",
+          icon: ClipboardTextIcon,
+        },
       ],
     },
     {
       label: "Attendance",
-      items: [{ title: "Weekly Attendance", path: "attendance", icon: CalendarCheckIcon }],
+      items: [
+        {
+          title: "Weekly Attendance",
+          path: "attendance",
+          icon: CalendarCheckIcon,
+        },
+      ],
     },
   ],
 };

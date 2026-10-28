@@ -12,10 +12,11 @@ import {
 } from "@internium/ui/components/sidebar";
 import { GearIcon } from "@phosphor-icons/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ICON_WEIGHT } from "@/constants/navigation";
+import { SETTINGS_PATH } from "@/constants/roles";
 import { MOCK_USER } from "@/constants/user";
-import { useCurrentRole } from "@/hooks/use-current-role";
-import { getRoleHref } from "@/utils/navigation";
+import { isSettingsPath } from "@/utils/navigation";
 
 function getInitials(name: string): string {
   return name
@@ -27,15 +28,16 @@ function getInitials(name: string): string {
 }
 
 export function NavUser() {
-  const role = useCurrentRole();
+  const pathname = usePathname();
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton
           tooltip="Settings"
+          isActive={isSettingsPath(pathname)}
           className="group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
-          render={<Link href={getRoleHref(role, "settings")} />}
+          render={<Link href={SETTINGS_PATH} />}
         >
           <Avatar size="sm">
             <AvatarImage src={MOCK_USER.avatar} alt={MOCK_USER.name} />
