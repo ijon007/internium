@@ -35,7 +35,7 @@ import {
   ExportIcon,
   PlusIcon,
 } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   AdminPage,
@@ -52,6 +52,7 @@ import {
   teacherName,
 } from "@/constants/coordinator";
 import { cn } from "@/lib/utils";
+import { useRetained } from "@/hooks/use-retained";
 
 function nextYear(year: string) {
   const [a, b] = year.split("/").map(Number);
@@ -65,6 +66,7 @@ export function CoordinatorClasses() {
   const [openId, setOpenId] = useState<string | null>(null);
   const visible = classes.filter((c) => c.archived === (tab === "archived"));
   const open = classes.find((c) => c.id === openId) ?? null;
+  const shown = useRetained(open);
 
   function update(id: string, patch: Partial<ClassGroup>) {
     setClasses((cur) => cur.map((c) => (c.id === id ? { ...c, ...patch } : c)));
@@ -120,34 +122,34 @@ export function CoordinatorClasses() {
         ))}
       </AdminTable>
 
-      {open ? (
+      {shown ? (
         <ClassSheet
-          key={open.id}
-          group={open}
+          open={open !== null}
+          group={shown}
           students={students}
           onClose={() => setOpenId(null)}
           onSave={(patch) => {
-            update(open.id, patch);
+            update(shown.id, patch);
             toast.success("Class saved");
           }}
           onAddStudents={(ids) =>
             setStudents((cur) =>
-              cur.map((s) => (ids.includes(s.id) ? { ...s, classId: open.id } : s)),
+              cur.map((s) => (ids.includes(s.id) ? { ...s, classId: shown.id } : s)),
             )
           }
           onPromote={() => {
-            update(open.id, { archived: true });
+            update(shown.id, { archived: true });
             setClasses((cur) => [
               ...cur,
               {
-                ...open,
+                ...shown,
                 id: `c-${Date.now()}`,
-                name: open.name.replace(/^(\d+)/, (n) => String(Number(n) + 1)),
-                year: nextYear(open.year),
+                name: shown.name.replace(/^(\d+)/, (n) => String(Number(n) + 1)),
+                year: nextYear(shown.year),
               },
             ]);
             setOpenId(null);
-            toast.success(`${open.name} promoted to ${nextYear(open.year)}`);
+            toast.success(`${shown.name} promoted to ${nextYear(shown.year)}`);
           }}
         />
       ) : null}
@@ -156,6 +158,7 @@ export function CoordinatorClasses() {
 }
 
 function ClassSheet({
+  open,
   group,
   students,
   onClose,
@@ -163,6 +166,7 @@ function ClassSheet({
   onAddStudents,
   onPromote,
 }: {
+  open: boolean;
   group: ClassGroup;
   students: typeof STUDENTS;
   onClose: () => void;
@@ -175,12 +179,20 @@ function ClassSheet({
   const [year, setYear] = useState(group.year);
   const [teacherIds, setTeacherIds] = useState(group.teacherIds);
   const [promoting, setPromoting] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setName(group.name);
+    setYear(group.year);
+    setTeacherIds(group.teacherIds);
+    setPromoting(false);
+  }, [open, group]);
   const members = students.filter((s) => s.classId === group.id);
   const others = students.filter((s) => s.classId !== group.id);
 
   return (
     <Sheet
-      open
+      open={open}
       onOpenChange={(o) => {
         if (!o) onClose();
       }}

@@ -19,7 +19,7 @@ import {
   PlusIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   AdminPage,
@@ -36,6 +36,7 @@ import {
   STUDENTS,
 } from "@/constants/coordinator";
 import { cn } from "@/lib/utils";
+import { useRetained } from "@/hooks/use-retained";
 
 const EMPTY_COMPANY: Company = {
   id: "",
@@ -58,6 +59,7 @@ export function CoordinatorCompanies() {
     openId === "new"
       ? { ...EMPTY_COMPANY, id: "new" }
       : (companies.find((c) => c.id === openId) ?? null);
+  const shown = useRetained(open);
 
   return (
     <AdminPage
@@ -119,10 +121,10 @@ export function CoordinatorCompanies() {
         ))}
       </AdminTable>
 
-      {open ? (
+      {shown ? (
         <CompanySheet
-          key={open.id}
-          company={open}
+          open={open !== null}
+          company={shown}
           onClose={() => setOpenId(null)}
           onSave={(next) => {
             setCompanies((cur) =>
@@ -140,16 +142,25 @@ export function CoordinatorCompanies() {
 }
 
 function CompanySheet({
+  open,
   company,
   onClose,
   onSave,
 }: {
+  open: boolean;
   company: Company;
   onClose: () => void;
   onSave: (company: Company) => void;
 }) {
   const [draft, setDraft] = useState(company);
   const [editing, setEditing] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    setDraft(company);
+    setEditing(null);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: reset when the sheet opens
+  }, [open, company.id]);
   const placed = STUDENTS.filter((s) => s.companyId === company.id);
   const isNew = company.id === "new";
 
@@ -172,7 +183,7 @@ function CompanySheet({
   ] as const;
 
   return (
-    <Sheet open onOpenChange={(o) => !o && onClose()}>
+    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent className="sm:max-w-md">
         <SheetHeader>
           <SheetTitle>{isNew ? "New company" : company.name}</SheetTitle>

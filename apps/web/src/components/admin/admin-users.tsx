@@ -45,7 +45,7 @@ import {
   UserSwitchIcon,
   ProhibitIcon,
 } from "@phosphor-icons/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   AdminDropdown,
@@ -64,6 +64,7 @@ import {
 } from "@/constants/admin-users";
 import { ROLE_LABELS, ROLE_PICKER_ORDER, type Role } from "@/constants/roles";
 import { cn } from "@/lib/utils";
+import { useRetained } from "@/hooks/use-retained";
 
 type RoleFilter = Role | "all";
 type StatusFilter = AdminUserStatus | "all";
@@ -111,6 +112,7 @@ export function AdminUsers() {
   const [role, setRole] = useState<RoleFilter>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [editing, setEditing] = useState<AdminUser | "new" | null>(null);
+  const shownUser = useRetained(editing);
   const [deactivating, setDeactivating] = useState<AdminUser | null>(null);
   const [credentials, setCredentials] = useState<{
     email: string;
@@ -292,8 +294,8 @@ export function AdminUsers() {
       </AdminTable>
 
       <UserSheet
-        key={editing === "new" ? "new" : (editing?.id ?? "closed")}
-        user={editing}
+        open={editing !== null}
+        user={shownUser}
         onClose={() => setEditing(null)}
         onSave={save}
       />
@@ -457,16 +459,18 @@ function RowMenu({
 }
 
 function UserSheet({
+  open,
   user,
   onClose,
   onSave,
 }: {
+  open: boolean;
   user: AdminUser | "new" | null;
   onClose: () => void;
   onSave: (draft: Draft, invite: boolean) => void;
 }) {
   const isNew = user === "new";
-  const [draft, setDraft] = useState<Draft>(() =>
+  const initial = (): Draft =>
     user && user !== "new"
       ? {
           name: user.name,
@@ -475,9 +479,16 @@ function UserSheet({
           className: user.className ?? ADMIN_CLASSES[0],
           company: user.company ?? "",
         }
-      : EMPTY_DRAFT,
-  );
+      : EMPTY_DRAFT;
+  const [draft, setDraft] = useState<Draft>(initial);
   const [invite, setInvite] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setDraft(initial());
+    setInvite(false);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: reset when the sheet opens
+  }, [open, user]);
   const valid =
     draft.name.trim() !== "" &&
     /.+@.+\..+/.test(draft.email) &&
@@ -489,7 +500,7 @@ function UserSheet({
 
   return (
     <Sheet
-      open={user !== null}
+      open={open}
       onOpenChange={(open) => {
         if (!open) onClose();
       }}

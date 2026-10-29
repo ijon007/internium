@@ -69,6 +69,7 @@ import {
   teacherName,
 } from "@/constants/coordinator";
 import { cn } from "@/lib/utils";
+import { useRetained } from "@/hooks/use-retained";
 
 const ACTIVE_CLASSES = CLASSES.filter((c) => !c.archived);
 const className_ = (id: string) => CLASSES.find((c) => c.id === id)?.name ?? "—";
@@ -105,6 +106,8 @@ export function CoordinatorStudents() {
   );
   const allChecked = visible.length > 0 && visible.every((s) => selected.includes(s.id));
   const open = students.find((s) => s.id === openId) ?? null;
+  const shown = useRetained(open);
+  const shownAssign = useRetained(assignIds);
 
   function patch(ids: string[], data: Partial<Student>) {
     setStudents((cur) => cur.map((s) => (ids.includes(s.id) ? { ...s, ...data } : s)));
@@ -295,11 +298,12 @@ export function CoordinatorStudents() {
         })}
       </AdminTable>
 
-      {assignIds ? (
-        <AssignDialog
-          count={assignIds.length}
+      <AssignDialog
+          open={assignIds !== null}
+          count={shownAssign?.length ?? 0}
           onClose={() => setAssignIds(null)}
           onAssign={(co, m) => {
+            if (!assignIds) return;
             patch(assignIds, { companyId: co, mentorId: m });
             toast.success(
               `${assignIds.length === 1 ? "Student" : `${assignIds.length} students`} assigned to ${company(co)?.name}`,
@@ -308,14 +312,13 @@ export function CoordinatorStudents() {
             setSelected([]);
           }}
         />
-      ) : null}
 
-      {open ? (
+      {shown ? (
         <StudentSheet
-          key={open.id}
-          student={open}
+          open={open !== null}
+          student={shown}
           onClose={() => setOpenId(null)}
-          onAssign={() => setAssignIds([open.id])}
+          onAssign={() => setAssignIds([shown.id])}
         />
       ) : null}
 
@@ -333,10 +336,12 @@ export function CoordinatorStudents() {
 }
 
 function AssignDialog({
+  open,
   count,
   onClose,
   onAssign,
 }: {
+  open: boolean;
   count: number;
   onClose: () => void;
   onAssign: (companyId: string, mentorId: string) => void;
@@ -345,8 +350,15 @@ function AssignDialog({
   const mentors = company(co)?.mentors ?? [];
   const [m, setM] = useState(mentors[0]?.id ?? "");
 
+  useEffect(() => {
+    if (!open) return;
+    const first = COMPANIES[0]?.id ?? "";
+    setCo(first);
+    setM(company(first)?.mentors[0]?.id ?? "");
+  }, [open]);
+
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Assign to company</DialogTitle>
@@ -585,10 +597,12 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 function StudentSheet({
+  open,
   student,
   onClose,
   onAssign,
 }: {
+  open: boolean;
   student: Student;
   onClose: () => void;
   onAssign: () => void;
@@ -601,7 +615,7 @@ function StudentSheet({
 
   return (
     <>
-      <Sheet open onOpenChange={(o) => !o && onClose()}>
+      <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
         <SheetContent className="sm:max-w-md">
           <SheetHeader>
             <SheetTitle>{student.name}</SheetTitle>
