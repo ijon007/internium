@@ -43,15 +43,27 @@ export function DocumentViewer({
     <Sheet open={file !== null} onOpenChange={(o) => !o && onClose()}>
       <SheetContent
         showCloseButton={false}
-        className="gap-0 data-[side=right]:sm:max-w-[min(900px,90vw)]"
+        className="gap-0 transform-gpu will-change-[translate,opacity] data-[side=right]:sm:max-w-[min(900px,90vw)]"
       >
-        {shown ? <Reader key={shown.url} file={shown} onClose={onClose} actions={actions} /> : null}
+        {shown ? (
+          <Reader key={shown.url} file={shown} closing={file === null} onClose={onClose} actions={actions} />
+        ) : null}
       </SheetContent>
     </Sheet>
   );
 }
 
-function Reader({ file, onClose, actions }: { file: ViewerFile; onClose: () => void; actions?: ReactNode }) {
+function Reader({
+  file,
+  closing,
+  onClose,
+  actions,
+}: {
+  file: ViewerFile;
+  closing: boolean;
+  onClose: () => void;
+  actions?: ReactNode;
+}) {
   const word = isWordFile(file.name);
   const Icon = word ? FileDocIcon : FilePdfIcon;
   const [zoom, setZoom] = useState(2);
@@ -63,14 +75,22 @@ function Reader({ file, onClose, actions }: { file: ViewerFile; onClose: () => v
   useEffect(() => {
     const el = scroller.current;
     if (!el) return;
-    const ro = new ResizeObserver(([e]) => setAvail(Math.floor(e.contentRect.width)));
+    // Only grow/shrink for real resizes; ignore transient 0 widths while the sheet unmounts.
+    const ro = new ResizeObserver(([e]) => {
+      const w = Math.floor(e.contentRect.width);
+      if (w > 0) setAvail((cur) => (Math.abs(cur - w) > 1 ? w : cur));
+    });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
+  // Freeze the page width once closing starts so react-pdf never re-renders canvases mid-animation.
+  const frozen = useRef(0);
   const onPages = useCallback((n: number) => setPages(n), []);
   const onError = useCallback(() => setFailed(true), []);
-  const width = Math.round(Math.min(Math.max(avail - 48, 240), PAGE_MAX) * ZOOMS[zoom]);
+  const live = Math.round(Math.min(Math.max(avail - 48, 240), PAGE_MAX) * ZOOMS[zoom]);
+  if (!closing) frozen.current = live;
+  const width = closing && frozen.current ? frozen.current : live;
 
   return (
     <>
@@ -134,7 +154,7 @@ function Reader({ file, onClose, actions }: { file: ViewerFile; onClose: () => v
 
       <div
         ref={scroller}
-        className="min-h-0 flex-1 overflow-auto bg-muted/50 [mask-image:linear-gradient(to_bottom,transparent,black_10px)]"
+        className="min-h-0 flex-1 overflow-auto overscroll-contain bg-muted/50 [contain:strict]"
       >
         <div className={cn("mx-auto flex w-max min-w-full flex-col items-center px-6 py-6")}>
           {failed ? (
