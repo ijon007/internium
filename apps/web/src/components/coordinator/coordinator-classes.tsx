@@ -1,5 +1,6 @@
 "use client";
 
+import { SHEET_LIST, SHEET_ROW, SheetBody, SheetSection } from "@/components/sheet-section";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import {
   AlertDialog,
@@ -211,7 +212,8 @@ function ClassSheet({
             {readOnly ? "Archived classes are read-only." : group.year}
           </SheetDescription>
         </SheetHeader>
-        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
+        <SheetBody>
+          <SheetSection title="Details">
           <FieldGroup className="grid grid-cols-2 gap-3">
             <Field>
               <FieldLabel htmlFor="class-name">Name</FieldLabel>
@@ -269,16 +271,12 @@ function ClassSheet({
               </DropdownMenu>
             </Field>
           </FieldGroup>
+          </SheetSection>
 
-          <section className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-medium">
-                Students{" "}
-                <span className="text-muted-foreground tabular-nums">
-                  {members.length}
-                </span>
-              </h3>
-              {readOnly ? null : (
+          <SheetSection
+            title="Students"
+            count={members.length}
+            action={readOnly ? null : (
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={<Button variant="ghost" size="sm" className={PRESS} />}
@@ -308,29 +306,26 @@ function ClassSheet({
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
-            </div>
-            <ul className="rounded-lg bg-muted/50 text-xs">
-              {members.map((s, i) => (
+          >
+            <ul className={SHEET_LIST}>
+              {members.map((s) => (
                 <li
                   key={s.id}
-                  className={cn(
-                    "flex justify-between px-3 py-2",
-                    i < members.length - 1 && "border-b border-border/70",
-                  )}
+                  className={SHEET_ROW}
                 >
                   <span className="font-medium">{s.name}</span>
-                  <span className="text-muted-foreground">{s.email}</span>
+                  <span className="ml-auto truncate text-muted-foreground">{s.email}</span>
                 </li>
               ))}
               {members.length === 0 ? (
-                <li className="px-3 py-2 text-muted-foreground">No students yet.</li>
+                <li className="px-2 py-1.5 text-muted-foreground">No students yet.</li>
               ) : null}
             </ul>
-          </section>
-        </div>
-        <SheetFooter className="flex-row flex-wrap gap-2">
+          </SheetSection>
+        </SheetBody>
+        <SheetFooter className="justify-start">
           <Button
-            variant="outline"
+            variant="ghost"
             className={PRESS}
             onClick={() => toast.success(`Report for ${group.name} exported`)}
           >
@@ -340,7 +335,7 @@ function ClassSheet({
           {readOnly ? null : (
             <>
               <Button
-                variant="outline"
+                variant="ghost"
                 className={PRESS}
                 onClick={() => setPromoting(true)}
               >
