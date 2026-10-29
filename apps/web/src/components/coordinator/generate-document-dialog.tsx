@@ -1,20 +1,20 @@
 "use client";
 
-import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
 import { Checkbox } from "@internium/ui/components/checkbox";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@internium/ui/components/sheet";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@internium/ui/components/dialog";
 import { CheckIcon, DownloadSimpleIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PRESS } from "@/components/admin/admin-table";
+import { ICON_WEIGHT } from "@/constants/navigation";
 import {
   CLASSES,
   DOCUMENT_TEMPLATES,
@@ -48,7 +48,7 @@ function PlaceholderQr({ seed }: { seed: string }) {
   );
 }
 
-export function GenerateDocumentSheet({
+export function GenerateDocumentDialog({
   open,
   onOpenChange,
   students,
@@ -62,23 +62,25 @@ export function GenerateDocumentSheet({
   const [step, setStep] = useState(0);
   const [template, setTemplate] = useState<string>(DOCUMENT_TEMPLATES[0].id);
   const [picked, setPicked] = useState<string[]>(initialStudentIds);
+  useEffect(() => {
+    if (!open) return;
+    setStep(0);
+    setPicked(initialStudentIds);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: sync on open only
+  }, [open]);
   const chosen = DOCUMENT_TEMPLATES.find((t) => t.id === template);
   const selected = students.filter((s) => picked.includes(s.id));
 
   function close(next: boolean) {
     onOpenChange(next);
-    if (!next) {
-      setStep(0);
-      setPicked(initialStudentIds);
-    }
   }
 
   return (
-    <Sheet open={open} onOpenChange={close}>
-      <SheetContent className="sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle>Generate document</SheetTitle>
-          <SheetDescription>
+    <Dialog open={open} onOpenChange={close}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Generate document</DialogTitle>
+          <DialogDescription>
             <span className="flex items-center gap-1.5">
               {STEPS.map((label, i) => (
                 <span
@@ -111,10 +113,10 @@ export function GenerateDocumentSheet({
                 </span>
               ))}
             </span>
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 text-xs">
+        <div className="max-h-[50vh] overflow-y-auto text-xs">
           {step === 0 ? (
             <ul className="flex flex-col gap-1.5">
               {DOCUMENT_TEMPLATES.map((t) => (
@@ -187,7 +189,7 @@ export function GenerateDocumentSheet({
           ) : null}
         </div>
 
-        <SheetFooter className="flex-row gap-2">
+        <DialogFooter className="flex-row gap-2">
           {step > 0 ? (
             <Button variant="outline" className={PRESS} onClick={() => setStep(step - 1)}>
               Back
@@ -215,8 +217,8 @@ export function GenerateDocumentSheet({
               Download
             </Button>
           )}
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

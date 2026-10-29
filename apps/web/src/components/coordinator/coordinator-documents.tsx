@@ -25,7 +25,7 @@ import {
   PRESS,
 } from "@/components/admin/admin-table";
 import { DOCUMENT_STATUS_STYLES } from "@/components/coordinator/document-status";
-import { GenerateDocumentSheet } from "@/components/coordinator/generate-document-sheet";
+import { GenerateDocumentDialog } from "@/components/coordinator/generate-document-dialog";
 import {
   CLASSES,
   DOCUMENT_STATUS_LABELS,
@@ -208,8 +208,7 @@ export function CoordinatorDocuments() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <GenerateDocumentSheet
-        key={selected.join()}
+      <GenerateDocumentDialog
         open={generating}
         onOpenChange={setGenerating}
         students={STUDENTS}

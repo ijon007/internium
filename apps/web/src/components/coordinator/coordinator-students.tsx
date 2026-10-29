@@ -58,7 +58,7 @@ import {
   PRESS,
 } from "@/components/admin/admin-table";
 import { DocumentStatusBadge } from "@/components/coordinator/document-status";
-import { GenerateDocumentSheet } from "@/components/coordinator/generate-document-sheet";
+import { GenerateDocumentDialog } from "@/components/coordinator/generate-document-dialog";
 import {
   CLASSES,
   COMPANIES,
@@ -713,7 +713,7 @@ function StudentSheet({
           </SheetFooter>
         </SheetContent>
       </Sheet>
-      <GenerateDocumentSheet
+      <GenerateDocumentDialog
         open={generating}
         onOpenChange={setGenerating}
         students={[student]}
