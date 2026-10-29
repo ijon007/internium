@@ -4,6 +4,7 @@ import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -13,7 +14,11 @@ import {
 } from "@internium/ui/components/dialog";
 import { Field, FieldGroup, FieldLabel } from "@internium/ui/components/field";
 import { Input } from "@internium/ui/components/input";
-import { DeviceMobileIcon, MonitorIcon } from "@phosphor-icons/react";
+import {
+  CheckIcon,
+  DeviceMobileIcon,
+  MonitorIcon,
+} from "@phosphor-icons/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -62,7 +67,7 @@ export function SecuritySettings() {
                     At least 8 characters. You stay signed in here.
                   </DialogDescription>
                 </DialogHeader>
-                <FieldGroup>
+                <FieldGroup className="gap-3">
                   <Field>
                     <FieldLabel htmlFor="security-current">Current</FieldLabel>
                     <Input
@@ -89,6 +94,7 @@ export function SecuritySettings() {
                   </Field>
                 </FieldGroup>
                 <DialogFooter>
+                  <DialogClose render={<Button variant="ghost" />}>Cancel</DialogClose>
                   <Button
                     type="button"
                     onClick={() => {
@@ -96,6 +102,7 @@ export function SecuritySettings() {
                       toast.success("Password updated");
                     }}
                   >
+                    <CheckIcon weight="fill" />
                     Update password
                   </Button>
                 </DialogFooter>
