@@ -2,35 +2,17 @@
 
 import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
-import {
-  BuildingsIcon,
-  ChatCircleIcon,
-  EnvelopeSimpleIcon,
-  MapPinIcon,
-  PhoneIcon,
-  UserIcon,
-} from "@phosphor-icons/react";
+import { BuildingsIcon, ChatCircleIcon } from "@phosphor-icons/react";
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
-import { AdminPage, PRESS, SURFACE } from "@/components/admin/admin-table";
+import type { ReactNode } from "react";
+import { PRESS, SURFACE } from "@/components/admin/admin-table";
 import { ME, MY_COMPANY, MY_PEOPLE } from "@/constants/student";
 import { cn } from "@/lib/utils";
 import { getRoleHref } from "@/utils/navigation";
 
-const CARD = cn(SURFACE, "rounded-xl ring-1");
-
-/** A few calm hues; each person keeps the same one everywhere. */
-const HUES = [
-  "oklch(0.55 0.17 265)",
-  "oklch(0.55 0.12 185)",
-  "oklch(0.6 0.15 55)",
-  "oklch(0.55 0.18 320)",
-];
-
-function hueFor(name: string): CSSProperties {
-  const sum = [...name].reduce((n, c) => n + c.charCodeAt(0), 0);
-  return { "--status-color": HUES[sum % HUES.length] } as CSSProperties;
-}
+/** One rounded inset group; rows are separated by hairlines, not cards. */
+const GROUP = cn(SURFACE, "flex flex-col divide-y divide-border/60 overflow-hidden rounded-xl ring-1");
+const LINK = "transition-colors duration-150 ease-out [@media(hover:hover)]:hover:text-foreground";
 
 function initials(name: string) {
   return name
@@ -43,9 +25,9 @@ function initials(name: string) {
 function Avatar({ name, className }: { name: string; className?: string }) {
   return (
     <span
-      style={hueFor(name)}
+      aria-hidden
       className={cn(
-        "status-tint flex shrink-0 items-center justify-center rounded-full font-semibold tracking-tight",
+        "flex shrink-0 items-center justify-center rounded-full bg-muted font-medium text-muted-foreground",
         className,
       )}
     >
@@ -54,34 +36,21 @@ function Avatar({ name, className }: { name: string; className?: string }) {
   );
 }
 
-function GroupLabel({ children }: { children: ReactNode }) {
-  return <h2 className="px-1 text-[11px] font-medium text-muted-foreground">{children}</h2>;
+function Group({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="flex flex-col gap-1.5">
+      <h2 className="px-3 text-[11px] font-medium text-muted-foreground">{title}</h2>
+      <div className={GROUP}>{children}</div>
+    </section>
+  );
 }
 
-function ContactLine({
-  icon: Icon,
-  href,
-  children,
-}: {
-  icon: typeof EnvelopeSimpleIcon;
-  href?: string;
-  children: ReactNode;
-}) {
-  const body = (
-    <>
-      <Icon weight={ICON_WEIGHT} className="size-3.5 shrink-0 text-muted-foreground" />
-      <span className="truncate">{children}</span>
-    </>
-  );
-  return href ? (
-    <a
-      href={href}
-      className="flex min-w-0 items-center gap-2 rounded-md transition-colors duration-150 ease-out [@media(hover:hover)]:hover:text-foreground"
-    >
-      {body}
-    </a>
-  ) : (
-    <span className="flex min-w-0 items-center gap-2">{body}</span>
+function Row({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex min-h-9 items-center gap-4 px-3 py-2 text-xs">
+      <span className="shrink-0 text-muted-foreground">{label}</span>
+      <span className="min-w-0 flex-1 truncate text-right">{children}</span>
+    </div>
   );
 }
 
@@ -91,96 +60,90 @@ export function StudentMyData() {
   const chatHref = getRoleHref("student", "chat");
 
   return (
-    <AdminPage title="My Data" description="Your details, people, and company. Read-only.">
-      <section className={cn(CARD, "flex items-center gap-4 p-4")}>
-        <Avatar name={ME.name} className="size-14 text-lg" />
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <p className="truncate text-base font-semibold tracking-tight">{ME.name}</p>
-          <p className="truncate text-xs text-muted-foreground">{ME.email}</p>
-          <div className="mt-1 flex flex-wrap gap-1.5 text-[11px]">
-            <span className="rounded-full bg-muted px-2 py-0.5">
-              <span className="text-muted-foreground">Class</span> <span className="font-medium">{ME.className}</span>
-            </span>
-            <span className="rounded-full bg-muted px-2 py-0.5">
-              <span className="text-muted-foreground">School year</span>{" "}
-              <span className="font-medium tabular-nums">{ME.schoolYear}</span>
-            </span>
-          </div>
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-5 py-2">
+      <header className="flex flex-col items-center gap-2 pt-2 text-center">
+        <Avatar name={ME.name} className="size-16 text-xl tracking-tight" />
+        <div className="flex flex-col gap-0.5">
+          <h1 className="text-lg leading-tight font-semibold tracking-tight">{ME.name}</h1>
+          <p className="text-xs text-muted-foreground">{ME.email}</p>
+          <p className="text-xs text-muted-foreground">
+            Class {ME.className} · {ME.schoolYear}
+          </p>
         </div>
-      </section>
+      </header>
 
-      <div className="flex flex-col gap-2">
-        <GroupLabel>My people</GroupLabel>
-        <ul className="grid gap-2 sm:grid-cols-2">
-          {MY_PEOPLE.map((p) => (
-            <li key={p.role} className={cn(CARD, "flex flex-col gap-3 p-3 text-xs")}>
-              <div className="flex items-center gap-3">
-                <Avatar name={p.name} className="size-10 text-[13px]" />
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className="truncate text-sm font-medium tracking-tight">{p.name}</span>
-                  <span className="truncate text-muted-foreground">{p.role}</span>
-                </div>
-              </div>
-              <div className="flex flex-col gap-1.5 text-muted-foreground">
-                <ContactLine icon={EnvelopeSimpleIcon} href={`mailto:${p.email}`}>
-                  {p.email}
-                </ContactLine>
-                <ContactLine icon={PhoneIcon} href={tel(p.phone)}>
-                  {p.phone}
-                </ContactLine>
-              </div>
-              <Button
-                variant="secondary"
-                size="sm"
-                className={cn(PRESS, "w-full")}
-                nativeButton={false}
-                render={<Link href={chatHref} />}
-              >
-                <ChatCircleIcon weight={ICON_WEIGHT} />
-                Message
-              </Button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Group title="Personal">
+        <Row label="Name">{ME.name}</Row>
+        <Row label="Email">
+          <a href={`mailto:${ME.email}`} className={LINK}>
+            {ME.email}
+          </a>
+        </Row>
+        <Row label="Class">{ME.className}</Row>
+        <Row label="School year">
+          <span className="tabular-nums">{ME.schoolYear}</span>
+        </Row>
+      </Group>
 
-      <div className="flex flex-col gap-2">
-        <GroupLabel>My company</GroupLabel>
-        {MY_COMPANY ? (
-          <section className={cn(CARD, "flex flex-col gap-3 p-3 text-xs sm:flex-row sm:items-center sm:gap-4")}>
-            <div className="flex min-w-0 items-center gap-3 sm:flex-1">
-              <span
-                style={hueFor(MY_COMPANY.name)}
-                className="status-tint flex size-10 shrink-0 items-center justify-center rounded-[11px]"
-              >
-                <BuildingsIcon weight={ICON_WEIGHT} className="size-5" />
+      <Group title="My people">
+        {MY_PEOPLE.map((p) => (
+          <div key={p.role} className="flex items-center gap-3 px-3 py-2.5 text-xs">
+            <Avatar name={p.name} className="size-8 text-[11px]" />
+            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="truncate">
+                <span className="font-medium">{p.name}</span>
+                <span className="text-muted-foreground"> · {p.role}</span>
               </span>
-              <div className="flex min-w-0 flex-col gap-0.5">
-                <span className="truncate text-sm font-medium tracking-tight">{MY_COMPANY.name}</span>
-                <span className="text-muted-foreground">
-                  <ContactLine icon={MapPinIcon}>{MY_COMPANY.address}</ContactLine>
-                </span>
-              </div>
+              <span className="flex min-w-0 gap-1.5 truncate text-muted-foreground">
+                <a href={`mailto:${p.email}`} className={cn(LINK, "truncate")}>
+                  {p.email}
+                </a>
+                <span aria-hidden>·</span>
+                <a href={tel(p.phone)} className={cn(LINK, "shrink-0 tabular-nums")}>
+                  {p.phone}
+                </a>
+              </span>
             </div>
-            <div className="grid min-w-0 gap-1.5 text-muted-foreground sm:w-60">
-              <ContactLine icon={UserIcon}>{MY_COMPANY.contact}</ContactLine>
-              <ContactLine icon={EnvelopeSimpleIcon} href={`mailto:${MY_COMPANY.email}`}>
+            <Button
+              variant="secondary"
+              size="sm"
+              className={PRESS}
+              nativeButton={false}
+              render={<Link href={chatHref} />}
+            >
+              <ChatCircleIcon weight={ICON_WEIGHT} className="text-muted-foreground" />
+              Message
+            </Button>
+          </div>
+        ))}
+      </Group>
+
+      <Group title="Company">
+        {MY_COMPANY ? (
+          <>
+            <Row label="Name">
+              <span className="font-medium">{MY_COMPANY.name}</span>
+            </Row>
+            <Row label="Address">{MY_COMPANY.address}</Row>
+            <Row label="Contact">{MY_COMPANY.contact}</Row>
+            <Row label="Email">
+              <a href={`mailto:${MY_COMPANY.email}`} className={LINK}>
                 {MY_COMPANY.email}
-              </ContactLine>
-              <ContactLine icon={PhoneIcon} href={tel(MY_COMPANY.phone)}>
+              </a>
+            </Row>
+            <Row label="Phone">
+              <a href={tel(MY_COMPANY.phone)} className={cn(LINK, "tabular-nums")}>
                 {MY_COMPANY.phone}
-              </ContactLine>
-            </div>
-          </section>
+              </a>
+            </Row>
+          </>
         ) : (
-          <div className={cn(CARD, "flex flex-col items-center gap-2 py-8 text-center text-xs text-muted-foreground")}>
-            <span className="flex size-9 items-center justify-center rounded-full bg-muted">
-              <BuildingsIcon weight={ICON_WEIGHT} className="size-4" />
-            </span>
+          <div className="flex flex-col items-center gap-2 px-3 py-6 text-center text-xs text-muted-foreground">
+            <BuildingsIcon weight={ICON_WEIGHT} className="size-5 text-muted-foreground/70" />
             Your coordinator hasn't assigned your company yet.
           </div>
         )}
-      </div>
-    </AdminPage>
+      </Group>
+    </div>
   );
 }
