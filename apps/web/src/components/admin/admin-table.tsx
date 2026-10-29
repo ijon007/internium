@@ -1,3 +1,4 @@
+import { dateFormat } from "@/lib/date-format";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
 import {
@@ -101,7 +102,7 @@ export function AdminTableEmpty({ children }: { children: ReactNode }) {
 export const CELL = "h-10 px-3 whitespace-nowrap";
 
 export function formatDate(iso: string, withTime = false) {
-  return new Intl.DateTimeFormat("en-GB", {
+  return dateFormat({
     day: "numeric",
     month: "short",
     year: "numeric",

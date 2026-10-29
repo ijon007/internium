@@ -1,5 +1,6 @@
 "use client";
 
+import { dateFormat } from "@/lib/date-format";
 import { ICON_WEIGHT } from "@/constants/navigation";
 
 import { Badge } from "@internium/ui/components/badge";
@@ -36,7 +37,7 @@ function toDay(date: Date) {
 
 function formatRange(range: DateRange | undefined) {
   if (!range?.from) return "Any date";
-  const fmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
+  const fmt = dateFormat({ day: "numeric", month: "short" });
   if (!range.to || toDay(range.to) === toDay(range.from)) return fmt.format(range.from);
   return `${fmt.format(range.from)} – ${fmt.format(range.to)}`;
 }

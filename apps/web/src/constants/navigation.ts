@@ -82,16 +82,11 @@ export const ROLE_NAV: Record<Role, NavGroup[]> = {
     },
   ],
   student: [
-    OVERVIEW_GROUP,
     {
-      label: "Me",
+      label: "Student",
       items: [
+        { title: "Dashboard", path: "", icon: SquaresFourIcon },
         { title: "My Data", path: "my-data", icon: IdentificationCardIcon },
-      ],
-    },
-    {
-      label: "Practice",
-      items: [
         { title: "My Documents", path: "documents", icon: FileTextIcon },
         { title: "My Absences", path: "absences", icon: UserMinusIcon },
       ],

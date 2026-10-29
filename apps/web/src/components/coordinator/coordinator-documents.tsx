@@ -28,6 +28,8 @@ import {
   CELL,
   PRESS,
 } from "@/components/admin/admin-table";
+import { DocumentViewer } from "@/components/documents/document-viewer";
+import { studentDocFile, type ViewerFile } from "@/lib/document-files";
 import { DOCUMENT_STATUS_STYLES } from "@/components/coordinator/document-status";
 import { GenerateDocumentDialog } from "@/components/coordinator/generate-document-dialog";
 import {
@@ -50,6 +52,7 @@ export function CoordinatorDocuments() {
   const [selected, setSelected] = useState<string[]>([]);
   const [reminding, setReminding] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [viewing, setViewing] = useState<ViewerFile | null>(null);
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("missing") === "1") {
@@ -168,22 +171,27 @@ export function CoordinatorDocuments() {
               const st = s.documents[d.id];
               return (
                 <td key={d.id} className={cn(CELL, "text-center")}>
-                  <span
-                    title={`${d.label}: ${DOCUMENT_STATUS_LABELS[st]}`}
+                  <button
+                    type="button"
+                    disabled={st === "missing"}
+                    title={st === "missing" ? `${d.label}: Missing` : `Open ${d.label}`}
+                    onClick={() => setViewing(studentDocFile(s.name, d, DOCUMENT_STATUS_LABELS[st]))}
                     className={cn(
-                      "inline-flex h-5 min-w-16 items-center justify-center rounded-md px-1.5 text-[10px] font-medium",
+                      "inline-flex h-5 min-w-16 items-center justify-center rounded-md px-1.5 text-[10px] font-medium transition-[transform,filter] duration-100 ease-out enabled:cursor-pointer enabled:hover:brightness-95 enabled:active:scale-[0.96]",
                       DOCUMENT_STATUS_STYLES[st],
                       status !== "all" && st !== status && "opacity-30",
                     )}
                   >
                     {DOCUMENT_STATUS_LABELS[st]}
-                  </span>
+                  </button>
                 </td>
               );
             })}
           </tr>
         ))}
       </AdminTable>
+
+      <DocumentViewer file={viewing} onClose={() => setViewing(null)} />
 
       <AlertDialog open={reminding} onOpenChange={setReminding}>
         <AlertDialogContent>

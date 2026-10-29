@@ -32,14 +32,16 @@ export type ClassGroup = {
   year: string;
   teacherIds: string[];
   archived: boolean;
+  /** Final-year (13th grade) class whose students have graduated. */
+  graduated?: boolean;
 };
 
 export const CLASSES: ClassGroup[] = [
   { id: "c-1", name: "12A", year: "2026/27", teacherIds: ["t-1"], archived: false },
   { id: "c-2", name: "12B", year: "2026/27", teacherIds: ["t-2", "t-3"], archived: false },
   { id: "c-3", name: "13A", year: "2026/27", teacherIds: ["t-4"], archived: false },
-  { id: "c-4", name: "13B", year: "2025/26", teacherIds: ["t-1"], archived: true },
-  { id: "c-5", name: "13C", year: "2024/25", teacherIds: ["t-3"], archived: true },
+  { id: "c-4", name: "13B", year: "2025/26", teacherIds: ["t-1"], archived: true, graduated: true },
+  { id: "c-5", name: "13C", year: "2024/25", teacherIds: ["t-3"], archived: true, graduated: true },
 ];
 
 export type Mentor = { id: string; name: string; email: string; phone: string };
