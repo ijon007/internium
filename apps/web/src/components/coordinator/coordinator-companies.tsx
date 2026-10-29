@@ -1,5 +1,6 @@
 "use client";
 
+import { SHEET_LIST, SHEET_ROW, SheetBody, SheetSection } from "@/components/sheet-section";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
 import { Field, FieldGroup, FieldLabel } from "@internium/ui/components/field";
@@ -192,7 +193,8 @@ function CompanySheet({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 text-xs">
+        <SheetBody>
+          <SheetSection title="Details">
           <FieldGroup className="grid grid-cols-2 gap-3">
             {fields.map(([key, label]) => (
               <Field key={key} className={cn(key === "address" && "col-span-2")}>
@@ -205,10 +207,12 @@ function CompanySheet({
               </Field>
             ))}
           </FieldGroup>
+          </SheetSection>
 
-          <section className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium">Business mentors</h3>
+          <SheetSection
+            title="Business mentors"
+            count={draft.mentors.length}
+            action={
               <Button
                 variant="ghost"
                 size="sm"
@@ -222,14 +226,15 @@ function CompanySheet({
                 <PlusIcon weight="bold" />
                 Add mentor
               </Button>
-            </div>
+            }
+          >
             {draft.mentors.length === 0 ? (
               <p className="text-muted-foreground">No mentors yet.</p>
             ) : (
-              <ul className="divide-y divide-border/70 rounded-lg bg-muted/50">
+              <ul className={SHEET_LIST}>
                 {draft.mentors.map((m) =>
                   editing === m.id ? (
-                    <li key={m.id} className="flex items-center gap-1.5 px-2 py-1.5">
+                    <li key={m.id} className="flex items-center gap-1.5 py-1">
                       <Input
                         autoFocus
                         placeholder="Name"
@@ -252,10 +257,10 @@ function CompanySheet({
                       </Button>
                     </li>
                   ) : (
-                    <li key={m.id} className="flex items-center gap-2 px-3 py-1.5">
+                    <li key={m.id} className={cn(SHEET_ROW, "group py-1")}>
                       <span className="font-medium">{m.name}</span>
                       <span className="truncate text-muted-foreground">{m.email}</span>
-                      <span className="ml-auto flex">
+                      <span className="ml-auto flex opacity-100 transition-opacity duration-150 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 focus-within:opacity-100">
                         <Button
                           variant="ghost"
                           size="icon-sm"
@@ -283,17 +288,16 @@ function CompanySheet({
                 )}
               </ul>
             )}
-          </section>
+          </SheetSection>
 
           {!isNew ? (
-            <section className="flex flex-col gap-1.5">
-              <h3 className="font-medium">Placed students</h3>
+            <SheetSection title="Placed students" count={placed.length}>
               {placed.length === 0 ? (
                 <p className="text-muted-foreground">Nobody placed here yet.</p>
               ) : (
-                <ul className="divide-y divide-border/70 rounded-lg bg-muted/50">
+                <ul className={SHEET_LIST}>
                   {placed.map((s) => (
-                    <li key={s.id} className="flex items-center justify-between px-3 py-1.5">
+                    <li key={s.id} className={cn(SHEET_ROW, "justify-between")}>
                       <span className="font-medium">{s.name}</span>
                       <span className="text-muted-foreground">
                         {CLASSES.find((c) => c.id === s.classId)?.name} ·{" "}
@@ -303,12 +307,12 @@ function CompanySheet({
                   ))}
                 </ul>
               )}
-            </section>
+            </SheetSection>
           ) : null}
-        </div>
+        </SheetBody>
 
-        <SheetFooter className="flex-row justify-end gap-2">
-          <Button variant="outline" className={PRESS} onClick={onClose}>
+        <SheetFooter>
+          <Button variant="ghost" className={PRESS} onClick={onClose}>
             Cancel
           </Button>
           <Button
