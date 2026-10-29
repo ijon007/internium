@@ -195,12 +195,17 @@ export type StudentAbsence = {
 };
 
 export const MY_ABSENCES: StudentAbsence[] = [
-  { id: "a-3", date: "2026-10-21", reason: "Doctor appointment", recordedBy: "Business mentor", recorder: "Tom Richter" },
-  { id: "a-2", date: "2026-10-14", reason: "Sick", recordedBy: "Teacher", recorder: "Mira Santos" },
-  { id: "a-1", date: "2026-09-30", reason: "Family matter", recordedBy: "Business mentor", recorder: "Tom Richter" },
+  { id: "a-5", date: "2027-02-10", reason: "Public transport strike", recordedBy: "Business mentor", recorder: "Tom Richter" },
+  { id: "a-4", date: "2027-01-15", reason: "Sick", recordedBy: "Teacher", recorder: "Mira Santos" },
+  { id: "a-3", date: "2026-12-18", reason: "Family matter", recordedBy: "Business mentor", recorder: "Tom Richter" },
+  { id: "a-2", date: "2026-12-02", reason: "Doctor appointment", recordedBy: "Business mentor", recorder: "Tom Richter" },
+  { id: "a-1", date: "2026-11-13", reason: "Sick", recordedBy: "Teacher", recorder: "Mira Santos" },
 ];
 
-export const INTERNSHIP_START = "2026-09-09";
+/** First session: the first Wednesday of November. */
+export const INTERNSHIP_START = "2026-11-04";
+/** Mock "today" for the internship timeline, so past sessions show a mix of states. */
+export const INTERNSHIP_TODAY = "2027-02-19";
 /** Last day of the internship; the absences timeline runs until here. */
 export const INTERNSHIP_END = "2027-04-30";
 

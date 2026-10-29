@@ -1,9 +1,8 @@
 "use client";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@internium/ui/components/tooltip";
-import { useEffect, useState } from "react";
 import { AdminPage, SURFACE } from "@/components/admin/admin-table";
-import { INTERNSHIP_SESSIONS, MY_ABSENCES, type StudentAbsence } from "@/constants/student";
+import { INTERNSHIP_SESSIONS, INTERNSHIP_TODAY, MY_ABSENCES, type StudentAbsence } from "@/constants/student";
 import { dateFormat } from "@/lib/date-format";
 import { cn } from "@/lib/utils";
 
@@ -23,17 +22,9 @@ function buildSessions(todayKey: string): Session[] {
   });
 }
 
-const todayIso = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-};
-
 export function StudentAbsences() {
-  // "Today" is only known on the client; the prerendered HTML treats every session as upcoming.
-  const [today, setToday] = useState("");
-  useEffect(() => setToday(todayIso()), []);
-
-  const sessions = buildSessions(today || "0000-00-00");
+  const today = INTERNSHIP_TODAY;
+  const sessions = buildSessions(today);
   const held = sessions.filter((s) => s.state !== "upcoming");
   const absent = held.filter((s) => s.state === "absent").length;
   const attended = held.length - absent;
