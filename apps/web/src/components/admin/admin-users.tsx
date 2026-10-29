@@ -1,5 +1,6 @@
-import { ICON_WEIGHT } from "@/constants/navigation";
 "use client";
+
+import { ICON_WEIGHT } from "@/constants/navigation";
 
 import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
