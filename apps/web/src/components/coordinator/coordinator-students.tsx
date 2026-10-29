@@ -1,5 +1,6 @@
 "use client";
 
+import { SHEET_LIST, SHEET_ROW, SheetBody, SheetSection, SheetStats } from "@/components/sheet-section";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
 import { Checkbox } from "@internium/ui/components/checkbox";
@@ -624,15 +625,17 @@ function StudentSheet({
             </SheetDescription>
           </SheetHeader>
 
-          <Tabs defaultValue="info" className="min-h-0 flex-1 overflow-y-auto p-4 text-xs">
-            <TabsList>
+          <Tabs defaultValue="info" className="flex min-h-0 flex-1 flex-col gap-0">
+            <TabsList className="mx-5 mb-2 self-start">
               <TabsTrigger value="info">Info</TabsTrigger>
               <TabsTrigger value="documents">Documents</TabsTrigger>
               <TabsTrigger value="absences">Absences</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="info" className="flex flex-col gap-3 pt-2">
-              <div className="divide-y divide-border/70 rounded-lg bg-muted/50">
+            <TabsContent value="info" className="min-h-0 flex-1">
+             <SheetBody>
+              <SheetSection title="Contact">
+              <div className={SHEET_LIST}>
                 <InfoRow label="Email" value={student.email} />
                 <InfoRow label="Phone" value={student.phone} />
                 <InfoRow
@@ -640,7 +643,17 @@ function StudentSheet({
                   value={student.birthDate ? formatDate(student.birthDate) : ""}
                 />
               </div>
-              <div className="divide-y divide-border/70 rounded-lg bg-muted/50">
+              </SheetSection>
+              <SheetSection
+                title="Placement"
+                action={
+                  <Button variant="ghost" size="sm" className={PRESS} onClick={onAssign}>
+                    <BuildingsIcon weight={ICON_WEIGHT} />
+                    {placement ? "Change" : "Assign company"}
+                  </Button>
+                }
+              >
+              <div className={SHEET_LIST}>
                 <InfoRow label="Class" value={group ? `${group.name} · ${group.year}` : ""} />
                 <InfoRow
                   label="Mentor teacher"
@@ -652,51 +665,49 @@ function StudentSheet({
                   value={mentor(student.companyId, student.mentorId)?.name ?? ""}
                 />
               </div>
-              <Button variant="outline" size="sm" className={cn("self-start", PRESS)} onClick={onAssign}>
-                <BuildingsIcon weight={ICON_WEIGHT} />
-                {placement ? "Change placement" : "Assign company"}
-              </Button>
+              </SheetSection>
+             </SheetBody>
             </TabsContent>
 
-            <TabsContent value="documents" className="flex flex-col gap-3 pt-2">
-              <ul className="divide-y divide-border/70 rounded-lg bg-muted/50">
+            <TabsContent value="documents" className="min-h-0 flex-1">
+             <SheetBody>
+              <SheetSection
+                title="Documents"
+                action={
+                  <Button variant="ghost" size="sm" className={PRESS} onClick={() => setGenerating(true)}>
+                    <FilePlusIcon weight={ICON_WEIGHT} />
+                    Generate
+                  </Button>
+                }
+              >
+              <ul className={SHEET_LIST}>
                 {DOCUMENT_TYPES.map((d) => (
-                  <li key={d.id} className="flex items-center justify-between px-3 py-2">
+                  <li key={d.id} className={cn(SHEET_ROW, "justify-between")}>
                     <span className="font-medium">{d.label}</span>
                     <DocumentStatusBadge status={student.documents[d.id]} />
                   </li>
                 ))}
               </ul>
-              <Button
-                variant="outline"
-                size="sm"
-                className={cn("self-start", PRESS)}
-                onClick={() => setGenerating(true)}
-              >
-                <FilePlusIcon weight={ICON_WEIGHT} />
-                Generate document
-              </Button>
+              </SheetSection>
+             </SheetBody>
             </TabsContent>
 
-            <TabsContent value="absences" className="flex flex-col gap-3 pt-2">
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  ["Total", hours],
-                  ["Excused", excused],
-                  ["Unexcused", hours - excused],
-                ].map(([label, value]) => (
-                  <div key={label} className="rounded-lg bg-muted/50 px-3 py-2">
-                    <p className="text-muted-foreground">{label}</p>
-                    <p className="font-semibold text-sm tabular-nums">{value}h</p>
-                  </div>
-                ))}
-              </div>
+            <TabsContent value="absences" className="min-h-0 flex-1">
+             <SheetBody>
+              <SheetStats
+                items={[
+                  ["Total", `${hours}h`],
+                  ["Excused", `${excused}h`],
+                  ["Unexcused", `${hours - excused}h`],
+                ]}
+              />
+              <SheetSection title="History" count={student.absences.length}>
               {student.absences.length === 0 ? (
                 <p className="text-muted-foreground">No absences recorded.</p>
               ) : (
-                <ul className="divide-y divide-border/70 rounded-lg bg-muted/50">
+                <ul className={SHEET_LIST}>
                   {student.absences.map((a) => (
-                    <li key={a.id} className="flex items-center gap-3 px-3 py-2">
+                    <li key={a.id} className={SHEET_ROW}>
                       <span className="w-20 tabular-nums">{formatDate(a.date)}</span>
                       <span className="flex-1 truncate text-muted-foreground">{a.reason}</span>
                       <span className="tabular-nums">{a.hours}h</span>
@@ -712,12 +723,14 @@ function StudentSheet({
                   ))}
                 </ul>
               )}
+              </SheetSection>
+             </SheetBody>
             </TabsContent>
           </Tabs>
 
           <SheetFooter>
             <Button
-              variant="outline"
+              variant="ghost"
               className={PRESS}
               onClick={() => toast.success(`Report for ${student.name} exported`)}
             >
