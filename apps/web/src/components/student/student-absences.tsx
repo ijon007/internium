@@ -4,6 +4,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@inter
 import { useEffect, useState } from "react";
 import { AdminPage, SURFACE } from "@/components/admin/admin-table";
 import { INTERNSHIP_SESSIONS, MY_ABSENCES, type StudentAbsence } from "@/constants/student";
+import { dateFormat } from "@/lib/date-format";
 import { cn } from "@/lib/utils";
 
 /** Local-midnight date from YYYY-MM-DD, so comparisons never drift across time zones. */
@@ -101,7 +102,7 @@ const DOT: Record<Session["state"], string> = {
 function Timeline({ sessions, today }: { sessions: Session[]; today: string }) {
   const months = new Map<string, Session[]>();
   for (const s of sessions) {
-    const m = parse(s.date).toLocaleDateString("en-GB", { month: "short" });
+    const m = dateFormat({ month: "short" }).format(parse(s.date));
     months.set(m, [...(months.get(m) ?? []), s]);
   }
 
@@ -134,7 +135,8 @@ function Timeline({ sessions, today }: { sessions: Session[]; today: string }) {
 }
 
 function SessionDot({ session: s, today }: { session: Session; today: boolean }) {
-  const label = parse(s.date).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+  const d = parse(s.date);
+  const label = `${d.toLocaleDateString("en-GB", { weekday: "long" })}, ${dateFormat({ day: "numeric", month: "short", year: "numeric" }).format(d)}`;
   const status = s.state === "absent" ? "Absent" : s.state === "upcoming" ? "Upcoming" : "Present";
   return (
     <Tooltip>
@@ -155,7 +157,6 @@ function SessionDot({ session: s, today }: { session: Session; today: boolean })
         <span className="font-medium">{label}</span>
         <span className="opacity-70">
           · {today ? "Today" : status}
-          {s.absence ? ` · ${s.absence.reason}` : null}
         </span>
       </TooltipContent>
     </Tooltip>

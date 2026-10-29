@@ -1,5 +1,6 @@
 "use client";
 
+import { dateFormat } from "@/lib/date-format";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import {
   Card,
@@ -103,7 +104,7 @@ const CARDS = [
   {
     label: "Next deadline",
     value: nextDeadline?.deadline
-      ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" }).format(
+      ? dateFormat({ day: "numeric", month: "short" }).format(
           new Date(nextDeadline.deadline),
         )
       : "—",

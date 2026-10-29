@@ -1,5 +1,6 @@
 "use client";
 
+import { dateFormat } from "@/lib/date-format";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
 import { Calendar } from "@internium/ui/components/calendar";
@@ -270,7 +271,7 @@ function DateBlank({
         }
       >
         {date ? (
-          date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+          dateFormat({ day: "2-digit", month: "short", year: "numeric" }).format(date)
         ) : (
           <span className="tracking-widest text-neutral-400">__ / __ / ____</span>
         )}

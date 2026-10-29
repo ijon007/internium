@@ -200,11 +200,19 @@ export const MY_ABSENCES: StudentAbsence[] = [
   { id: "a-1", date: "2026-09-30", reason: "Family matter", recordedBy: "Business mentor", recorder: "Tom Richter" },
 ];
 
-/** Days the internship actually meets (Wednesdays and Fridays); absences fall on these. */
-export const INTERNSHIP_SESSIONS = [
-  "2026-09-09", "2026-09-11", "2026-09-16", "2026-09-18", "2026-09-23", "2026-09-25", "2026-09-30", "2026-10-02",
-  "2026-10-07", "2026-10-09", "2026-10-14", "2026-10-16", "2026-10-21", "2026-10-23", "2026-10-28", "2026-10-30",
-  "2026-11-04", "2026-11-06", "2026-11-11", "2026-11-13", "2026-11-18", "2026-11-20", "2026-11-25", "2026-11-27",
-];
+export const INTERNSHIP_START = "2026-09-09";
+/** Last day of the internship; the absences timeline runs until here. */
+export const INTERNSHIP_END = "2027-04-30";
+
+/** Days the internship actually meets (Wednesdays and Fridays), start to end. Absences fall on these. */
+export const INTERNSHIP_SESSIONS: string[] = (() => {
+  const out: string[] = [];
+  const end = new Date(INTERNSHIP_END + "T12:00:00Z");
+  for (let d = new Date(INTERNSHIP_START + "T12:00:00Z"); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
+    const day = d.getUTCDay();
+    if (day === 3 || day === 5) out.push(d.toISOString().slice(0, 10));
+  }
+  return out;
+})();
 
 export const UPLOAD_HINT = "PDF or Word (.pdf, .doc, .docx), up to 10 MB";

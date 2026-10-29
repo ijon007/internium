@@ -1,5 +1,6 @@
 "use client";
 
+import { dateFormat } from "@/lib/date-format";
 import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
 import {
@@ -39,7 +40,7 @@ const SURFACE =
   "bg-card/70 ring-foreground/8 backdrop-blur-xl backdrop-saturate-150 [@media(prefers-reduced-transparency:reduce)]:bg-card [@media(prefers-reduced-transparency:reduce)]:backdrop-filter-none";
 
 function formatWhen(iso: string) {
-  return new Intl.DateTimeFormat("en-GB", {
+  return dateFormat({
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -49,7 +50,7 @@ function formatWhen(iso: string) {
 }
 
 function formatCompact(iso: string) {
-  return new Intl.DateTimeFormat("en-GB", {
+  return dateFormat({
     day: "numeric",
     month: "short",
   }).format(new Date(iso));
