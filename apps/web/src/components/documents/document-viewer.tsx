@@ -95,7 +95,7 @@ function Reader({ file, onClose, actions }: { file: ViewerFile; onClose: () => v
             disabled={zoom === 0}
             onClick={() => setZoom((z) => Math.max(0, z - 1))}
           >
-            <MagnifyingGlassMinusIcon weight={ICON_WEIGHT} />
+            <MagnifyingGlassMinusIcon weight="bold" />
           </Button>
           <button
             type="button"
@@ -113,7 +113,7 @@ function Reader({ file, onClose, actions }: { file: ViewerFile; onClose: () => v
             disabled={zoom === ZOOMS.length - 1}
             onClick={() => setZoom((z) => Math.min(ZOOMS.length - 1, z + 1))}
           >
-            <MagnifyingGlassPlusIcon weight={ICON_WEIGHT} />
+            <MagnifyingGlassPlusIcon weight="bold" />
           </Button>
         </div>
         <Button
