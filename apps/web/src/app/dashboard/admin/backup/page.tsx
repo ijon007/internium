@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AdminPlaceholder } from "@/components/admin/admin-placeholder";
+import { AdminBackup } from "@/components/admin/admin-backup";
 
 export const metadata: Metadata = {
   title: "Backup",
@@ -7,10 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminBackupPage() {
-  return (
-    <AdminPlaceholder
-      title="Backup"
-      description="Backup history and restore will live here. Use Run backup on the dashboard for now."
-    />
-  );
+  return <AdminBackup />;
 }
