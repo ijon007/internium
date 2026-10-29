@@ -200,6 +200,8 @@ export const MY_ABSENCES: StudentAbsence[] = [
   { id: "a-1", date: "2026-09-30", reason: "Family matter", recordedBy: "Business mentor", recorder: "Tom Richter" },
 ];
 
+/** Monday of the first internship week; the absences grid runs WEEKS_TOTAL weeks from here. */
+export const INTERNSHIP_START = "2026-09-07";
 export const WEEKS_ATTENDED = 7;
 export const WEEKS_TOTAL = 8;
 
