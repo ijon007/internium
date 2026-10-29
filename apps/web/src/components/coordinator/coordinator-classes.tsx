@@ -35,6 +35,7 @@ import {
   CaretDownIcon,
   CheckIcon,
   ExportIcon,
+  GraduationCapIcon,
   PlusIcon,
 } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
@@ -60,6 +61,13 @@ function nextYear(year: string) {
   const [a, b] = year.split("/").map(Number);
   return `${(a ?? 0) + 1}/${String((b ?? 0) + 1).padStart(2, "0")}`;
 }
+
+/** 13th grade is the senior year; promoting it graduates the class. */
+const FINAL_GRADE = 13;
+const gradeOf = (name: string) => Number(/^\d+/.exec(name)?.[0] ?? 0);
+const isFinal = (c: ClassGroup) => gradeOf(c.name) >= FINAL_GRADE;
+const nextName = (name: string) =>
+  name.replace(/^\d+/, (n) => String(Math.min(Number(n) + 1, FINAL_GRADE)));
 
 export function CoordinatorClasses() {
   const [classes, setClasses] = useState(CLASSES);
@@ -140,18 +148,29 @@ export function CoordinatorClasses() {
             )
           }
           onPromote={() => {
-            update(shown.id, { archived: true });
-            setClasses((cur) => [
-              ...cur,
-              {
-                ...shown,
-                id: `c-${Date.now()}`,
-                name: shown.name.replace(/^(\d+)/, (n) => String(Number(n) + 1)),
-                year: nextYear(shown.year),
-              },
-            ]);
+            const g = shown;
             setOpenId(null);
-            toast.success(`${shown.name} promoted to ${nextYear(shown.year)}`);
+            // Guard against a second confirm while the dialog animates out.
+            if (classes.find((c) => c.id === g.id)?.archived) return;
+            if (isFinal(g)) {
+              update(g.id, { archived: true, graduated: true });
+              toast.success(`${g.name} graduated`);
+              return;
+            }
+            const next: ClassGroup = {
+              ...g,
+              id: `c-${Date.now()}`,
+              name: nextName(g.name),
+              year: nextYear(g.year),
+            };
+            setClasses((cur) => [
+              ...cur.map((c) => (c.id === g.id ? { ...c, archived: true } : c)),
+              next,
+            ]);
+            setStudents((cur) =>
+              cur.map((s) => (s.classId === g.id ? { ...s, classId: next.id } : s)),
+            );
+            toast.success(`${g.name} promoted to ${next.name}`);
           }}
         />
       ) : null}
@@ -181,6 +200,7 @@ function ClassSheet({
   const [year, setYear] = useState(group.year);
   const [teacherIds, setTeacherIds] = useState(group.teacherIds);
   const [promoting, setPromoting] = useState(false);
+  const final = isFinal(group);
 
   useEffect(() => {
     if (!open) return;
@@ -205,12 +225,14 @@ function ClassSheet({
             {group.name}
             {readOnly ? (
               <Badge variant="outline" className="ml-2 align-middle">
-                Archived
+                {group.graduated ? "Graduated" : "Archived"}
               </Badge>
             ) : null}
           </SheetTitle>
           <SheetDescription>
-            {readOnly ? "Archived classes are read-only." : group.year}
+            {readOnly
+              ? `${group.graduated ? "Graduated" : "Archived"} classes are read-only.`
+              : group.year}
           </SheetDescription>
         </SheetHeader>
         <SheetBody>
@@ -340,8 +362,12 @@ function ClassSheet({
                 className={PRESS}
                 onClick={() => setPromoting(true)}
               >
-                <ArrowFatLineUpIcon weight={ICON_WEIGHT} />
-                Promote
+                {final ? (
+                  <GraduationCapIcon weight={ICON_WEIGHT} />
+                ) : (
+                  <ArrowFatLineUpIcon weight={ICON_WEIGHT} />
+                )}
+                {final ? "Graduate" : "Promote"}
               </Button>
               <Button
                 className={cn("ml-auto", PRESS)}
@@ -358,17 +384,31 @@ function ClassSheet({
       <AlertDialog open={promoting} onOpenChange={setPromoting}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Promote {group.name}?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {final ? "Graduate" : "Promote"} {group.name}?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Its students move to {nextYear(group.year)} and this class is
-              archived as read-only.
+              {final
+                ? "Its students graduate and this class is archived as read-only."
+                : `Its students move to ${nextName(group.name)} for ${nextYear(group.year)} and this class is archived as read-only.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <Button className={PRESS} onClick={onPromote}>
-              <ArrowFatLineUpIcon weight={ICON_WEIGHT} />
-              Promote
+            <Button
+              className={PRESS}
+              onClick={() => {
+                if (!promoting) return;
+                setPromoting(false);
+                onPromote();
+              }}
+            >
+              {final ? (
+                <GraduationCapIcon weight={ICON_WEIGHT} />
+              ) : (
+                <ArrowFatLineUpIcon weight={ICON_WEIGHT} />
+              )}
+              {final ? "Graduate" : "Promote"}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
