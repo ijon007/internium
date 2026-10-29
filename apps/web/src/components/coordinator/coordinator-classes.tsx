@@ -33,6 +33,7 @@ import { Tabs, TabsList, TabsTrigger } from "@internium/ui/components/tabs";
 import {
   ArrowFatLineUpIcon,
   CaretDownIcon,
+  CheckIcon,
   ExportIcon,
   PlusIcon,
 } from "@phosphor-icons/react";
@@ -346,6 +347,7 @@ function ClassSheet({
                 className={cn("ml-auto", PRESS)}
                 onClick={() => onSave({ name, year, teacherIds })}
               >
+                <CheckIcon weight={ICON_WEIGHT} />
                 Save
               </Button>
             </>
@@ -364,7 +366,10 @@ function ClassSheet({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <Button onClick={onPromote}>Promote</Button>
+            <Button className={PRESS} onClick={onPromote}>
+              <ArrowFatLineUpIcon weight={ICON_WEIGHT} />
+              Promote
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

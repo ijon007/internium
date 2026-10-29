@@ -12,6 +12,7 @@ import {
 } from "@internium/ui/components/dialog";
 import { Input } from "@internium/ui/components/input";
 import {
+  ArrowRightIcon,
   CheckIcon,
   DownloadSimpleIcon,
   FileTextIcon,
@@ -231,6 +232,7 @@ export function GenerateDocumentDialog({
               onClick={() => setStep(step + 1)}
             >
               Continue
+              <ArrowRightIcon weight="bold" />
             </Button>
           ) : (
             <Button

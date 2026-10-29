@@ -45,7 +45,9 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
   TrashIcon,
+  UploadSimpleIcon,
   UserIcon,
+  UserPlusIcon,
 } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -126,6 +128,7 @@ export function CoordinatorStudents() {
           </Button>
           <Button className={PRESS} onClick={() => setAdding(true)}>
             <PlusIcon weight="bold" />
+            <UserPlusIcon weight={ICON_WEIGHT} />
             Add student
           </Button>
         </>
@@ -393,10 +396,11 @@ function AssignDialog({
           </Field>
         </FieldGroup>
         <DialogFooter>
-          <Button variant="outline" className={PRESS} onClick={onClose}>
+          <Button variant="ghost" className={PRESS} onClick={onClose}>
             Cancel
           </Button>
           <Button className={PRESS} disabled={!co || !m} onClick={() => onAssign(co, m)}>
+            <BuildingsIcon weight={ICON_WEIGHT} />
             Assign
           </Button>
         </DialogFooter>
@@ -451,7 +455,7 @@ function AddStudentDialog({
           </Field>
         </FieldGroup>
         <DialogFooter>
-          <Button variant="outline" className={PRESS} onClick={() => onOpenChange(false)}>
+          <Button variant="ghost" className={PRESS} onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
           <Button
@@ -479,6 +483,7 @@ function AddStudentDialog({
               onOpenChange(false);
             }}
           >
+            <UserPlusIcon weight={ICON_WEIGHT} />
             Add student
           </Button>
         </DialogFooter>
@@ -521,7 +526,7 @@ function ImportDialog({
               <span className="font-medium text-foreground">{file}</span> ·{" "}
               {PREVIEW_ROWS.length} rows
             </p>
-            <table className="w-full overflow-hidden rounded-lg bg-muted/50">
+            <table className="w-full overflow-hidden rounded-lg bg-muted/40">
               <thead className="text-muted-foreground">
                 <tr>
                   <th className="px-2.5 py-1.5 text-left font-medium">Name</th>
@@ -531,7 +536,7 @@ function ImportDialog({
               </thead>
               <tbody>
                 {PREVIEW_ROWS.map(([n, e, c]) => (
-                  <tr key={e} className="border-border/70 border-t">
+                  <tr key={e}>
                     <td className="px-2.5 py-1.5">{n}</td>
                     <td className="px-2.5 py-1.5 text-muted-foreground">{e}</td>
                     <td className="px-2.5 py-1.5">{c}</td>
@@ -569,7 +574,7 @@ function ImportDialog({
           </label>
         )}
         <DialogFooter>
-          <Button variant="outline" className={PRESS} onClick={() => close(false)}>
+          <Button variant="ghost" className={PRESS} onClick={() => close(false)}>
             Cancel
           </Button>
           <Button
@@ -580,6 +585,7 @@ function ImportDialog({
               close(false);
             }}
           >
+            <UploadSimpleIcon weight={ICON_WEIGHT} />
             Import {file ? PREVIEW_ROWS.length : ""}
           </Button>
         </DialogFooter>

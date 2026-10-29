@@ -14,6 +14,7 @@ import {
   SheetTitle,
 } from "@internium/ui/components/sheet";
 import {
+  BuildingsIcon,
   CheckIcon,
   MagnifyingGlassIcon,
   PencilSimpleIcon,
@@ -322,7 +323,8 @@ function CompanySheet({
               onSave({ ...draft, mentors: draft.mentors.filter((m) => m.name.trim()) })
             }
           >
-            Save
+            {isNew ? <BuildingsIcon weight={ICON_WEIGHT} /> : <CheckIcon weight={ICON_WEIGHT} />}
+            {isNew ? "Add company" : "Save"}
           </Button>
         </SheetFooter>
       </SheetContent>

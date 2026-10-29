@@ -13,7 +13,11 @@ import {
 import { Button } from "@internium/ui/components/button";
 import { Checkbox } from "@internium/ui/components/checkbox";
 import { Switch } from "@internium/ui/components/switch";
-import { BellRingingIcon, FilePlusIcon } from "@phosphor-icons/react";
+import {
+  BellRingingIcon,
+  FilePlusIcon,
+  PaperPlaneTiltIcon,
+} from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -202,6 +206,7 @@ export function CoordinatorDocuments() {
                 setSelected([]);
               }}
             >
+              <PaperPlaneTiltIcon weight={ICON_WEIGHT} />
               Send reminder
             </Button>
           </AlertDialogFooter>
