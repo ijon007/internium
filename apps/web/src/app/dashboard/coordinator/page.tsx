@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CoordinatorDashboard } from "@/components/coordinator/coordinator-dashboard";
 
 export const metadata: Metadata = {
   title: "Coordinator",
@@ -6,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function CoordinatorPage() {
-  return <p>Coordinator Page</p>;
+  return <CoordinatorDashboard />;
 }

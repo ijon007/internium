@@ -1,3 +1,4 @@
+import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
 import {
   DropdownMenu,
@@ -30,12 +31,14 @@ export function AdminPage({
 }) {
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-5 pt-4 pb-8">
-      <header className="flex items-end justify-between gap-3">
-        <div className="flex flex-col gap-1">
+      <header className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-col gap-1">
           <PageHeading>{title}</PageHeading>
           <p className="text-sm text-muted-foreground">{description}</p>
         </div>
-        {actions}
+        {actions ? (
+          <div className="flex shrink-0 items-center gap-2 *:data-[slot=button]:h-7">{actions}</div>
+        ) : null}
       </header>
       {children}
     </div>
@@ -47,7 +50,7 @@ export function AdminTable({
   children,
   empty,
 }: {
-  head: { label: string; className?: string }[];
+  head: { label: ReactNode; className?: string }[];
   children: ReactNode;
   empty?: ReactNode;
 }) {
@@ -62,9 +65,10 @@ export function AdminTable({
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-border/70">
-              {head.map((cell) => (
+              {head.map((cell, index) => (
                 <th
-                  key={cell.label}
+                  // biome-ignore lint/suspicious/noArrayIndexKey: static header
+                  key={index}
                   scope="col"
                   className={cn(
                     "h-8 px-3 text-[11px] font-medium tracking-[0.01em] whitespace-nowrap text-muted-foreground",
@@ -135,7 +139,7 @@ export function AdminDropdown<T extends string>({
       >
         <span className="truncate">{current?.label ?? label}</span>
         <CaretDownIcon
-          weight={ADMIN_ICON_WEIGHT}
+          weight={ICON_WEIGHT}
           className="size-3 text-muted-foreground"
         />
       </DropdownMenuTrigger>

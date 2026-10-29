@@ -1,5 +1,8 @@
 "use client";
 
+import { SheetBody, SheetSection } from "@/components/sheet-section";
+import { ICON_WEIGHT } from "@/constants/navigation";
+
 import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
 import {
@@ -35,20 +38,22 @@ import {
 } from "@internium/ui/components/sheet";
 import {
   ArrowCounterClockwiseIcon,
+  CheckIcon,
   CopyIcon,
   DotsThreeIcon,
   KeyIcon,
   MagnifyingGlassIcon,
+  PaperPlaneTiltIcon,
   PencilSimpleIcon,
   PlusIcon,
-  UserSwitchIcon,
   ProhibitIcon,
+  UserPlusIcon,
+  UserSwitchIcon,
 } from "@phosphor-icons/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   AdminDropdown,
-  ADMIN_ICON_WEIGHT,
   AdminPage,
   AdminTable,
   AdminTableEmpty,
@@ -64,6 +69,7 @@ import {
 } from "@/constants/admin-users";
 import { ROLE_LABELS, ROLE_PICKER_ORDER, type Role } from "@/constants/roles";
 import { cn } from "@/lib/utils";
+import { useRetained } from "@/hooks/use-retained";
 
 type RoleFilter = Role | "all";
 type StatusFilter = AdminUserStatus | "all";
@@ -111,6 +117,7 @@ export function AdminUsers() {
   const [role, setRole] = useState<RoleFilter>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [editing, setEditing] = useState<AdminUser | "new" | null>(null);
+  const shownUser = useRetained(editing);
   const [deactivating, setDeactivating] = useState<AdminUser | null>(null);
   const [credentials, setCredentials] = useState<{
     email: string;
@@ -177,7 +184,7 @@ export function AdminUsers() {
       description="Search, filter, and manage Internium accounts."
       actions={
         <Button className={PRESS} onClick={() => setEditing("new")}>
-          <PlusIcon weight={ADMIN_ICON_WEIGHT} />
+          <PlusIcon weight="bold" />
           Add user
         </Button>
       }
@@ -185,7 +192,7 @@ export function AdminUsers() {
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative min-w-48 flex-1">
           <MagnifyingGlassIcon
-            weight={ADMIN_ICON_WEIGHT}
+            weight={ICON_WEIGHT}
             className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground"
           />
           <Input
@@ -292,8 +299,8 @@ export function AdminUsers() {
       </AdminTable>
 
       <UserSheet
-        key={editing === "new" ? "new" : (editing?.id ?? "closed")}
-        user={editing}
+        open={editing !== null}
+        user={shownUser}
         onClose={() => setEditing(null)}
         onSave={save}
       />
@@ -313,11 +320,12 @@ export function AdminUsers() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <DialogClose render={<Button variant="outline" />}>
+            <DialogClose render={<Button variant="ghost" className={PRESS} />}>
               Cancel
             </DialogClose>
             <Button
               variant="destructive"
+              className={PRESS}
               onClick={() => {
                 if (deactivating) {
                   update(deactivating.id, { status: "inactive" });
@@ -326,6 +334,7 @@ export function AdminUsers() {
                 setDeactivating(null);
               }}
             >
+              <ProhibitIcon weight={ICON_WEIGHT} />
               Deactivate
             </Button>
           </DialogFooter>
@@ -368,13 +377,16 @@ export function AdminUsers() {
                     toast.success("Password copied");
                   }}
                 >
-                  <CopyIcon weight={ADMIN_ICON_WEIGHT} />
+                  <CopyIcon weight={ICON_WEIGHT} />
                 </Button>
               </span>
             </div>
           </div>
           <DialogFooter>
-            <DialogClose render={<Button />}>Done</DialogClose>
+            <DialogClose render={<Button className={PRESS} />}>
+              <CheckIcon weight={ICON_WEIGHT} />
+              Done
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -410,16 +422,16 @@ function RowMenu({
           />
         }
       >
-        <DotsThreeIcon weight={ADMIN_ICON_WEIGHT} />
+        <DotsThreeIcon weight="bold" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">
         <DropdownMenuItem onClick={onEdit}>
-          <PencilSimpleIcon weight={ADMIN_ICON_WEIGHT} />
+          <PencilSimpleIcon weight={ICON_WEIGHT} />
           Edit
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <UserSwitchIcon weight={ADMIN_ICON_WEIGHT} />
+            <UserSwitchIcon weight={ICON_WEIGHT} />
             Change role
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
@@ -436,18 +448,18 @@ function RowMenu({
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuItem onClick={onReset} disabled={inactive}>
-          <KeyIcon weight={ADMIN_ICON_WEIGHT} />
+          <KeyIcon weight={ICON_WEIGHT} />
           Reset password
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {inactive ? (
           <DropdownMenuItem onClick={onReactivate}>
-            <ArrowCounterClockwiseIcon weight={ADMIN_ICON_WEIGHT} />
+            <ArrowCounterClockwiseIcon weight={ICON_WEIGHT} />
             Reactivate
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem variant="destructive" onClick={onDeactivate}>
-            <ProhibitIcon weight={ADMIN_ICON_WEIGHT} />
+            <ProhibitIcon weight={ICON_WEIGHT} />
             Deactivate
           </DropdownMenuItem>
         )}
@@ -457,16 +469,18 @@ function RowMenu({
 }
 
 function UserSheet({
+  open,
   user,
   onClose,
   onSave,
 }: {
+  open: boolean;
   user: AdminUser | "new" | null;
   onClose: () => void;
   onSave: (draft: Draft, invite: boolean) => void;
 }) {
   const isNew = user === "new";
-  const [draft, setDraft] = useState<Draft>(() =>
+  const initial = (): Draft =>
     user && user !== "new"
       ? {
           name: user.name,
@@ -475,9 +489,16 @@ function UserSheet({
           className: user.className ?? ADMIN_CLASSES[0],
           company: user.company ?? "",
         }
-      : EMPTY_DRAFT,
-  );
+      : EMPTY_DRAFT;
+  const [draft, setDraft] = useState<Draft>(initial);
   const [invite, setInvite] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setDraft(initial());
+    setInvite(false);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: reset when the sheet opens
+  }, [open, user]);
   const valid =
     draft.name.trim() !== "" &&
     /.+@.+\..+/.test(draft.email) &&
@@ -489,14 +510,14 @@ function UserSheet({
 
   return (
     <Sheet
-      open={user !== null}
+      open={open}
       onOpenChange={(open) => {
         if (!open) onClose();
       }}
     >
-      <SheetContent className="sm:max-w-sm">
+      <SheetContent>
         <form
-          className="flex h-full flex-col"
+          className="flex min-h-0 flex-1 flex-col"
           onSubmit={(event) => {
             event.preventDefault();
             if (valid) onSave(draft, invite);
@@ -510,7 +531,9 @@ function UserSheet({
                 : "Update this account's details."}
             </SheetDescription>
           </SheetHeader>
-          <FieldGroup className="flex-1 gap-3 px-4">
+          <SheetBody>
+          <SheetSection title="Profile">
+          <FieldGroup className="gap-3">
             <Field>
               <FieldLabel htmlFor="user-name">Full name</FieldLabel>
               <Input
@@ -530,6 +553,10 @@ function UserSheet({
                 autoComplete="off"
               />
             </Field>
+          </FieldGroup>
+          </SheetSection>
+          <SheetSection title="Access">
+          <FieldGroup className="gap-3">
             <Field>
               <FieldLabel>Role</FieldLabel>
               <AdminDropdown
@@ -574,8 +601,22 @@ function UserSheet({
               </label>
             ) : null}
           </FieldGroup>
+          </SheetSection>
+          </SheetBody>
           <SheetFooter>
+            <Button type="button" variant="ghost" className={PRESS} onClick={onClose}>
+              Cancel
+            </Button>
             <Button type="submit" disabled={!valid} className={PRESS}>
+              {isNew ? (
+                invite ? (
+                  <PaperPlaneTiltIcon weight={ICON_WEIGHT} />
+                ) : (
+                  <UserPlusIcon weight={ICON_WEIGHT} />
+                )
+              ) : (
+                <CheckIcon weight={ICON_WEIGHT} />
+              )}
               {isNew ? (invite ? "Send invite" : "Create user") : "Save"}
             </Button>
           </SheetFooter>

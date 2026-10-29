@@ -1,5 +1,7 @@
 "use client";
 
+import { ICON_WEIGHT } from "@/constants/navigation";
+
 import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
 import { Calendar } from "@internium/ui/components/calendar";
@@ -13,7 +15,6 @@ import { useMemo, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import {
   AdminDropdown,
-  ADMIN_ICON_WEIGHT,
   AdminPage,
   AdminTable,
   AdminTableEmpty,
@@ -109,7 +110,7 @@ export function AdminActivityLog() {
               />
             }
           >
-            <CalendarBlankIcon weight={ADMIN_ICON_WEIGHT} />
+            <CalendarBlankIcon weight={ICON_WEIGHT} />
             {formatRange(range)}
           </PopoverTrigger>
           <PopoverContent align="start" className="w-auto p-0">

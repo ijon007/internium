@@ -1,5 +1,7 @@
 "use client";
 
+import { CheckIcon } from "@phosphor-icons/react";
+
 import { Button } from "@internium/ui/components/button";
 import { Textarea } from "@internium/ui/components/textarea";
 import { type FormEvent, type KeyboardEvent, useEffect, useState } from "react";
@@ -56,6 +58,7 @@ export function MessageEditForm({
       />
       <div className="flex items-center gap-2">
         <Button type="submit" size="sm" disabled={!body.trim()}>
+          <CheckIcon weight="fill" data-icon="inline-start" />
           Save
         </Button>
         <Button
