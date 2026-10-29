@@ -178,13 +178,7 @@ export function StudentDashboard() {
                     <item.icon weight={ICON_WEIGHT} className="size-4 shrink-0 text-muted-foreground" />
                     <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <span className="truncate font-medium">{item.title}</span>
-                      <span
-                        style={item.status === "returned" ? statusVars("returned") : undefined}
-                        className={cn(
-                          "truncate",
-                          item.status === "returned" ? "status-text" : "text-muted-foreground",
-                        )}
-                      >
+                      <span className="truncate text-muted-foreground">
                         {item.detail}
                       </span>
                     </span>

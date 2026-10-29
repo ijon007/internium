@@ -18,7 +18,6 @@ import {
   type Icon,
   NotebookIcon,
   SignatureIcon,
-  ChatTeardropTextIcon,
   DownloadSimpleIcon,
   FileDocIcon,
   FilePdfIcon,
@@ -40,17 +39,19 @@ import {
   SheetBody,
   SheetSection,
 } from "@/components/sheet-section";
-import { StatusBadge, statusVars } from "@/components/status-badge";
+import { StatusBadge } from "@/components/status-badge";
 import {
   type DocEntry,
   type DocVersion,
   MY_DOCUMENTS,
+  MY_PEOPLE,
   type StudentDocument,
   UPLOAD_HINT,
 } from "@/constants/student";
 import { useRetained } from "@/hooks/use-retained";
 import { cn } from "@/lib/utils";
 
+const TEACHER = MY_PEOPLE.find((p) => p.role === "Mentor teacher")?.name ?? "Your teacher";
 const ACCEPT = ".pdf,.doc,.docx";
 const MAX_BYTES = 10 * 1024 * 1024;
 const TODAY = new Date().toISOString().slice(0, 10);
@@ -303,16 +304,13 @@ function DocumentSheet({
 
           {target.comment ? (
             <SheetSection title="Teacher's comment">
-              <p
-                style={target.status === "returned" ? statusVars("returned") : undefined}
-                className={cn(
-                  "flex gap-2 rounded-lg px-3 py-2.5 leading-relaxed",
-                  target.status === "returned" ? "status-tint" : "bg-muted/60",
-                )}
-              >
-                <ChatTeardropTextIcon weight={ICON_WEIGHT} className="mt-0.5 size-3.5 shrink-0" />
-                {target.comment}
-              </p>
+              <figure className="flex flex-col gap-1 rounded-lg bg-muted/50 px-3 py-2.5">
+                <blockquote className="leading-relaxed text-foreground">{target.comment}</blockquote>
+                <figcaption className="text-[11px] text-muted-foreground">
+                  {TEACHER}
+                  {target.updatedAt ? ` · ${formatDate(target.updatedAt)}` : ""}
+                </figcaption>
+              </figure>
             </SheetSection>
           ) : null}
 
