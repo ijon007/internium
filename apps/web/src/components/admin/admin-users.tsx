@@ -38,14 +38,17 @@ import {
 } from "@internium/ui/components/sheet";
 import {
   ArrowCounterClockwiseIcon,
+  CheckIcon,
   CopyIcon,
   DotsThreeIcon,
   KeyIcon,
   MagnifyingGlassIcon,
+  PaperPlaneTiltIcon,
   PencilSimpleIcon,
   PlusIcon,
-  UserSwitchIcon,
   ProhibitIcon,
+  UserPlusIcon,
+  UserSwitchIcon,
 } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -317,11 +320,12 @@ export function AdminUsers() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <DialogClose render={<Button variant="outline" />}>
+            <DialogClose render={<Button variant="ghost" className={PRESS} />}>
               Cancel
             </DialogClose>
             <Button
               variant="destructive"
+              className={PRESS}
               onClick={() => {
                 if (deactivating) {
                   update(deactivating.id, { status: "inactive" });
@@ -330,6 +334,7 @@ export function AdminUsers() {
                 setDeactivating(null);
               }}
             >
+              <ProhibitIcon weight={ICON_WEIGHT} />
               Deactivate
             </Button>
           </DialogFooter>
@@ -378,7 +383,10 @@ export function AdminUsers() {
             </div>
           </div>
           <DialogFooter>
-            <DialogClose render={<Button />}>Done</DialogClose>
+            <DialogClose render={<Button className={PRESS} />}>
+              <CheckIcon weight={ICON_WEIGHT} />
+              Done
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -600,6 +608,15 @@ function UserSheet({
               Cancel
             </Button>
             <Button type="submit" disabled={!valid} className={PRESS}>
+              {isNew ? (
+                invite ? (
+                  <PaperPlaneTiltIcon weight={ICON_WEIGHT} />
+                ) : (
+                  <UserPlusIcon weight={ICON_WEIGHT} />
+                )
+              ) : (
+                <CheckIcon weight={ICON_WEIGHT} />
+              )}
               {isNew ? (invite ? "Send invite" : "Create user") : "Save"}
             </Button>
           </SheetFooter>
