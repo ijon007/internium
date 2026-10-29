@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AdminPlaceholder } from "@/components/admin/admin-placeholder";
+import { AdminActivityLog } from "@/components/admin/admin-activity-log";
 
 export const metadata: Metadata = {
   title: "Activity Log",
@@ -7,10 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminActivityLogPage() {
-  return (
-    <AdminPlaceholder
-      title="Activity Log"
-      description="The full log with user, action, and date filters will go here."
-    />
-  );
+  return <AdminActivityLog />;
 }
