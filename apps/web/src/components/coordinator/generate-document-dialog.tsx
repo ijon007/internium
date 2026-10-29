@@ -77,109 +77,144 @@ export function GenerateDocumentDialog({
 
   return (
     <Dialog open={open} onOpenChange={close}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Generate document</DialogTitle>
-          <DialogDescription>
-            <span className="flex items-center gap-1.5">
-              {STEPS.map((label, i) => (
+      <DialogContent className="gap-0 p-0 sm:max-w-2xl">
+        <DialogHeader className="gap-3 border-b px-5 pt-5 pb-4">
+          <div className="flex flex-col gap-1">
+            <DialogTitle>Generate document</DialogTitle>
+            <DialogDescription>
+              {step === 0
+                ? "Pick the template to fill in."
+                : step === 1
+                  ? "Choose who gets a copy."
+                  : `${selected.length} ${selected.length === 1 ? "document" : "documents"} ready, each with a verification QR.`}
+            </DialogDescription>
+          </div>
+          <ol className="flex items-center gap-2 text-xs">
+            {STEPS.map((label, i) => (
+              <li key={label} className="flex flex-1 items-center gap-2 last:flex-none">
                 <span
-                  key={label}
                   className={cn(
-                    "flex items-center gap-1",
-                    i === step ? "text-foreground" : "text-muted-foreground",
+                    "flex items-center gap-1.5 font-medium transition-colors",
+                    i <= step ? "text-foreground" : "text-muted-foreground",
                   )}
                 >
                   <span
                     className={cn(
-                      "flex size-4 items-center justify-center rounded-full text-[10px] tabular-nums",
+                      "flex size-5 items-center justify-center rounded-full text-[10px] tabular-nums transition-colors",
                       i < step
                         ? "bg-primary text-primary-foreground"
                         : i === step
                           ? "bg-foreground text-background"
-                          : "bg-muted",
+                          : "bg-muted text-muted-foreground",
                     )}
                   >
-                    {i < step ? (
-                      <CheckIcon weight={ICON_WEIGHT} className="size-2.5" />
-                    ) : (
-                      i + 1
-                    )}
+                    {i < step ? <CheckIcon weight="bold" className="size-3" /> : i + 1}
                   </span>
                   {label}
-                  {i < STEPS.length - 1 ? (
-                    <span className="text-muted-foreground">·</span>
-                  ) : null}
                 </span>
-              ))}
-            </span>
-          </DialogDescription>
+                {i < STEPS.length - 1 ? (
+                  <span
+                    className={cn(
+                      "h-px flex-1 transition-colors",
+                      i < step ? "bg-primary" : "bg-border",
+                    )}
+                  />
+                ) : null}
+              </li>
+            ))}
+          </ol>
         </DialogHeader>
 
-        <div className="max-h-[50vh] overflow-y-auto text-xs">
+        <div className="max-h-[55vh] overflow-y-auto p-5 text-xs">
           {step === 0 ? (
-            <ul className="flex flex-col gap-1.5">
-              {DOCUMENT_TEMPLATES.map((t) => (
-                <li key={t.id}>
+            <div role="radiogroup" aria-label="Template" className="grid gap-2 sm:grid-cols-2">
+              {DOCUMENT_TEMPLATES.map((t) => {
+                const on = template === t.id;
+                return (
                   <button
+                    key={t.id}
                     type="button"
+                    role="radio"
+                    aria-checked={on}
                     onClick={() => setTemplate(t.id)}
                     className={cn(
-                      "w-full rounded-lg px-3 py-2 text-left ring-1 transition-colors",
+                      "flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
                       PRESS,
-                      template === t.id
-                        ? "bg-primary/10 ring-primary"
-                        : "ring-border hover:bg-muted/50",
+                      on ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50",
                     )}
                   >
-                    <p className="font-medium">{t.label}</p>
-                    <p className="text-muted-foreground">{t.description}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium">{t.label}</p>
+                      <p className="mt-0.5 text-muted-foreground">{t.description}</p>
+                    </div>
+                    <span
+                      className={cn(
+                        "mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border transition-colors",
+                        on ? "border-primary bg-primary text-primary-foreground" : "border-border",
+                      )}
+                    >
+                      {on ? <CheckIcon weight="bold" className="size-2.5" /> : null}
+                    </span>
                   </button>
-                </li>
-              ))}
-            </ul>
+                );
+              })}
+            </div>
           ) : null}
 
           {step === 1 ? (
-            <ul className="rounded-lg bg-muted/50">
-              {students.map((s, i) => (
-                <li
-                  key={s.id}
-                  className={cn(i < students.length - 1 && "border-b border-border/70")}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span>
+                  {picked.length} of {students.length} selected
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={PRESS}
+                  onClick={() =>
+                    setPicked(picked.length === students.length ? [] : students.map((s) => s.id))
+                  }
                 >
-                  <label className="flex cursor-pointer items-center gap-2 px-3 py-2">
-                    <Checkbox
-                      checked={picked.includes(s.id)}
-                      onCheckedChange={(checked) =>
-                        setPicked((cur) =>
-                          checked ? [...cur, s.id] : cur.filter((id) => id !== s.id),
-                        )
-                      }
-                    />
-                    <span className="font-medium">{s.name}</span>
-                    <span className="ml-auto text-muted-foreground">
-                      {CLASSES.find((c) => c.id === s.classId)?.name}
-                    </span>
-                  </label>
-                </li>
-              ))}
-            </ul>
+                  {picked.length === students.length ? "Clear all" : "Select all"}
+                </Button>
+              </div>
+              <ul className="overflow-hidden rounded-lg border">
+                {students.map((s) => (
+                  <li key={s.id} className="border-b last:border-b-0">
+                    <label className="flex cursor-pointer items-center gap-3 px-3 py-2.5 transition-colors hover:bg-muted/50">
+                      <Checkbox
+                        checked={picked.includes(s.id)}
+                        onCheckedChange={(checked) =>
+                          setPicked((cur) =>
+                            checked ? [...cur, s.id] : cur.filter((id) => id !== s.id),
+                          )
+                        }
+                      />
+                      <span className="font-medium">{s.name}</span>
+                      <span className="ml-auto text-muted-foreground">
+                        {CLASSES.find((c) => c.id === s.classId)?.name}
+                      </span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : null}
 
           {step === 2 ? (
-            <div className="flex flex-col gap-2">
+            <div className="grid gap-2 sm:grid-cols-2">
               {selected.map((s) => (
                 <div
                   key={s.id}
-                  className="flex items-start justify-between gap-3 rounded-lg bg-card p-3 ring-1 ring-border"
+                  className="flex items-start justify-between gap-3 rounded-lg border bg-card p-3"
                 >
                   <div className="min-w-0">
                     <p className="text-[11px] text-muted-foreground">{chosen?.label}</p>
                     <p className="font-medium">{s.name}</p>
                     <div className="mt-2 flex flex-col gap-1">
-                      <span className="h-1 w-40 rounded-full bg-muted" />
                       <span className="h-1 w-32 rounded-full bg-muted" />
-                      <span className="h-1 w-36 rounded-full bg-muted" />
+                      <span className="h-1 w-24 rounded-full bg-muted" />
+                      <span className="h-1 w-28 rounded-full bg-muted" />
                     </div>
                   </div>
                   <PlaceholderQr seed={`${template}-${s.id}`} />
@@ -189,7 +224,7 @@ export function GenerateDocumentDialog({
           ) : null}
         </div>
 
-        <DialogFooter className="flex-row gap-2">
+        <DialogFooter className="m-0 flex-row justify-end gap-2 rounded-b-xl border-t px-5 py-3">
           {step > 0 ? (
             <Button variant="outline" className={PRESS} onClick={() => setStep(step - 1)}>
               Back
@@ -197,7 +232,7 @@ export function GenerateDocumentDialog({
           ) : null}
           {step < 2 ? (
             <Button
-              className={cn("ml-auto", PRESS)}
+              className={PRESS}
               disabled={step === 1 && picked.length === 0}
               onClick={() => setStep(step + 1)}
             >
@@ -205,7 +240,7 @@ export function GenerateDocumentDialog({
             </Button>
           ) : (
             <Button
-              className={cn("ml-auto", PRESS)}
+              className={PRESS}
               onClick={() => {
                 toast.success(
                   `${selected.length} ${selected.length === 1 ? "document" : "documents"} downloaded`,
