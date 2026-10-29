@@ -37,8 +37,8 @@ function Avatar({ name, className }: { name: string; className?: string }) {
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="flex flex-col gap-1.5">
-      <h2 className="px-1 text-[11px] font-medium text-muted-foreground">{title}</h2>
+    <section className="flex flex-col gap-2">
+      <h2 className="px-1 text-[13px] font-medium text-muted-foreground">{title}</h2>
       {children}
     </section>
   );
@@ -48,8 +48,8 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 function Field({ label, children, className }: { label: string; children: ReactNode; className?: string }) {
   return (
     <div className={cn("flex min-w-0 flex-col gap-0.5", className)}>
-      <dt className="text-[11px] text-muted-foreground">{label}</dt>
-      <dd className="truncate text-xs">{children}</dd>
+      <dt className="text-[13px] text-muted-foreground">{label}</dt>
+      <dd className="truncate text-[15px] text-foreground">{children}</dd>
     </div>
   );
 }
@@ -60,19 +60,19 @@ export function StudentMyData() {
   const chatHref = getRoleHref("student", "chat");
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-5 py-2">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 py-2">
       <header className="flex flex-col items-center gap-2.5 pt-2 text-center">
-        <Avatar name={ME.name} className="size-16 text-xl tracking-tight" />
+        <Avatar name={ME.name} className="size-[4.5rem] text-2xl tracking-tight" />
         <div className="flex flex-col gap-0.5">
-          <h1 className="text-lg leading-tight font-semibold tracking-tight text-foreground">{ME.name}</h1>
-          <p className="text-xs text-muted-foreground tabular-nums">
+          <h1 className="text-xl leading-tight font-semibold tracking-tight text-foreground">{ME.name}</h1>
+          <p className="text-[13px] text-muted-foreground tabular-nums">
             Class {ME.className} · {ME.schoolYear}
           </p>
         </div>
       </header>
 
       <Section title="Personal">
-        <dl className={cn(CARD, "grid grid-cols-2 gap-x-6 gap-y-3 p-3")}>
+        <dl className={cn(CARD, "grid grid-cols-2 gap-x-6 gap-y-4 p-4")}>
           <Field label="Full name">{ME.name}</Field>
           <Field label="Email">
             <a href={`mailto:${ME.email}`} className={LINK}>
@@ -89,15 +89,15 @@ export function StudentMyData() {
       <Section title="My mentors">
         <div className="grid gap-2 sm:grid-cols-2">
           {MY_PEOPLE.map((p) => (
-            <article key={p.role} className={cn(CARD, "flex flex-col gap-3 p-3")}>
+            <article key={p.role} className={cn(CARD, "flex flex-col gap-4 p-4")}>
               <div className="flex items-center gap-2.5">
-                <Avatar name={p.name} className="size-9 text-xs" />
+                <Avatar name={p.name} className="size-10 text-[13px]" />
                 <div className="flex min-w-0 flex-col">
-                  <span className="truncate text-sm leading-tight font-medium tracking-tight">{p.name}</span>
-                  <span className="truncate text-[11px] text-muted-foreground">{p.role}</span>
+                  <span className="truncate text-[15px] leading-tight font-medium tracking-tight">{p.name}</span>
+                  <span className="truncate text-[13px] text-muted-foreground">{p.role}</span>
                 </div>
               </div>
-              <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+              <div className="flex flex-col gap-1.5 text-[13px] text-muted-foreground">
                 <a href={`mailto:${p.email}`} className={cn(LINK, "flex min-w-0 items-center gap-2")}>
                   <EnvelopeSimpleIcon weight={ICON_WEIGHT} className="size-3.5 shrink-0 opacity-70" />
                   <span className="truncate">{p.email}</span>
@@ -124,17 +124,15 @@ export function StudentMyData() {
 
       <Section title="Company">
         {MY_COMPANY ? (
-          <div className={cn(CARD, "flex flex-col gap-3 p-3")}>
-            <div className="flex items-center gap-2.5">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted ring-1 ring-foreground/5">
-                <BuildingsIcon weight={ICON_WEIGHT} className="size-4.5 text-muted-foreground" />
-              </span>
+          <div className={cn(CARD, "flex flex-col gap-4 p-4")}>
+            <div className="flex items-center gap-3">
+              <BuildingsIcon weight={ICON_WEIGHT} className="size-6 shrink-0 text-muted-foreground" />
               <div className="flex min-w-0 flex-col">
-                <span className="truncate text-sm leading-tight font-medium tracking-tight">{MY_COMPANY.name}</span>
-                <span className="truncate text-[11px] text-muted-foreground">{MY_COMPANY.address}</span>
+                <span className="truncate text-[15px] leading-tight font-medium tracking-tight">{MY_COMPANY.name}</span>
+                <span className="truncate text-[13px] text-muted-foreground">{MY_COMPANY.address}</span>
               </div>
             </div>
-            <dl className="grid grid-cols-3 gap-x-6 gap-y-3 border-t border-border/60 pt-3">
+            <dl className="grid grid-cols-3 gap-x-6 gap-y-4 border-t border-border/60 pt-4">
               <Field label="Contact">{MY_COMPANY.contact}</Field>
               <Field label="Email">
                 <a href={`mailto:${MY_COMPANY.email}`} className={LINK}>
@@ -149,7 +147,7 @@ export function StudentMyData() {
             </dl>
           </div>
         ) : (
-          <div className={cn(CARD, "flex flex-col items-center gap-2 px-3 py-6 text-center text-xs text-muted-foreground")}>
+          <div className={cn(CARD, "flex flex-col items-center gap-2 px-4 py-6 text-center text-[13px] text-muted-foreground")}>
             <BuildingsIcon weight={ICON_WEIGHT} className="size-5 text-muted-foreground/70" />
             Your coordinator hasn't assigned your company yet.
           </div>
