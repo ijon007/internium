@@ -82,6 +82,48 @@ function DocTypeTile({ id }: { id: StudentDocument["id"] }) {
   );
 }
 
+const FILE_KIND = {
+  pdf: { label: "PDF", hue: "oklch(0.58 0.19 27)" },
+  doc: { label: "DOC", hue: "oklch(0.55 0.16 255)" },
+  other: { label: "FILE", hue: "oklch(0.55 0.01 260)" },
+};
+
+function fileKind(name: string) {
+  if (/\.pdf$/i.test(name)) return FILE_KIND.pdf;
+  if (/\.docx?$/i.test(name)) return FILE_KIND.doc;
+  return FILE_KIND.other;
+}
+
+/** Compact attachment row: type tile, name, size · date, inline download. */
+function AttachmentCard({ name, meta }: { name: string; meta: string }) {
+  const kind = fileKind(name);
+  return (
+    <div className="flex items-center gap-2.5 rounded-xl bg-muted/50 p-2 pr-1.5">
+      <span
+        style={tint(kind.hue)}
+        className="status-tint flex size-9 shrink-0 flex-col items-center justify-center gap-px rounded-[9px]"
+      >
+        <FileIcon name={name} className="size-4" />
+        <span className="text-[7px] leading-none font-semibold tracking-wide">{kind.label}</span>
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="truncate font-medium">{name}</span>
+        <span className="truncate text-muted-foreground tabular-nums">{meta}</span>
+      </span>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        aria-label={`Download ${name}`}
+        title="Download"
+        className={PRESS}
+        onClick={() => download(name)}
+      >
+        <DownloadSimpleIcon weight={ICON_WEIGHT} />
+      </Button>
+    </div>
+  );
+}
+
 function download(name: string) {
   toast.success(`Downloading ${name}`);
 }
@@ -276,23 +318,10 @@ function DocumentSheet({
 
           <SheetSection title={doc.entries ? `File · ${target.label}` : "File"}>
             {latest || doc.hasGenerated ? (
-              <div className="flex flex-col gap-2">
-                <div className="flex aspect-[16/9] items-center justify-center rounded-lg bg-muted/60">
-                  <FileIcon name={latest?.file ?? ".pdf"} className="size-10 text-muted-foreground/60" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate font-medium">{latest?.file ?? `${doc.label} (generated).pdf`}</span>
-                    <span className="text-muted-foreground">
-                      {latest ? `${latest.size} · ${formatDate(latest.date)}` : "Generated copy"}
-                    </span>
-                  </span>
-                  <Button variant="outline" size="sm" className={PRESS} onClick={() => download(latest?.file ?? `${doc.label}.pdf`)}>
-                    <DownloadSimpleIcon weight={ICON_WEIGHT} />
-                    Download
-                  </Button>
-                </div>
-              </div>
+              <AttachmentCard
+                name={latest?.file ?? `${doc.label} (generated).pdf`}
+                meta={latest ? `${latest.size} · ${formatDate(latest.date)}` : "Generated copy"}
+              />
             ) : (
               <p className="text-muted-foreground">No file yet.</p>
             )}
