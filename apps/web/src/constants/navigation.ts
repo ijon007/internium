@@ -14,7 +14,6 @@ import {
   FileTextIcon,
   HandshakeIcon,
   IdentificationCardIcon,
-  KeyIcon,
   SquaresFourIcon,
   StudentIcon,
   UserMinusIcon,
@@ -40,10 +39,7 @@ export const ROLE_NAV: Record<Role, NavGroup[]> = {
     OVERVIEW_GROUP,
     {
       label: "Management",
-      items: [
-        { title: "Users", path: "users", icon: UsersIcon },
-        { title: "Roles & Credentials", path: "roles", icon: KeyIcon },
-      ],
+      items: [{ title: "Users", path: "users", icon: UsersIcon }],
     },
     {
       label: "System",
