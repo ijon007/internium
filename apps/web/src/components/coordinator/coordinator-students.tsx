@@ -256,7 +256,7 @@ export function CoordinatorStudents() {
                   <DropdownMenuTrigger
                     render={
                       <Button variant="ghost" size="icon-sm" aria-label="Actions">
-                        <DotsThreeIcon weight={ICON_WEIGHT} />
+                        <DotsThreeIcon weight="bold" />
                       </Button>
                     }
                   />

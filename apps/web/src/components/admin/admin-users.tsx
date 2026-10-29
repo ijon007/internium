@@ -413,7 +413,7 @@ function RowMenu({
           />
         }
       >
-        <DotsThreeIcon weight={ICON_WEIGHT} />
+        <DotsThreeIcon weight="bold" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">
         <DropdownMenuItem onClick={onEdit}>
