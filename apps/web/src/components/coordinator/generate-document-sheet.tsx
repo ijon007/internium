@@ -1,5 +1,6 @@
 "use client";
 
+import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
 import { Checkbox } from "@internium/ui/components/checkbox";
 import {
@@ -13,7 +14,7 @@ import {
 import { CheckIcon, DownloadSimpleIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ADMIN_ICON_WEIGHT, PRESS } from "@/components/admin/admin-table";
+import { PRESS } from "@/components/admin/admin-table";
 import {
   CLASSES,
   DOCUMENT_TEMPLATES,
@@ -98,7 +99,7 @@ export function GenerateDocumentSheet({
                     )}
                   >
                     {i < step ? (
-                      <CheckIcon weight={ADMIN_ICON_WEIGHT} className="size-2.5" />
+                      <CheckIcon weight={ICON_WEIGHT} className="size-2.5" />
                     ) : (
                       i + 1
                     )}
@@ -210,7 +211,7 @@ export function GenerateDocumentSheet({
                 close(false);
               }}
             >
-              <DownloadSimpleIcon weight={ADMIN_ICON_WEIGHT} />
+              <DownloadSimpleIcon weight={ICON_WEIGHT} />
               Download
             </Button>
           )}

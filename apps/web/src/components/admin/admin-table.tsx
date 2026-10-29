@@ -1,3 +1,4 @@
+import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
 import {
   DropdownMenu,
@@ -136,7 +137,7 @@ export function AdminDropdown<T extends string>({
       >
         <span className="truncate">{current?.label ?? label}</span>
         <CaretDownIcon
-          weight={ADMIN_ICON_WEIGHT}
+          weight={ICON_WEIGHT}
           className="size-3 text-muted-foreground"
         />
       </DropdownMenuTrigger>

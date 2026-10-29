@@ -1,5 +1,6 @@
 "use client";
 
+import { ICON_WEIGHT } from "@/constants/navigation";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -16,7 +17,6 @@ import { BellRingingIcon, FilePlusIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
-  ADMIN_ICON_WEIGHT,
   AdminDropdown,
   AdminPage,
   AdminTable,
@@ -76,11 +76,11 @@ export function CoordinatorDocuments() {
             disabled={targets.length === 0}
             onClick={() => setReminding(true)}
           >
-            <BellRingingIcon weight={ADMIN_ICON_WEIGHT} />
+            <BellRingingIcon weight={ICON_WEIGHT} />
             {selected.length ? `Remind ${selected.length}` : "Remind missing"}
           </Button>
           <Button className={PRESS} onClick={() => setGenerating(true)}>
-            <FilePlusIcon weight={ADMIN_ICON_WEIGHT} />
+            <FilePlusIcon weight={ICON_WEIGHT} />
             Generate
           </Button>
         </>

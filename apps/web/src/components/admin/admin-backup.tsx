@@ -1,3 +1,4 @@
+import { ICON_WEIGHT } from "@/constants/navigation";
 "use client";
 
 import { Badge } from "@internium/ui/components/badge";
@@ -18,7 +19,6 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import {
-  ADMIN_ICON_WEIGHT,
   AdminPage,
   AdminTable,
   CELL,
@@ -85,9 +85,9 @@ export function AdminBackup() {
           <CardAction>
             <Button className={PRESS} onClick={runBackup} disabled={running}>
               {running ? (
-                <CircleNotchIcon weight={ADMIN_ICON_WEIGHT} className="animate-spin" />
+                <CircleNotchIcon weight={ICON_WEIGHT} className="animate-spin" />
               ) : (
-                <DatabaseIcon weight={ADMIN_ICON_WEIGHT} />
+                <DatabaseIcon weight={ICON_WEIGHT} />
               )}
               {running ? "Backing up…" : "Run backup now"}
             </Button>
@@ -138,7 +138,7 @@ export function AdminBackup() {
                   className={PRESS}
                   onClick={() => toast("Download starting")}
                 >
-                  <DownloadSimpleIcon weight={ADMIN_ICON_WEIGHT} />
+                  <DownloadSimpleIcon weight={ICON_WEIGHT} />
                 </Button>
               </td>
             </tr>

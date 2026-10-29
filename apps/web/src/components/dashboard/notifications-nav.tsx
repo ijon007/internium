@@ -38,7 +38,7 @@ export function NotificationsNav() {
           render={<PopoverTrigger />}
         >
           <span className="relative">
-            <BellIcon weight="bold" />
+            <BellIcon weight={ICON_WEIGHT} />
             {hasUnread ? (
               <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-primary" />
             ) : null}

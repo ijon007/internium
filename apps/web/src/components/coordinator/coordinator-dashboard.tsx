@@ -1,5 +1,6 @@
 "use client";
 
+import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
 import {
   Card,
@@ -16,7 +17,6 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import {
-  ADMIN_ICON_WEIGHT,
   AdminPage,
   PRESS,
   SURFACE,
@@ -76,7 +76,7 @@ export function CoordinatorDashboard() {
               </CardTitle>
               <CardAction>
                 <span className="flex size-7 items-center justify-center rounded-full bg-primary/12 text-foreground">
-                  <card.icon weight={ADMIN_ICON_WEIGHT} className="size-3.5" />
+                  <card.icon weight={ICON_WEIGHT} className="size-3.5" />
                 </span>
               </CardAction>
             </CardHeader>
@@ -97,7 +97,7 @@ export function CoordinatorDashboard() {
                 render={<Link href={card.href} />}
               >
                 {card.cta}
-                <ArrowRightIcon weight={ADMIN_ICON_WEIGHT} />
+                <ArrowRightIcon weight={ICON_WEIGHT} />
               </Button>
             </CardContent>
           </Card>

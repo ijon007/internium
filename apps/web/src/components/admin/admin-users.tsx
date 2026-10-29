@@ -1,3 +1,4 @@
+import { ICON_WEIGHT } from "@/constants/navigation";
 "use client";
 
 import { Badge } from "@internium/ui/components/badge";
@@ -48,7 +49,6 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   AdminDropdown,
-  ADMIN_ICON_WEIGHT,
   AdminPage,
   AdminTable,
   AdminTableEmpty,
@@ -177,7 +177,7 @@ export function AdminUsers() {
       description="Search, filter, and manage Internium accounts."
       actions={
         <Button className={PRESS} onClick={() => setEditing("new")}>
-          <PlusIcon weight={ADMIN_ICON_WEIGHT} />
+          <PlusIcon weight="bold" />
           Add user
         </Button>
       }
@@ -185,7 +185,7 @@ export function AdminUsers() {
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative min-w-48 flex-1">
           <MagnifyingGlassIcon
-            weight={ADMIN_ICON_WEIGHT}
+            weight={ICON_WEIGHT}
             className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground"
           />
           <Input
@@ -368,7 +368,7 @@ export function AdminUsers() {
                     toast.success("Password copied");
                   }}
                 >
-                  <CopyIcon weight={ADMIN_ICON_WEIGHT} />
+                  <CopyIcon weight={ICON_WEIGHT} />
                 </Button>
               </span>
             </div>
@@ -410,16 +410,16 @@ function RowMenu({
           />
         }
       >
-        <DotsThreeIcon weight={ADMIN_ICON_WEIGHT} />
+        <DotsThreeIcon weight={ICON_WEIGHT} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">
         <DropdownMenuItem onClick={onEdit}>
-          <PencilSimpleIcon weight={ADMIN_ICON_WEIGHT} />
+          <PencilSimpleIcon weight={ICON_WEIGHT} />
           Edit
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <UserSwitchIcon weight={ADMIN_ICON_WEIGHT} />
+            <UserSwitchIcon weight={ICON_WEIGHT} />
             Change role
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
@@ -436,18 +436,18 @@ function RowMenu({
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuItem onClick={onReset} disabled={inactive}>
-          <KeyIcon weight={ADMIN_ICON_WEIGHT} />
+          <KeyIcon weight={ICON_WEIGHT} />
           Reset password
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {inactive ? (
           <DropdownMenuItem onClick={onReactivate}>
-            <ArrowCounterClockwiseIcon weight={ADMIN_ICON_WEIGHT} />
+            <ArrowCounterClockwiseIcon weight={ICON_WEIGHT} />
             Reactivate
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem variant="destructive" onClick={onDeactivate}>
-            <ProhibitIcon weight={ADMIN_ICON_WEIGHT} />
+            <ProhibitIcon weight={ICON_WEIGHT} />
             Deactivate
           </DropdownMenuItem>
         )}

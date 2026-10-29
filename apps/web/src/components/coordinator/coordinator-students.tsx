@@ -1,5 +1,6 @@
 "use client";
 
+import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
 import { Checkbox } from "@internium/ui/components/checkbox";
 import {
@@ -48,7 +49,6 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
-  ADMIN_ICON_WEIGHT,
   AdminDropdown,
   AdminPage,
   AdminTable,
@@ -117,11 +117,11 @@ export function CoordinatorStudents() {
       actions={
         <>
           <Button variant="outline" className={PRESS} onClick={() => setImporting(true)}>
-            <FileArrowUpIcon weight={ADMIN_ICON_WEIGHT} />
+            <FileArrowUpIcon weight={ICON_WEIGHT} />
             Import
           </Button>
           <Button className={PRESS} onClick={() => setAdding(true)}>
-            <PlusIcon weight={ADMIN_ICON_WEIGHT} />
+            <PlusIcon weight="bold" />
             Add student
           </Button>
         </>
@@ -130,7 +130,7 @@ export function CoordinatorStudents() {
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative min-w-48 flex-1">
           <MagnifyingGlassIcon
-            weight={ADMIN_ICON_WEIGHT}
+            weight={ICON_WEIGHT}
             className="-translate-y-1/2 absolute top-1/2 left-2.5 size-3.5 text-muted-foreground"
           />
           <Input
@@ -182,7 +182,7 @@ export function CoordinatorStudents() {
             Clear
           </Button>
           <Button size="sm" className={PRESS} onClick={() => setAssignIds(selected)}>
-            <BuildingsIcon weight={ADMIN_ICON_WEIGHT} />
+            <BuildingsIcon weight={ICON_WEIGHT} />
             Assign
           </Button>
         </div>
@@ -253,23 +253,23 @@ export function CoordinatorStudents() {
                   <DropdownMenuTrigger
                     render={
                       <Button variant="ghost" size="icon-sm" aria-label="Actions">
-                        <DotsThreeIcon weight={ADMIN_ICON_WEIGHT} />
+                        <DotsThreeIcon weight={ICON_WEIGHT} />
                       </Button>
                     }
                   />
                   <DropdownMenuContent align="end" className="w-44">
                     <DropdownMenuItem onClick={() => setOpenId(s.id)}>
-                      <UserIcon weight={ADMIN_ICON_WEIGHT} />
+                      <UserIcon weight={ICON_WEIGHT} />
                       Open profile
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setAssignIds([s.id])}>
-                      <BuildingsIcon weight={ADMIN_ICON_WEIGHT} />
+                      <BuildingsIcon weight={ICON_WEIGHT} />
                       Assign
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => toast.success(`Report for ${s.name} exported`)}
                     >
-                      <ExportIcon weight={ADMIN_ICON_WEIGHT} />
+                      <ExportIcon weight={ICON_WEIGHT} />
                       Export report
                     </DropdownMenuItem>
                     {s.companyId ? (
@@ -282,7 +282,7 @@ export function CoordinatorStudents() {
                             toast.success(`${s.name} unassigned`);
                           }}
                         >
-                          <TrashIcon weight={ADMIN_ICON_WEIGHT} />
+                          <TrashIcon weight={ICON_WEIGHT} />
                           Unassign
                         </DropdownMenuItem>
                       </>
@@ -544,7 +544,7 @@ function ImportDialog({
               dragging ? "border-primary bg-primary/5" : "hover:bg-muted/50",
             )}
           >
-            <FileArrowUpIcon weight={ADMIN_ICON_WEIGHT} className="size-5 text-muted-foreground" />
+            <FileArrowUpIcon weight={ICON_WEIGHT} className="size-5 text-muted-foreground" />
             <span className="font-medium">Drop a file or click to browse</span>
             <span className="text-muted-foreground">.csv, .xlsx up to 5 MB</span>
             <input
@@ -639,7 +639,7 @@ function StudentSheet({
                 />
               </div>
               <Button variant="outline" size="sm" className={cn("self-start", PRESS)} onClick={onAssign}>
-                <BuildingsIcon weight={ADMIN_ICON_WEIGHT} />
+                <BuildingsIcon weight={ICON_WEIGHT} />
                 {placement ? "Change placement" : "Assign company"}
               </Button>
             </TabsContent>
@@ -659,7 +659,7 @@ function StudentSheet({
                 className={cn("self-start", PRESS)}
                 onClick={() => setGenerating(true)}
               >
-                <FilePlusIcon weight={ADMIN_ICON_WEIGHT} />
+                <FilePlusIcon weight={ICON_WEIGHT} />
                 Generate document
               </Button>
             </TabsContent>
@@ -707,7 +707,7 @@ function StudentSheet({
               className={PRESS}
               onClick={() => toast.success(`Report for ${student.name} exported`)}
             >
-              <ExportIcon weight={ADMIN_ICON_WEIGHT} />
+              <ExportIcon weight={ICON_WEIGHT} />
               Export report
             </Button>
           </SheetFooter>

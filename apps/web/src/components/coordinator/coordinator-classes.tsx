@@ -1,5 +1,6 @@
 "use client";
 
+import { ICON_WEIGHT } from "@/constants/navigation";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -37,7 +38,6 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import {
-  ADMIN_ICON_WEIGHT,
   AdminPage,
   AdminTable,
   AdminTableEmpty,
@@ -235,7 +235,7 @@ function ClassSheet({
                     {teacherIds.map(teacherName).join(", ") || "Pick teachers"}
                   </span>
                   <CaretDownIcon
-                    weight={ADMIN_ICON_WEIGHT}
+                    weight={ICON_WEIGHT}
                     className="size-3 text-muted-foreground"
                   />
                 </DropdownMenuTrigger>
@@ -271,7 +271,7 @@ function ClassSheet({
                   <DropdownMenuTrigger
                     render={<Button variant="ghost" size="sm" className={PRESS} />}
                   >
-                    <PlusIcon weight={ADMIN_ICON_WEIGHT} />
+                    <PlusIcon weight="bold" />
                     Add students
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="min-w-48">
@@ -322,7 +322,7 @@ function ClassSheet({
             className={PRESS}
             onClick={() => toast.success(`Report for ${group.name} exported`)}
           >
-            <ExportIcon weight={ADMIN_ICON_WEIGHT} />
+            <ExportIcon weight={ICON_WEIGHT} />
             Export report
           </Button>
           {readOnly ? null : (
@@ -332,7 +332,7 @@ function ClassSheet({
                 className={PRESS}
                 onClick={() => setPromoting(true)}
               >
-                <ArrowFatLineUpIcon weight={ADMIN_ICON_WEIGHT} />
+                <ArrowFatLineUpIcon weight={ICON_WEIGHT} />
                 Promote
               </Button>
               <Button

@@ -1,5 +1,6 @@
 "use client";
 
+import { ICON_WEIGHT } from "@/constants/navigation";
 import { Button } from "@internium/ui/components/button";
 import { Field, FieldGroup, FieldLabel } from "@internium/ui/components/field";
 import { Input } from "@internium/ui/components/input";
@@ -21,7 +22,6 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import {
-  ADMIN_ICON_WEIGHT,
   AdminPage,
   AdminTable,
   AdminTableEmpty,
@@ -65,14 +65,14 @@ export function CoordinatorCompanies() {
       description="Host companies, their contacts, and business mentors."
       actions={
         <Button className={PRESS} onClick={() => setOpenId("new")}>
-          <PlusIcon weight={ADMIN_ICON_WEIGHT} />
+          <PlusIcon weight="bold" />
           Add company
         </Button>
       }
     >
       <div className="relative max-w-xs">
         <MagnifyingGlassIcon
-          weight={ADMIN_ICON_WEIGHT}
+          weight={ICON_WEIGHT}
           className="-translate-y-1/2 absolute top-1/2 left-2.5 size-3.5 text-muted-foreground"
         />
         <Input
@@ -208,7 +208,7 @@ function CompanySheet({
                   setEditing(id);
                 }}
               >
-                <PlusIcon weight={ADMIN_ICON_WEIGHT} />
+                <PlusIcon weight="bold" />
                 Add mentor
               </Button>
             </div>
@@ -237,7 +237,7 @@ function CompanySheet({
                         disabled={!m.name.trim()}
                         onClick={() => setEditing(null)}
                       >
-                        <CheckIcon weight={ADMIN_ICON_WEIGHT} />
+                        <CheckIcon weight={ICON_WEIGHT} />
                       </Button>
                     </li>
                   ) : (
@@ -251,7 +251,7 @@ function CompanySheet({
                           aria-label={`Edit ${m.name}`}
                           onClick={() => setEditing(m.id)}
                         >
-                          <PencilSimpleIcon weight={ADMIN_ICON_WEIGHT} />
+                          <PencilSimpleIcon weight={ICON_WEIGHT} />
                         </Button>
                         <Button
                           variant="ghost"
@@ -264,7 +264,7 @@ function CompanySheet({
                             )
                           }
                         >
-                          <TrashIcon weight={ADMIN_ICON_WEIGHT} />
+                          <TrashIcon weight={ICON_WEIGHT} />
                         </Button>
                       </span>
                     </li>
