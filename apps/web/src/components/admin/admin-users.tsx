@@ -1,5 +1,6 @@
 "use client";
 
+import { SheetBody, SheetSection } from "@/components/sheet-section";
 import { ICON_WEIGHT } from "@/constants/navigation";
 
 import { Badge } from "@internium/ui/components/badge";
@@ -522,7 +523,9 @@ function UserSheet({
                 : "Update this account's details."}
             </SheetDescription>
           </SheetHeader>
-          <FieldGroup className="min-h-0 flex-1 gap-3 overflow-y-auto p-4">
+          <SheetBody>
+          <SheetSection title="Profile">
+          <FieldGroup className="gap-3">
             <Field>
               <FieldLabel htmlFor="user-name">Full name</FieldLabel>
               <Input
@@ -542,6 +545,10 @@ function UserSheet({
                 autoComplete="off"
               />
             </Field>
+          </FieldGroup>
+          </SheetSection>
+          <SheetSection title="Access">
+          <FieldGroup className="gap-3">
             <Field>
               <FieldLabel>Role</FieldLabel>
               <AdminDropdown
@@ -586,7 +593,12 @@ function UserSheet({
               </label>
             ) : null}
           </FieldGroup>
+          </SheetSection>
+          </SheetBody>
           <SheetFooter>
+            <Button type="button" variant="ghost" className={PRESS} onClick={onClose}>
+              Cancel
+            </Button>
             <Button type="submit" disabled={!valid} className={PRESS}>
               {isNew ? (invite ? "Send invite" : "Create user") : "Save"}
             </Button>
