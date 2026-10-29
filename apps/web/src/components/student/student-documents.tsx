@@ -48,7 +48,9 @@ import {
   type StudentDocument,
   UPLOAD_HINT,
 } from "@/constants/student";
+import { DocumentViewer } from "@/components/documents/document-viewer";
 import { useRetained } from "@/hooks/use-retained";
+import { sampleUrl, type ViewerFile } from "@/lib/document-files";
 import { cn } from "@/lib/utils";
 
 const TEACHER = MY_PEOPLE.find((p) => p.role === "Mentor teacher")?.name ?? "Your teacher";
@@ -95,29 +97,36 @@ function fileKind(name: string) {
   return FILE_KIND.other;
 }
 
-/** Compact attachment row: type tile, name, size · date, inline download. */
-function AttachmentCard({ name, meta }: { name: string; meta: string }) {
-  const kind = fileKind(name);
+/** Compact attachment row: type tile, name, size · date. Opens in the reader; inline download. */
+function AttachmentCard({ file, onOpen }: { file: ViewerFile; onOpen: () => void }) {
+  const kind = fileKind(file.name);
   return (
-    <div className="flex items-center gap-2.5 rounded-xl bg-muted/50 p-2 pr-1.5">
-      <span
-        style={tint(kind.hue)}
-        className="status-tint flex size-9 shrink-0 flex-col items-center justify-center gap-px rounded-[9px]"
+    <div className="flex items-center gap-1 rounded-xl bg-muted/50 p-1 pr-1.5 transition-colors duration-150 [@media(hover:hover)]:hover:bg-muted">
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 rounded-lg p-1 text-left outline-none transition-transform duration-100 ease-out focus-visible:ring-2 focus-visible:ring-ring/50 active:scale-[0.99]"
       >
-        <FileIcon name={name} className="size-4" />
-        <span className="text-[7px] leading-none font-semibold tracking-wide">{kind.label}</span>
-      </span>
-      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="truncate font-medium">{name}</span>
-        <span className="truncate text-muted-foreground tabular-nums">{meta}</span>
-      </span>
+        <span
+          style={tint(kind.hue)}
+          className="status-tint flex size-9 shrink-0 flex-col items-center justify-center gap-px rounded-[9px]"
+        >
+          <FileIcon name={file.name} className="size-4" />
+          <span className="text-[7px] leading-none font-semibold tracking-wide">{kind.label}</span>
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="truncate font-medium">{file.name}</span>
+          <span className="truncate text-muted-foreground tabular-nums">{file.meta}</span>
+        </span>
+      </button>
       <Button
         variant="ghost"
         size="icon-sm"
-        aria-label={`Download ${name}`}
+        aria-label={`Download ${file.name}`}
         title="Download"
         className={PRESS}
-        onClick={() => download(name)}
+        nativeButton={false}
+        render={<a href={file.url} download={file.name} />}
       >
         <DownloadSimpleIcon weight={ICON_WEIGHT} />
       </Button>
@@ -125,8 +134,12 @@ function AttachmentCard({ name, meta }: { name: string; meta: string }) {
   );
 }
 
-function download(name: string) {
-  toast.success(`Downloading ${name}`);
+function versionFile(docId: string, v: DocVersion): ViewerFile {
+  return { name: v.file, url: v.url ?? sampleUrl(docId, v.file), meta: `${v.size} · ${formatDate(v.date)}` };
+}
+
+function generatedFile(doc: StudentDocument): ViewerFile {
+  return { name: `${doc.label} (generated).pdf`, url: sampleUrl(doc.id), meta: "Generated copy" };
 }
 
 function kb(bytes: number) {
@@ -145,7 +158,13 @@ export function StudentDocuments() {
   }, []);
 
   function upload(docId: string, entryId: string | null, file: File) {
-    const version: DocVersion = { id: `v-${Date.now()}`, file: file.name, size: kb(file.size), date: TODAY };
+    const version: DocVersion = {
+      id: `v-${Date.now()}`,
+      file: file.name,
+      size: kb(file.size),
+      date: TODAY,
+      url: URL.createObjectURL(file),
+    };
     setDocs((cur) =>
       cur.map((d) => {
         if (d.id !== docId) return d;
@@ -198,7 +217,7 @@ export function StudentDocuments() {
               <StatusBadge status={d.status} />
               <span className="flex shrink-0 items-center gap-1" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
                 {d.hasGenerated ? (
-                  <Button variant="ghost" size="icon-sm" aria-label={`Download generated ${d.label}`} title="Download generated copy" className={PRESS} onClick={() => download(`${d.label}.pdf`)}>
+                  <Button variant="ghost" size="icon-sm" aria-label={`Download generated ${d.label}`} title="Download generated copy" className={PRESS} nativeButton={false} render={<a href={sampleUrl(d.id)} download={`${d.label}.pdf`} />}>
                     <DownloadSimpleIcon weight={ICON_WEIGHT} />
                   </Button>
                 ) : null}
@@ -240,6 +259,7 @@ function DocumentSheet({
   const [entryId, setEntryId] = useState<string | null>(firstOpen?.id ?? null);
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [viewing, setViewing] = useState<ViewerFile | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const target: DocEntry | StudentDocument = doc.entries?.find((e) => e.id === entryId) ?? doc;
@@ -317,8 +337,8 @@ function DocumentSheet({
           <SheetSection title={doc.entries ? `File · ${target.label}` : "File"}>
             {latest || doc.hasGenerated ? (
               <AttachmentCard
-                name={latest?.file ?? `${doc.label} (generated).pdf`}
-                meta={latest ? `${latest.size} · ${formatDate(latest.date)}` : "Generated copy"}
+                file={latest ? versionFile(doc.id, latest) : generatedFile(doc)}
+                onOpen={() => setViewing(latest ? versionFile(doc.id, latest) : generatedFile(doc))}
               />
             ) : (
               <p className="text-muted-foreground">No file yet.</p>
@@ -331,11 +351,17 @@ function DocumentSheet({
             ) : (
               <ul className={SHEET_LIST}>
                 {target.versions.map((v, i) => (
-                  <li key={v.id} className={SHEET_ROW}>
-                    <FileIcon name={v.file} className="size-3.5 shrink-0 text-muted-foreground" />
-                    <span className="flex-1 truncate font-medium">{v.file}</span>
-                    {i === 0 ? <span className="text-[10px] text-muted-foreground">Latest</span> : null}
-                    <span className="text-muted-foreground tabular-nums">{formatDate(v.date)}</span>
+                  <li key={v.id}>
+                    <button
+                      type="button"
+                      onClick={() => setViewing(versionFile(doc.id, v))}
+                      className={cn(SHEET_ROW, "w-full cursor-pointer text-left")}
+                    >
+                      <FileIcon name={v.file} className="size-3.5 shrink-0 text-muted-foreground" />
+                      <span className="flex-1 truncate font-medium">{v.file}</span>
+                      {i === 0 ? <span className="text-[10px] text-muted-foreground">Latest</span> : null}
+                      <span className="text-muted-foreground tabular-nums">{formatDate(v.date)}</span>
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -409,6 +435,7 @@ function DocumentSheet({
           </Button>
         </SheetFooter>
       </SheetContent>
+      <DocumentViewer file={viewing} onClose={() => setViewing(null)} />
     </Sheet>
   );
 }

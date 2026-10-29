@@ -60,11 +60,14 @@ import {
   formatDate,
   PRESS,
 } from "@/components/admin/admin-table";
+import { DocumentViewer } from "@/components/documents/document-viewer";
+import { studentDocFile, type ViewerFile } from "@/lib/document-files";
 import { DocumentStatusBadge } from "@/components/coordinator/document-status";
 import { GenerateDocumentDialog } from "@/components/coordinator/generate-document-dialog";
 import {
   CLASSES,
   COMPANIES,
+  DOCUMENT_STATUS_LABELS,
   DOCUMENT_TYPES,
   docProgress,
   STUDENTS,
@@ -615,6 +618,7 @@ function StudentSheet({
   onAssign: () => void;
 }) {
   const [generating, setGenerating] = useState(false);
+  const [viewing, setViewing] = useState<ViewerFile | null>(null);
   const group = CLASSES.find((c) => c.id === student.classId);
   const placement = company(student.companyId);
   const hours = student.absences.reduce((sum, a) => sum + a.hours, 0);
@@ -688,9 +692,18 @@ function StudentSheet({
               >
               <ul className={SHEET_LIST}>
                 {DOCUMENT_TYPES.map((d) => (
-                  <li key={d.id} className={cn(SHEET_ROW, "justify-between")}>
-                    <span className="font-medium">{d.label}</span>
-                    <DocumentStatusBadge status={student.documents[d.id]} />
+                  <li key={d.id}>
+                    <button
+                      type="button"
+                      disabled={student.documents[d.id] === "missing"}
+                      onClick={() =>
+                        setViewing(studentDocFile(student.name, d, DOCUMENT_STATUS_LABELS[student.documents[d.id]]))
+                      }
+                      className={cn(SHEET_ROW, "w-full justify-between text-left enabled:cursor-pointer")}
+                    >
+                      <span className="font-medium">{d.label}</span>
+                      <DocumentStatusBadge status={student.documents[d.id]} />
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -745,6 +758,7 @@ function StudentSheet({
             </Button>
           </SheetFooter>
         </SheetContent>
+        <DocumentViewer file={viewing} onClose={() => setViewing(null)} />
       </Sheet>
       <GenerateDocumentDialog
         open={generating}

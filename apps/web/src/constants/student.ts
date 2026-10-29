@@ -13,7 +13,7 @@ export const STUDENT_STATUS_LABELS: Record<StudentDocStatus, string> = {
   returned: "Returned",
 };
 
-export type DocVersion = { id: string; file: string; size: string; date: string };
+export type DocVersion = { id: string; file: string; size: string; date: string; /** Blob or public URL; mock versions fall back to a sample. */ url?: string };
 
 export type DocEntry = {
   id: string;
