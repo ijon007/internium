@@ -47,7 +47,7 @@ export function AdminTable({
   children,
   empty,
 }: {
-  head: { label: string; className?: string }[];
+  head: { label: ReactNode; className?: string }[];
   children: ReactNode;
   empty?: ReactNode;
 }) {
@@ -62,9 +62,10 @@ export function AdminTable({
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-border/70">
-              {head.map((cell) => (
+              {head.map((cell, index) => (
                 <th
-                  key={cell.label}
+                  // biome-ignore lint/suspicious/noArrayIndexKey: static header
+                  key={index}
                   scope="col"
                   className={cn(
                     "h-8 px-3 text-[11px] font-medium tracking-[0.01em] whitespace-nowrap text-muted-foreground",
