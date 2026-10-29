@@ -8,7 +8,7 @@ import {
 import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
 import { Input } from "@internium/ui/components/input";
-import { CameraIcon } from "@phosphor-icons/react";
+import { CameraIcon, CheckIcon } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -48,6 +48,7 @@ export function AccountSettings() {
             disabled={!dirty || name.trim().length === 0}
             onClick={() => toast.success("Profile saved")}
           >
+            <CheckIcon weight="fill" data-icon="inline-start" />
             Save
           </Button>
         }

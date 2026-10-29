@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@internium/ui/components/dropdown-menu";
 import { Input } from "@internium/ui/components/input";
-import { BuildingsIcon, CaretDownIcon } from "@phosphor-icons/react";
+import { BuildingsIcon, CaretDownIcon, CheckIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -72,6 +72,7 @@ export function SchoolSettings() {
             type="button"
             onClick={() => toast.success("School details saved")}
           >
+            <CheckIcon weight="fill" data-icon="inline-start" />
             Save
           </Button>
         }
