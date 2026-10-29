@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { PageHeading } from "@/components/dashboard/page-heading";
 import {
   ADMIN_ACTIVITY,
   ADMIN_ACTIVITY_LABELS,
@@ -92,11 +93,9 @@ export function AdminDashboard() {
   }
 
   return (
-    <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-5 overflow-y-auto pt-4 pb-8">
+    <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-5 pt-4 pb-8">
       <header className="flex flex-col gap-1">
-        <h1 className="font-heading text-[1.75rem] leading-none font-semibold tracking-[-0.02em]">
-          Dashboard
-        </h1>
+        <PageHeading>Dashboard</PageHeading>
         <p className="text-sm text-muted-foreground">
           Users, access, and school operations.
         </p>
