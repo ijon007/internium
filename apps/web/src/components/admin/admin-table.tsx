@@ -1,3 +1,12 @@
+import { Button } from "@internium/ui/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@internium/ui/components/dropdown-menu";
+import { CaretDownIcon } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 import { PageHeading } from "@/components/dashboard/page-heading";
 import { cn } from "@/lib/utils";
@@ -94,4 +103,54 @@ export function formatDate(iso: string, withTime = false) {
     year: "numeric",
     ...(withTime ? { hour: "2-digit", minute: "2-digit" } : {}),
   }).format(new Date(iso));
+}
+
+export const ADMIN_ICON_WEIGHT = "bold";
+
+export function AdminDropdown<T extends string>({
+  label,
+  value,
+  items,
+  onChange,
+  className,
+}: {
+  label: string;
+  value: T;
+  items: readonly { value: T; label: string }[];
+  onChange: (value: T) => void;
+  className?: string;
+}) {
+  const current = items.find((item) => item.value === value);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            type="button"
+            variant="outline"
+            aria-label={label}
+            className={cn("justify-between gap-1.5 font-normal", PRESS, className)}
+          />
+        }
+      >
+        <span className="truncate">{current?.label ?? label}</span>
+        <CaretDownIcon
+          weight={ADMIN_ICON_WEIGHT}
+          className="size-3 text-muted-foreground"
+        />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="min-w-36">
+        <DropdownMenuRadioGroup
+          value={value}
+          onValueChange={(next) => onChange(next as T)}
+        >
+          {items.map((item) => (
+            <DropdownMenuRadioItem key={item.value} value={item.value}>
+              {item.label}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }

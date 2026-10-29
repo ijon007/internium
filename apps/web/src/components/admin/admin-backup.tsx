@@ -18,6 +18,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import {
+  ADMIN_ICON_WEIGHT,
   AdminPage,
   AdminTable,
   CELL,
@@ -29,7 +30,6 @@ import {
   ADMIN_BACKUPS,
   type AdminBackupStatus,
 } from "@/constants/admin-users";
-import { ICON_WEIGHT } from "@/constants/navigation";
 import { cn } from "@/lib/utils";
 
 const STATUS_LABELS: Record<AdminBackupStatus, string> = {
@@ -85,9 +85,9 @@ export function AdminBackup() {
           <CardAction>
             <Button className={PRESS} onClick={runBackup} disabled={running}>
               {running ? (
-                <CircleNotchIcon className="animate-spin" />
+                <CircleNotchIcon weight={ADMIN_ICON_WEIGHT} className="animate-spin" />
               ) : (
-                <DatabaseIcon weight={ICON_WEIGHT} />
+                <DatabaseIcon weight={ADMIN_ICON_WEIGHT} />
               )}
               {running ? "Backing up…" : "Run backup now"}
             </Button>
@@ -138,7 +138,7 @@ export function AdminBackup() {
                   className={PRESS}
                   onClick={() => toast("Download starting")}
                 >
-                  <DownloadSimpleIcon weight={ICON_WEIGHT} />
+                  <DownloadSimpleIcon weight={ADMIN_ICON_WEIGHT} />
                 </Button>
               </td>
             </tr>

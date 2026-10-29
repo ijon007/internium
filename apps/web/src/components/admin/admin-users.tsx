@@ -26,13 +26,6 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@internium/ui/components/field";
 import { Input } from "@internium/ui/components/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@internium/ui/components/select";
-import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -54,6 +47,8 @@ import {
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
+  AdminDropdown,
+  ADMIN_ICON_WEIGHT,
   AdminPage,
   AdminTable,
   AdminTableEmpty,
@@ -67,22 +62,22 @@ import {
   type AdminUser,
   type AdminUserStatus,
 } from "@/constants/admin-users";
-import { ICON_WEIGHT } from "@/constants/navigation";
 import { ROLE_LABELS, ROLE_PICKER_ORDER, type Role } from "@/constants/roles";
 import { cn } from "@/lib/utils";
 
 type RoleFilter = Role | "all";
 type StatusFilter = AdminUserStatus | "all";
 
-const ROLE_FILTER_ITEMS = [
+const ROLE_FILTER_ITEMS: { value: RoleFilter; label: string }[] = [
   { value: "all", label: "All roles" },
   ...ROLE_PICKER_ORDER.map((role) => ({ value: role, label: ROLE_LABELS[role] })),
 ];
-const STATUS_FILTER_ITEMS = [
+const STATUS_FILTER_ITEMS: { value: StatusFilter; label: string }[] = [
   { value: "all", label: "Any status" },
   { value: "active", label: "Active" },
   { value: "inactive", label: "Inactive" },
 ];
+const CLASS_ITEMS = ADMIN_CLASSES.map((item) => ({ value: item, label: item }));
 const ROLE_ITEMS = ROLE_PICKER_ORDER.map((role) => ({
   value: role,
   label: ROLE_LABELS[role],
@@ -182,7 +177,7 @@ export function AdminUsers() {
       description="Search, filter, and manage Internium accounts."
       actions={
         <Button className={PRESS} onClick={() => setEditing("new")}>
-          <PlusIcon weight={ICON_WEIGHT} />
+          <PlusIcon weight={ADMIN_ICON_WEIGHT} />
           Add user
         </Button>
       }
@@ -190,7 +185,7 @@ export function AdminUsers() {
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative min-w-48 flex-1">
           <MagnifyingGlassIcon
-            weight={ICON_WEIGHT}
+            weight={ADMIN_ICON_WEIGHT}
             className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground"
           />
           <Input
@@ -201,40 +196,20 @@ export function AdminUsers() {
             className="pl-7"
           />
         </div>
-        <Select
+        <AdminDropdown
+          label="Filter by role"
           items={ROLE_FILTER_ITEMS}
           value={role}
-          onValueChange={(value) => setRole((value ?? "all") as RoleFilter)}
-        >
-          <SelectTrigger className="w-36" aria-label="Filter by role">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {ROLE_FILTER_ITEMS.map((item) => (
-              <SelectItem key={item.value} value={item.value}>
-                {item.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
+          onChange={setRole}
+          className="w-36"
+        />
+        <AdminDropdown
+          label="Filter by status"
           items={STATUS_FILTER_ITEMS}
           value={status}
-          onValueChange={(value) =>
-            setStatus((value ?? "all") as StatusFilter)
-          }
-        >
-          <SelectTrigger className="w-32" aria-label="Filter by status">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {STATUS_FILTER_ITEMS.map((item) => (
-              <SelectItem key={item.value} value={item.value}>
-                {item.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          onChange={setStatus}
+          className="w-32"
+        />
       </div>
 
       <AdminTable
@@ -393,7 +368,7 @@ export function AdminUsers() {
                     toast.success("Password copied");
                   }}
                 >
-                  <CopyIcon weight={ICON_WEIGHT} />
+                  <CopyIcon weight={ADMIN_ICON_WEIGHT} />
                 </Button>
               </span>
             </div>
@@ -435,16 +410,16 @@ function RowMenu({
           />
         }
       >
-        <DotsThreeIcon weight="bold" />
+        <DotsThreeIcon weight={ADMIN_ICON_WEIGHT} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">
         <DropdownMenuItem onClick={onEdit}>
-          <PencilSimpleIcon weight={ICON_WEIGHT} />
+          <PencilSimpleIcon weight={ADMIN_ICON_WEIGHT} />
           Edit
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <UserSwitchIcon weight={ICON_WEIGHT} />
+            <UserSwitchIcon weight={ADMIN_ICON_WEIGHT} />
             Change role
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
@@ -461,18 +436,18 @@ function RowMenu({
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuItem onClick={onReset} disabled={inactive}>
-          <KeyIcon weight={ICON_WEIGHT} />
+          <KeyIcon weight={ADMIN_ICON_WEIGHT} />
           Reset password
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {inactive ? (
           <DropdownMenuItem onClick={onReactivate}>
-            <ArrowCounterClockwiseIcon weight={ICON_WEIGHT} />
+            <ArrowCounterClockwiseIcon weight={ADMIN_ICON_WEIGHT} />
             Reactivate
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem variant="destructive" onClick={onDeactivate}>
-            <ProhibitIcon weight={ICON_WEIGHT} />
+            <ProhibitIcon weight={ADMIN_ICON_WEIGHT} />
             Deactivate
           </DropdownMenuItem>
         )}
@@ -557,45 +532,24 @@ function UserSheet({
             </Field>
             <Field>
               <FieldLabel>Role</FieldLabel>
-              <Select
+              <AdminDropdown
+                label="Role"
                 items={ROLE_ITEMS}
                 value={draft.role}
-                onValueChange={(value) => {
-                  if (value) set("role", value as Role);
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {ROLE_ITEMS.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={(value) => set("role", value)}
+                className="w-full"
+              />
             </Field>
             {draft.role === "student" ? (
               <Field>
                 <FieldLabel>Class</FieldLabel>
-                <Select
+                <AdminDropdown
+                  label="Class"
+                  items={CLASS_ITEMS}
                   value={draft.className}
-                  onValueChange={(value) => {
-                    if (value) set("className", value as string);
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ADMIN_CLASSES.map((item) => (
-                      <SelectItem key={item} value={item}>
-                        {item}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onChange={(value) => set("className", value)}
+                  className="w-full"
+                />
               </Field>
             ) : null}
             {draft.role === "business-mentor" ? (
