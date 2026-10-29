@@ -1,18 +1,13 @@
 import {
-  ArchiveIcon,
   BuildingsIcon,
   CalendarCheckIcon,
-  ChalkboardTeacherIcon,
-  ChartBarIcon,
   ChatCircleIcon,
   ClipboardTextIcon,
   ClockCounterClockwiseIcon,
   DatabaseIcon,
   FileMagnifyingGlassIcon,
-  FilePlusIcon,
   FilesIcon,
   FileTextIcon,
-  HandshakeIcon,
   IdentificationCardIcon,
   SquaresFourIcon,
   StudentIcon,
@@ -51,43 +46,18 @@ export const ROLE_NAV: Record<Role, NavGroup[]> = {
     },
   ],
   coordinator: [
-    OVERVIEW_GROUP,
     {
-      label: "People",
+      label: "Coordinator",
       items: [
+        { title: "Dashboard", path: "", icon: SquaresFourIcon },
         { title: "Classes", path: "classes", icon: UsersThreeIcon },
         { title: "Students", path: "students", icon: StudentIcon },
-        { title: "Teachers", path: "teachers", icon: ChalkboardTeacherIcon },
-      ],
-    },
-    {
-      label: "Companies",
-      items: [
         { title: "Companies", path: "companies", icon: BuildingsIcon },
-        { title: "Assignments", path: "assignments", icon: HandshakeIcon },
-      ],
-    },
-    {
-      label: "Documents",
-      items: [
-        { title: "Documents Overview", path: "documents", icon: FilesIcon },
-        {
-          title: "Generate Documents",
-          path: "generate-documents",
-          icon: FilePlusIcon,
-        },
-      ],
-    },
-    {
-      label: "Records",
-      items: [
-        { title: "Reports", path: "reports", icon: ChartBarIcon },
-        { title: "Archive", path: "archive", icon: ArchiveIcon },
+        { title: "Documents", path: "documents", icon: FilesIcon },
       ],
     },
   ],
-  teacher: [
-    OVERVIEW_GROUP,
+  teacher: [    OVERVIEW_GROUP,
     {
       label: "My Students",
       items: [
