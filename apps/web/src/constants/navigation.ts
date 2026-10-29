@@ -36,14 +36,11 @@ const OVERVIEW_GROUP: NavGroup = {
 
 export const ROLE_NAV: Record<Role, NavGroup[]> = {
   admin: [
-    OVERVIEW_GROUP,
     {
-      label: "Management",
-      items: [{ title: "Users", path: "users", icon: UsersIcon }],
-    },
-    {
-      label: "System",
+      label: "Overview",
       items: [
+        { title: "Dashboard", path: "", icon: SquaresFourIcon },
+        { title: "Users", path: "users", icon: UsersIcon },
         { title: "Backup", path: "backup", icon: DatabaseIcon },
         {
           title: "Activity Log",
