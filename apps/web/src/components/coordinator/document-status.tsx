@@ -9,7 +9,7 @@ export const DOCUMENT_STATUS_STYLES: Record<DocumentStatus, string> = {
   missing: "bg-muted text-muted-foreground",
   uploaded: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
   approved: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-  returned: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+  returned: "bg-red-500/15 text-red-700 dark:text-red-300",
 };
 
 export function DocumentStatusBadge({
