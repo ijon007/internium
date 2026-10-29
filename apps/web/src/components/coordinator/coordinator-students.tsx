@@ -616,7 +616,7 @@ function StudentSheet({
   return (
     <>
       <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
-        <SheetContent className="sm:max-w-md">
+        <SheetContent>
           <SheetHeader>
             <SheetTitle>{student.name}</SheetTitle>
             <SheetDescription>
@@ -624,7 +624,7 @@ function StudentSheet({
             </SheetDescription>
           </SheetHeader>
 
-          <Tabs defaultValue="info" className="flex-1 overflow-y-auto px-4 text-xs">
+          <Tabs defaultValue="info" className="min-h-0 flex-1 overflow-y-auto p-4 text-xs">
             <TabsList>
               <TabsTrigger value="info">Info</TabsTrigger>
               <TabsTrigger value="documents">Documents</TabsTrigger>

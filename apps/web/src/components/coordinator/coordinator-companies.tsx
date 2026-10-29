@@ -184,7 +184,7 @@ function CompanySheet({
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent className="sm:max-w-md">
+      <SheetContent>
         <SheetHeader>
           <SheetTitle>{isNew ? "New company" : company.name}</SheetTitle>
           <SheetDescription>
@@ -192,7 +192,7 @@ function CompanySheet({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 text-xs">
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 text-xs">
           <FieldGroup className="grid grid-cols-2 gap-3">
             {fields.map(([key, label]) => (
               <Field key={key} className={cn(key === "address" && "col-span-2")}>

@@ -197,7 +197,7 @@ function ClassSheet({
         if (!o) onClose();
       }}
     >
-      <SheetContent className="sm:max-w-md">
+      <SheetContent>
         <SheetHeader>
           <SheetTitle>
             {group.name}
@@ -211,7 +211,7 @@ function ClassSheet({
             {readOnly ? "Archived classes are read-only." : group.year}
           </SheetDescription>
         </SheetHeader>
-        <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4">
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
           <FieldGroup className="grid grid-cols-2 gap-3">
             <Field>
               <FieldLabel htmlFor="class-name">Name</FieldLabel>

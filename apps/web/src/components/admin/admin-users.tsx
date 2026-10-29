@@ -506,9 +506,9 @@ function UserSheet({
         if (!open) onClose();
       }}
     >
-      <SheetContent className="sm:max-w-sm">
+      <SheetContent>
         <form
-          className="flex h-full flex-col"
+          className="flex min-h-0 flex-1 flex-col"
           onSubmit={(event) => {
             event.preventDefault();
             if (valid) onSave(draft, invite);
@@ -522,7 +522,7 @@ function UserSheet({
                 : "Update this account's details."}
             </SheetDescription>
           </SheetHeader>
-          <FieldGroup className="flex-1 gap-3 px-4">
+          <FieldGroup className="min-h-0 flex-1 gap-3 overflow-y-auto p-4">
             <Field>
               <FieldLabel htmlFor="user-name">Full name</FieldLabel>
               <Input
