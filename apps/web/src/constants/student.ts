@@ -200,9 +200,11 @@ export const MY_ABSENCES: StudentAbsence[] = [
   { id: "a-1", date: "2026-09-30", reason: "Family matter", recordedBy: "Business mentor", recorder: "Tom Richter" },
 ];
 
-/** Monday of the first internship week; the absences grid runs WEEKS_TOTAL weeks from here. */
-export const INTERNSHIP_START = "2026-09-07";
-export const WEEKS_ATTENDED = 7;
-export const WEEKS_TOTAL = 8;
+/** Days the internship actually meets (Wednesdays and Fridays); absences fall on these. */
+export const INTERNSHIP_SESSIONS = [
+  "2026-09-09", "2026-09-11", "2026-09-16", "2026-09-18", "2026-09-23", "2026-09-25", "2026-09-30", "2026-10-02",
+  "2026-10-07", "2026-10-09", "2026-10-14", "2026-10-16", "2026-10-21", "2026-10-23", "2026-10-28", "2026-10-30",
+  "2026-11-04", "2026-11-06", "2026-11-11", "2026-11-13", "2026-11-18", "2026-11-20", "2026-11-25", "2026-11-27",
+];
 
 export const UPLOAD_HINT = "PDF or Word (.pdf, .doc, .docx), up to 10 MB";

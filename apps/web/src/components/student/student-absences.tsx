@@ -1,99 +1,52 @@
 "use client";
 
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@internium/ui/components/tooltip";
 import { useEffect, useState } from "react";
 import { AdminPage, SURFACE } from "@/components/admin/admin-table";
-import {
-  INTERNSHIP_START,
-  MY_ABSENCES,
-  type StudentAbsence,
-  WEEKS_ATTENDED,
-  WEEKS_TOTAL,
-} from "@/constants/student";
+import { INTERNSHIP_SESSIONS, MY_ABSENCES, type StudentAbsence } from "@/constants/student";
 import { cn } from "@/lib/utils";
 
-const DAY = 86_400_000;
-const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-
-/** Local-midnight date from YYYY-MM-DD, so grid math never drifts across time zones. */
+/** Local-midnight date from YYYY-MM-DD, so comparisons never drift across time zones. */
 const parse = (iso: string) => {
   const [y, m, d] = iso.split("-").map(Number);
   return new Date(y as number, (m as number) - 1, d);
 };
-const iso = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-type Cell = { date: Date; key: string; state: "present" | "absent" | "upcoming"; absence?: StudentAbsence; today: boolean };
+type Session = { date: string; state: "present" | "absent" | "upcoming"; absence?: StudentAbsence };
 
-function buildWeeks(today: Date) {
-  const start = parse(INTERNSHIP_START);
+function buildSessions(todayKey: string): Session[] {
   const byDay = new Map(MY_ABSENCES.map((a) => [a.date, a]));
-  const todayKey = iso(today);
-  return Array.from({ length: WEEKS_TOTAL }, (_, w) =>
-    WEEKDAYS.map((_, d): Cell => {
-      const date = new Date(start.getTime() + (w * 7 + d) * DAY);
-      const key = iso(date);
-      const absence = byDay.get(key);
-      const state = absence ? "absent" : date > today ? "upcoming" : "present";
-      return { date, key, state, absence, today: key === todayKey };
-    }),
-  );
+  return INTERNSHIP_SESSIONS.map((date) => {
+    const absence = byDay.get(date);
+    return { date, absence, state: absence ? "absent" : date > todayKey ? "upcoming" : "present" };
+  });
 }
 
+const todayIso = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
 export function StudentAbsences() {
-  // "Today" is only known on the client; the prerendered HTML uses the start date to avoid a hydration mismatch.
-  const [today, setToday] = useState(() => parse(INTERNSHIP_START));
-  useEffect(() => {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    setToday(now);
-  }, []);
-  const weeks = buildWeeks(today);
-  const days = weeks.flat();
-  const elapsed = days.filter((c) => c.state !== "upcoming").length;
-  const absent = days.filter((c) => c.state === "absent").length;
-  const rate = elapsed ? Math.round(((elapsed - absent) / elapsed) * 100) : 100;
+  // "Today" is only known on the client; the prerendered HTML treats every session as upcoming.
+  const [today, setToday] = useState("");
+  useEffect(() => setToday(todayIso()), []);
+
+  const sessions = buildSessions(today || "0000-00-00");
+  const held = sessions.filter((s) => s.state !== "upcoming");
+  const absent = held.filter((s) => s.state === "absent").length;
+  const attended = held.length - absent;
+  const rate = held.length ? Math.round((attended / held.length) * 100) : 100;
 
   return (
     <AdminPage title="My Absences" description="Absences recorded by your teacher or business mentor.">
-      <section className={cn(SURFACE, "flex flex-col gap-6 rounded-xl p-5 ring-1 sm:flex-row sm:items-center sm:gap-8")}>
-        <div className="flex items-center gap-4">
-          <Ring value={rate} />
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[11px] font-medium text-muted-foreground">Attendance</span>
-            <span className="font-heading text-[1.75rem] leading-none font-semibold tracking-[-0.02em] tabular-nums">
-              {rate}
-              <span className="ml-0.5 text-sm font-normal text-muted-foreground">%</span>
-            </span>
-            <span className="text-[11px] text-muted-foreground tabular-nums">
-              {elapsed - absent} of {elapsed} days so far
-            </span>
-          </div>
-        </div>
-
-        <dl className="grid flex-1 grid-cols-2 gap-px overflow-hidden rounded-lg bg-border/60 ring-1 ring-border/60">
-          <Stat label="Absences" value={String(MY_ABSENCES.length)} unit={MY_ABSENCES.length === 1 ? "day" : "days"} />
-          <Stat label="Weeks attended" value={String(WEEKS_ATTENDED)} unit={`of ${WEEKS_TOTAL}`} />
+      <section className={cn(SURFACE, "flex flex-col gap-5 rounded-xl px-5 py-4 ring-1")}>
+        <dl className="grid grid-cols-3 gap-4">
+          <Stat label="Attendance" value={`${rate}`} unit="%" ring={rate} />
+          <Stat label="Absences" value={String(absent)} unit={absent === 1 ? "session" : "sessions"} />
+          <Stat label="Attended" value={String(attended)} unit={`of ${held.length} so far`} />
         </dl>
-      </section>
-
-      <section className={cn(SURFACE, "flex flex-col gap-4 rounded-xl p-5 ring-1")}>
-        <header className="flex items-baseline justify-between gap-3">
-          <h2 className="text-[13px] font-semibold">Internship weeks</h2>
-          <Legend />
-        </header>
-        <div className="overflow-x-auto">
-          <div className="inline-grid grid-flow-col grid-rows-[auto_repeat(5,auto)] gap-1.5">
-            <span />
-            {WEEKDAYS.map((d) => (
-              <span key={d} className="pr-2 text-[10px] leading-6 text-muted-foreground">
-                {d}
-              </span>
-            ))}
-            {weeks.map((week, w) => (
-              <WeekColumn key={week[0]?.key} week={week} index={w} />
-            ))}
-          </div>
-        </div>
+        <Timeline sessions={sessions} today={today} />
       </section>
 
       <AbsenceList />
@@ -101,81 +54,111 @@ export function StudentAbsences() {
   );
 }
 
-function WeekColumn({ week, index }: { week: Cell[]; index: number }) {
-  const first = week[0]?.date;
+function Stat({ label, value, unit, ring }: { label: string; value: string; unit: string; ring?: number }) {
   return (
-    <>
-      <span className="text-center text-[10px] leading-5 text-muted-foreground tabular-nums" title={first?.toDateString()}>
-        W{index + 1}
-      </span>
-      {week.map((c) => (
-        <span
-          key={c.key}
-          title={`${c.date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}${
-            c.absence ? ` · Absent · ${c.absence.reason}` : c.state === "upcoming" ? " · Upcoming" : " · Present"
-          }`}
-          className={cn(
-            "size-6 rounded-[5px] transition-transform duration-150 ease-out hover:scale-110",
-            c.state === "present" && "bg-foreground/15",
-            c.state === "absent" && "bg-red-500/85",
-            c.state === "upcoming" && "border border-dashed border-border",
-            c.today && "ring-2 ring-foreground/70 ring-offset-2 ring-offset-background",
-          )}
-        />
-      ))}
-    </>
-  );
-}
-
-function Legend() {
-  const items: [string, string][] = [
-    ["Present", "bg-foreground/15"],
-    ["Absent", "bg-red-500/85"],
-    ["Upcoming", "border border-dashed border-border"],
-  ];
-  return (
-    <ul className="flex items-center gap-3">
-      {items.map(([label, cls]) => (
-        <li key={label} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-          <span className={cn("size-2.5 rounded-[3px]", cls)} />
-          {label}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function Stat({ label, value, unit }: { label: string; value: string; unit: string }) {
-  return (
-    <div className="flex flex-col gap-1 bg-background px-4 py-3">
-      <dt className="text-[11px] font-medium text-muted-foreground">{label}</dt>
-      <dd className="font-heading text-xl leading-none font-semibold tracking-[-0.02em] tabular-nums">
-        {value}
-        <span className="ml-1 text-xs font-normal tracking-normal text-muted-foreground">{unit}</span>
-      </dd>
+    <div className="flex items-center gap-2.5">
+      {ring !== undefined ? <Ring value={ring} /> : null}
+      <div className="flex flex-col gap-1">
+        <dt className="text-[11px] font-medium text-muted-foreground">{label}</dt>
+        <dd className="font-heading text-xl leading-none font-semibold tracking-[-0.02em] tabular-nums">
+          {value}
+          <span className="ml-1 text-xs font-normal tracking-normal text-muted-foreground">{unit}</span>
+        </dd>
+      </div>
     </div>
   );
 }
 
-/** Neutral progress ring; colour stays out of it, the number carries the meaning. */
+/** Thin neutral ring; the number carries the meaning, so no colour. */
 function Ring({ value }: { value: number }) {
-  const r = 22;
+  const r = 9;
   const c = 2 * Math.PI * r;
   return (
-    <svg viewBox="0 0 52 52" className="size-14 -rotate-90" aria-hidden>
-      <circle cx="26" cy="26" r={r} fill="none" strokeWidth="5" className="stroke-foreground/10" />
+    <svg viewBox="0 0 24 24" className="size-7 shrink-0 -rotate-90" aria-hidden>
+      <circle cx="12" cy="12" r={r} fill="none" strokeWidth="2.5" className="stroke-foreground/10" />
       <circle
-        cx="26"
-        cy="26"
+        cx="12"
+        cy="12"
         r={r}
         fill="none"
-        strokeWidth="5"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeDasharray={c}
         strokeDashoffset={c * (1 - value / 100)}
         className="stroke-foreground transition-[stroke-dashoffset] duration-300 ease-out"
       />
     </svg>
+  );
+}
+
+const DOT: Record<Session["state"], string> = {
+  present: "bg-foreground/20",
+  absent: "bg-red-500",
+  upcoming: "border border-dashed border-foreground/25",
+};
+
+/** Only the days the internship actually meets, in date order, labelled by month. */
+function Timeline({ sessions, today }: { sessions: Session[]; today: string }) {
+  const months = new Map<string, Session[]>();
+  for (const s of sessions) {
+    const m = parse(s.date).toLocaleDateString("en-GB", { month: "short" });
+    months.set(m, [...(months.get(m) ?? []), s]);
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <TooltipProvider delay={80}>
+        <div className="flex flex-wrap gap-x-5 gap-y-2">
+          {[...months].map(([month, items]) => (
+            <div key={month} className="flex flex-col gap-1.5">
+              <span className="text-[10px] font-medium tracking-[0.06em] text-muted-foreground uppercase">{month}</span>
+              <div className="flex items-center gap-1">
+                {items.map((s) => (
+                  <SessionDot key={s.date} session={s} today={s.date === today} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </TooltipProvider>
+      <ul className="flex items-center gap-3">
+        {(["present", "absent", "upcoming"] as const).map((k) => (
+          <li key={k} className="flex items-center gap-1.5 text-[11px] text-muted-foreground capitalize">
+            <span className={cn("size-2 rounded-full", DOT[k])} />
+            {k}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function SessionDot({ session: s, today }: { session: Session; today: boolean }) {
+  const label = parse(s.date).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+  const status = s.state === "absent" ? "Absent" : s.state === "upcoming" ? "Upcoming" : "Present";
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <span
+            role="img"
+            aria-label={`${label}, ${status}`}
+            className={cn(
+              "size-3.5 rounded-full transition-transform duration-150 ease-out hover:scale-125",
+              DOT[s.state],
+              today && "ring-[1.5px] ring-foreground ring-offset-2 ring-offset-background",
+            )}
+          />
+        }
+      />
+      <TooltipContent>
+        <span className="font-medium">{label}</span>
+        <span className="opacity-70">
+          · {today ? "Today" : status}
+          {s.absence ? ` · ${s.absence.reason}` : null}
+        </span>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
