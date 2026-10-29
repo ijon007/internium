@@ -34,10 +34,7 @@ import {
   SheetBody,
   SheetSection,
 } from "@/components/sheet-section";
-import {
-  STUDENT_STATUS_DOT,
-  StudentStatusBadge,
-} from "@/components/student/student-status";
+import { StatusBadge, statusVars } from "@/components/status-badge";
 import {
   type DocEntry,
   type DocVersion,
@@ -121,7 +118,7 @@ export function StudentDocuments() {
             >
               <span className="relative flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                 <FileTextIcon weight={ICON_WEIGHT} className="size-4" />
-                <span className={cn("absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full ring-2 ring-card", STUDENT_STATUS_DOT[d.status])} />
+                <span style={statusVars(d.status)} className={cn("absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full ring-2 ring-card", "bg-current")} />
               </span>
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="truncate font-medium">{d.label}</span>
@@ -130,7 +127,7 @@ export function StudentDocuments() {
                   {d.entries ? ` · ${d.entries.length} entries` : ""}
                 </span>
               </span>
-              <StudentStatusBadge status={d.status} />
+              <StatusBadge status={d.status} />
               <span className="flex shrink-0 items-center gap-1" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
                 {d.hasGenerated ? (
                   <Button variant="ghost" size="icon-sm" aria-label={`Download generated ${d.label}`} title="Download generated copy" className={PRESS} onClick={() => download(`${d.label}.pdf`)}>
@@ -199,7 +196,7 @@ function DocumentSheet({
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             {doc.label}
-            <StudentStatusBadge status={doc.status} />
+            <StatusBadge status={doc.status} />
           </SheetTitle>
           <SheetDescription>
             {doc.description}
@@ -229,7 +226,7 @@ function DocumentSheet({
                       <span className="text-muted-foreground tabular-nums">
                         {e.updatedAt ? formatDate(e.updatedAt) : "—"}
                       </span>
-                      <StudentStatusBadge status={e.status} />
+                      <StatusBadge status={e.status} />
                     </button>
                   </li>
                 ))}
@@ -240,11 +237,10 @@ function DocumentSheet({
           {target.comment ? (
             <SheetSection title="Teacher's comment">
               <p
+                style={target.status === "returned" ? statusVars("returned") : undefined}
                 className={cn(
                   "flex gap-2 rounded-lg px-3 py-2.5 leading-relaxed",
-                  target.status === "returned"
-                    ? "bg-red-500/10 text-red-800 dark:text-red-200"
-                    : "bg-muted/60",
+                  target.status === "returned" ? "status-tint" : "bg-muted/60",
                 )}
               >
                 <ChatTeardropTextIcon weight={ICON_WEIGHT} className="mt-0.5 size-3.5 shrink-0" />

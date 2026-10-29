@@ -19,7 +19,7 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { AdminPage, SURFACE, formatDate } from "@/components/admin/admin-table";
-import { StudentStatusBadge } from "@/components/student/student-status";
+import { StatusBadge, statusVars } from "@/components/status-badge";
 import {
   MY_ABSENCES,
   MY_DOCUMENTS,
@@ -97,7 +97,7 @@ const CARDS = [
     hint: returned.length ? "Needs your action" : "Nothing returned",
     icon: ArrowUUpLeftIcon,
     tint: returned.length
-      ? "bg-red-500/15 text-red-700 dark:text-red-300"
+      ? "status-tint"
       : "bg-muted text-muted-foreground",
   },
   {
@@ -131,7 +131,8 @@ export function StudentDashboard() {
                 {card.label}
               </CardTitle>
               <CardAction>
-                <span className={cn("flex size-7 items-center justify-center rounded-full", card.tint)}>
+                <span style={card.label === "Returned" ? statusVars("returned") : undefined}
+                  className={cn("flex size-7 items-center justify-center rounded-full", card.tint)}>
                   <card.icon weight={ICON_WEIGHT} className="size-3.5" />
                 </span>
               </CardAction>
@@ -178,15 +179,16 @@ export function StudentDashboard() {
                     <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <span className="truncate font-medium">{item.title}</span>
                       <span
+                        style={item.status === "returned" ? statusVars("returned") : undefined}
                         className={cn(
-                          "truncate text-muted-foreground",
-                          item.status === "returned" && "text-red-700 dark:text-red-300",
+                          "truncate",
+                          item.status === "returned" ? "status-text" : "text-muted-foreground",
                         )}
                       >
                         {item.detail}
                       </span>
                     </span>
-                    <StudentStatusBadge status={item.status} />
+                    <StatusBadge status={item.status} />
                     <ArrowRightIcon
                       weight={ICON_WEIGHT}
                       className="size-3 shrink-0 text-muted-foreground transition-transform duration-150 ease-out group-hover:translate-x-0.5"

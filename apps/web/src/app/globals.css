@@ -14,3 +14,30 @@
 @theme inline {
   --animate-settings-pane: settings-pane 0.18s var(--ease-out-strong) both;
 }
+
+/* Document status palette, shared by every status pill and dot. */
+:root {
+  --status-missing: oklch(0.55 0.01 260);
+  --status-generated: oklch(0.55 0.2 293);
+  --status-uploaded: oklch(0.56 0.15 240);
+  --status-approved: oklch(0.55 0.14 155);
+  --status-returned: oklch(0.56 0.21 25);
+}
+.dark {
+  --status-missing: oklch(0.72 0.01 260);
+  --status-generated: oklch(0.76 0.14 293);
+  --status-uploaded: oklch(0.76 0.12 240);
+  --status-approved: oklch(0.76 0.13 155);
+  --status-returned: oklch(0.74 0.15 25);
+}
+.status-pill {
+  color: var(--status-color);
+  background-color: color-mix(in oklch, var(--status-color) 13%, transparent);
+}
+.status-tint {
+  color: var(--status-color);
+  background-color: color-mix(in oklch, var(--status-color) 12%, transparent);
+}
+.status-text {
+  color: var(--status-color);
+}

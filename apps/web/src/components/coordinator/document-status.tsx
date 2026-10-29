@@ -1,10 +1,7 @@
-import { Badge } from "@internium/ui/components/badge";
-import {
-  DOCUMENT_STATUS_LABELS,
-  type DocumentStatus,
-} from "@/constants/coordinator";
-import { cn } from "@/lib/utils";
+import { StatusBadge } from "@/components/status-badge";
+import type { DocumentStatus } from "@/constants/coordinator";
 
+/** Cell tints for the coordinator documents grid. */
 export const DOCUMENT_STATUS_STYLES: Record<DocumentStatus, string> = {
   missing: "bg-muted text-muted-foreground",
   uploaded: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
@@ -19,12 +16,5 @@ export function DocumentStatusBadge({
   status: DocumentStatus;
   className?: string;
 }) {
-  return (
-    <Badge
-      variant="secondary"
-      className={cn(DOCUMENT_STATUS_STYLES[status], className)}
-    >
-      {DOCUMENT_STATUS_LABELS[status]}
-    </Badge>
-  );
+  return <StatusBadge status={status} className={className} />;
 }
