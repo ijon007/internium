@@ -31,12 +31,14 @@ export function AdminPage({
 }) {
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-5 pt-4 pb-8">
-      <header className="flex items-end justify-between gap-3">
-        <div className="flex flex-col gap-1">
+      <header className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-col gap-1">
           <PageHeading>{title}</PageHeading>
           <p className="text-sm text-muted-foreground">{description}</p>
         </div>
-        {actions}
+        {actions ? (
+          <div className="flex shrink-0 items-center gap-2 *:data-[slot=button]:h-7">{actions}</div>
+        ) : null}
       </header>
       {children}
     </div>
