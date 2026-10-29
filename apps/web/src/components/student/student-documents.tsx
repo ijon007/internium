@@ -19,6 +19,7 @@ import {
   NotebookIcon,
   SignatureIcon,
   DownloadSimpleIcon,
+  PencilSimpleLineIcon,
   FileDocIcon,
   FilePdfIcon,
   FileTextIcon,
@@ -48,6 +49,7 @@ import {
   type StudentDocument,
   UPLOAD_HINT,
 } from "@/constants/student";
+import { DocumentFillSheet } from "@/components/documents/document-fill-sheet";
 import { DocumentViewer } from "@/components/documents/document-viewer";
 import { useRetained } from "@/hooks/use-retained";
 import { sampleUrl, type ViewerFile } from "@/lib/document-files";
@@ -157,14 +159,34 @@ export function StudentDocuments() {
     if (doc) setOpenId(doc);
   }, []);
 
+  const [filling, setFilling] = useState<{ docId: StudentDocument["id"]; entryId: string | null } | null>(null);
+  const fillDoc = filling ? (docs.find((d) => d.id === filling.docId) ?? null) : null;
+
   function upload(docId: string, entryId: string | null, file: File) {
-    const version: DocVersion = {
+    addVersion(docId, entryId, {
       id: `v-${Date.now()}`,
       file: file.name,
       size: kb(file.size),
       date: TODAY,
       url: URL.createObjectURL(file),
-    };
+    });
+    toast.success("Uploaded", { description: `${file.name} was sent to your teacher for review.` });
+  }
+
+  function submitFilled(doc: StudentDocument) {
+    const name = `${doc.label} (filled).pdf`;
+    addVersion(doc.id, filling?.entryId ?? null, {
+      id: `v-${Date.now()}`,
+      file: name,
+      size: "Filled in app",
+      date: TODAY,
+      url: sampleUrl(doc.id),
+    });
+    setFilling(null);
+    toast.success("Submitted", { description: `${doc.label} was sent to your teacher for review.` });
+  }
+
+  function addVersion(docId: string, entryId: string | null, version: DocVersion) {
     setDocs((cur) =>
       cur.map((d) => {
         if (d.id !== docId) return d;
@@ -191,7 +213,6 @@ export function StudentDocuments() {
         };
       }),
     );
-    toast.success("Uploaded", { description: `${file.name} was sent to your teacher for review.` });
   }
 
   return (
@@ -238,8 +259,11 @@ export function StudentDocuments() {
           open={open !== null}
           onClose={() => setOpenId(null)}
           onUpload={upload}
+          onFill={(entryId) => setFilling({ docId: shown.id, entryId })}
         />
       ) : null}
+
+      <DocumentFillSheet doc={fillDoc} onClose={() => setFilling(null)} onSubmit={submitFilled} />
     </AdminPage>
   );
 }
@@ -249,11 +273,13 @@ function DocumentSheet({
   open,
   onClose,
   onUpload,
+  onFill,
 }: {
   doc: StudentDocument;
   open: boolean;
   onClose: () => void;
   onUpload: (docId: string, entryId: string | null, file: File) => void;
+  onFill: (entryId: string | null) => void;
 }) {
   const firstOpen = doc.entries?.find((e) => e.status !== "approved") ?? doc.entries?.[0];
   const [entryId, setEntryId] = useState<string | null>(firstOpen?.id ?? null);
@@ -334,7 +360,17 @@ function DocumentSheet({
             </SheetSection>
           ) : null}
 
-          <SheetSection title={doc.entries ? `File · ${target.label}` : "File"}>
+          <SheetSection
+            title={doc.entries ? `File · ${target.label}` : "File"}
+            action={
+              doc.hasGenerated ? (
+                <Button variant="ghost" size="sm" className={PRESS} onClick={() => onFill(doc.entries ? entryId : null)}>
+                  <PencilSimpleLineIcon weight={ICON_WEIGHT} />
+                  Fill in app
+                </Button>
+              ) : null
+            }
+          >
             {latest || doc.hasGenerated ? (
               <AttachmentCard
                 file={latest ? versionFile(doc.id, latest) : generatedFile(doc)}
