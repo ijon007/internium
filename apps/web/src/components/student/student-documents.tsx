@@ -12,6 +12,12 @@ import {
 } from "@internium/ui/components/sheet";
 import {
   ArrowsClockwiseIcon,
+  CalendarDotsIcon,
+  ClipboardTextIcon,
+  HandshakeIcon,
+  type Icon,
+  NotebookIcon,
+  SignatureIcon,
   ChatTeardropTextIcon,
   DownloadSimpleIcon,
   FileDocIcon,
@@ -20,7 +26,7 @@ import {
   UploadSimpleIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   AdminPage,
@@ -52,6 +58,28 @@ const TODAY = new Date().toISOString().slice(0, 10);
 function FileIcon({ name, className }: { name: string; className?: string }) {
   const Icon = name.endsWith(".pdf") ? FilePdfIcon : name.match(/\.docx?$/) ? FileDocIcon : FileTextIcon;
   return <Icon weight={ICON_WEIGHT} className={className} />;
+}
+
+/** One tinted tile per document type, so rows scan by shape and colour. */
+const DOC_TYPE: Record<StudentDocument["id"], { icon: Icon; hue: string }> = {
+  contract: { icon: SignatureIcon, hue: "oklch(0.55 0.17 265)" },
+  "monthly-notebook": { icon: NotebookIcon, hue: "oklch(0.62 0.15 65)" },
+  "yearly-program": { icon: CalendarDotsIcon, hue: "oklch(0.55 0.12 185)" },
+  "weekly-report": { icon: ClipboardTextIcon, hue: "oklch(0.55 0.18 320)" },
+  mou: { icon: HandshakeIcon, hue: "oklch(0.55 0.13 150)" },
+};
+
+function tint(hue: string): CSSProperties {
+  return { "--status-color": hue } as CSSProperties;
+}
+
+function DocTypeTile({ id }: { id: StudentDocument["id"] }) {
+  const { icon: TypeIcon, hue } = DOC_TYPE[id];
+  return (
+    <span style={tint(hue)} className="status-tint flex size-8 shrink-0 items-center justify-center rounded-[9px]">
+      <TypeIcon weight={ICON_WEIGHT} className="size-4" />
+    </span>
+  );
 }
 
 function download(name: string) {
@@ -116,10 +144,7 @@ export function StudentDocuments() {
               onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setOpenId(d.id)}
               className="group flex cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2.5 text-xs outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring/50 [@media(hover:hover)]:hover:bg-muted/50"
             >
-              <span className="relative flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                <FileTextIcon weight={ICON_WEIGHT} className="size-4" />
-                <span style={statusVars(d.status)} className={cn("absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full ring-2 ring-card", "bg-current")} />
-              </span>
+              <DocTypeTile id={d.id} />
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="truncate font-medium">{d.label}</span>
                 <span className="truncate text-muted-foreground">
