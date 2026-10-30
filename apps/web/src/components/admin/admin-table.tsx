@@ -31,7 +31,7 @@ export function AdminPage({
   children: ReactNode;
 }) {
   return (
-    <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-5 pt-4 pb-8">
+    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-5 pt-4 pb-8">
       <header className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-1">
           <PageHeading>{title}</PageHeading>
