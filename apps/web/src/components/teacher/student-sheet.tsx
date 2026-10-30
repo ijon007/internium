@@ -77,7 +77,7 @@ export function StudentSheet({
             <TabsTrigger value="absences">Absences</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="info" className="min-h-0 flex-1">
+          <TabsContent value="info" className="flex min-h-0 flex-1 flex-col">
             <SheetBody>
               <SheetSection title="Student">
                 <div className={SHEET_LIST}>
@@ -115,7 +115,7 @@ export function StudentSheet({
             </SheetBody>
           </TabsContent>
 
-          <TabsContent value="documents" className="min-h-0 flex-1">
+          <TabsContent value="documents" className="flex min-h-0 flex-1 flex-col">
             <SheetBody>
               <SheetSection title="Documents" count={TEACHER_DOC_TYPES.length}>
                 <ul className={SHEET_LIST}>
@@ -154,7 +154,7 @@ export function StudentSheet({
             </SheetBody>
           </TabsContent>
 
-          <TabsContent value="absences" className="min-h-0 flex-1">
+          <TabsContent value="absences" className="flex min-h-0 flex-1 flex-col">
             <SheetBody>
               <SheetStats
                 items={[

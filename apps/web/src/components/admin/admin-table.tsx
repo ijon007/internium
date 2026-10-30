@@ -59,7 +59,7 @@ export function AdminTable({
     <div
       className={cn(
         SURFACE,
-        "overflow-hidden rounded-xl ring-1 text-xs",
+        "shrink-0 overflow-hidden rounded-xl ring-1 text-xs",
       )}
     >
       <div className="overflow-x-auto">
