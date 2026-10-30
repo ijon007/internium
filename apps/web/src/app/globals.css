@@ -22,6 +22,10 @@
   --status-uploaded: oklch(0.56 0.15 240);
   --status-approved: oklch(0.55 0.14 155);
   --status-returned: oklch(0.56 0.21 25);
+  /* Attendance: grey pending, green present, red absent. */
+  --status-pending: var(--status-missing);
+  --status-present: var(--status-approved);
+  --status-absent: var(--status-returned);
 }
 .dark {
   --status-missing: oklch(0.72 0.01 260);
@@ -29,6 +33,9 @@
   --status-uploaded: oklch(0.76 0.12 240);
   --status-approved: oklch(0.76 0.13 155);
   --status-returned: oklch(0.74 0.15 25);
+  --status-pending: var(--status-missing);
+  --status-present: var(--status-approved);
+  --status-absent: var(--status-returned);
 }
 .status-pill {
   color: var(--status-color);

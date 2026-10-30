@@ -1,7 +1,15 @@
 import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
-export type StatusKey = "missing" | "generated" | "uploaded" | "approved" | "returned";
+export type StatusKey =
+  | "missing"
+  | "generated"
+  | "uploaded"
+  | "approved"
+  | "returned"
+  | "pending"
+  | "present"
+  | "absent";
 
 export const STATUS_LABELS: Record<StatusKey, string> = {
   missing: "Missing",
@@ -9,6 +17,9 @@ export const STATUS_LABELS: Record<StatusKey, string> = {
   uploaded: "Uploaded",
   approved: "Approved",
   returned: "Returned",
+  pending: "Pending",
+  present: "Present",
+  absent: "Absent",
 };
 
 /**
