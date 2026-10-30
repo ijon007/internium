@@ -5,7 +5,6 @@ import {
   ClipboardTextIcon,
   ClockCounterClockwiseIcon,
   DatabaseIcon,
-  FileMagnifyingGlassIcon,
   FilesIcon,
   FileTextIcon,
   IdentificationCardIcon,
@@ -57,27 +56,13 @@ export const ROLE_NAV: Record<Role, NavGroup[]> = {
       ],
     },
   ],
-  teacher: [    OVERVIEW_GROUP,
+  teacher: [
     {
-      label: "My Students",
+      label: "Teacher",
       items: [
-        { title: "My Classes", path: "classes", icon: UsersThreeIcon },
-        {
-          title: "Student Profile",
-          path: "students",
-          icon: IdentificationCardIcon,
-        },
-      ],
-    },
-    {
-      label: "Work",
-      items: [
-        {
-          title: "Documents to Review",
-          path: "review",
-          icon: FileMagnifyingGlassIcon,
-        },
-        { title: "Absences", path: "absences", icon: UserMinusIcon },
+        { title: "Dashboard", path: "", icon: SquaresFourIcon },
+        { title: "My Students", path: "students", icon: StudentIcon },
+        { title: "Documents", path: "documents", icon: FilesIcon },
       ],
     },
   ],

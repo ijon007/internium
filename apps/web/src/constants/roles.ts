@@ -18,7 +18,7 @@ export const ROLE_LABELS: Record<Role, string> = {
 
 export const ROLE_DESCRIPTIONS: Record<Role, string> = {
   student: "Your internship, documents, and absences.",
-  teacher: "Classes, student profiles, and reviews.",
+  teacher: "Your students, their documents, and absences.",
   coordinator: "People, companies, and placements.",
   admin: "Users, access, and school operations.",
   "business-mentor": "Workplace students and weekly attendance.",
