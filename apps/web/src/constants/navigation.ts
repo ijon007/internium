@@ -2,7 +2,6 @@ import {
   BuildingsIcon,
   CalendarCheckIcon,
   ChatCircleIcon,
-  ClipboardTextIcon,
   ClockCounterClockwiseIcon,
   DatabaseIcon,
   FilesIcon,
@@ -23,10 +22,6 @@ export const SHARED_NAV: NavItem[] = [
   { title: "Chat", path: "chat", icon: ChatCircleIcon },
 ];
 
-const OVERVIEW_GROUP: NavGroup = {
-  label: "Overview",
-  items: [{ title: "Dashboard", path: "", icon: SquaresFourIcon }],
-};
 
 export const ROLE_NAV: Record<Role, NavGroup[]> = {
   admin: [
@@ -78,26 +73,12 @@ export const ROLE_NAV: Record<Role, NavGroup[]> = {
     },
   ],
   "business-mentor": [
-    OVERVIEW_GROUP,
     {
-      label: "Students",
+      label: "Business Mentor",
       items: [
+        { title: "Dashboard", path: "", icon: SquaresFourIcon },
         { title: "My Students", path: "students", icon: StudentIcon },
-        {
-          title: "Student Documents",
-          path: "documents",
-          icon: ClipboardTextIcon,
-        },
-      ],
-    },
-    {
-      label: "Attendance",
-      items: [
-        {
-          title: "Weekly Attendance",
-          path: "attendance",
-          icon: CalendarCheckIcon,
-        },
+        { title: "Attendance", path: "attendance", icon: CalendarCheckIcon },
       ],
     },
   ],
