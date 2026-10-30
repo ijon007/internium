@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import { TeacherDashboard } from "@/components/teacher/teacher-dashboard";
 
 export const metadata: Metadata = {
   title: "Teacher",
-  description: "Teacher dashboard for supervising student internships.",
 };
 
-export default function TeacherPage() {
-  return <p>Teacher Page</p>;
+export default function Page() {
+  return <TeacherDashboard />;
 }

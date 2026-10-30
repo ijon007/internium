@@ -344,3 +344,58 @@ export const TEACHER_STUDENTS: TeacherStudent[] = [
 
 export const docsApproved = (s: TeacherStudent) =>
   TEACHER_DOC_TYPES.filter((t) => s.documents[t.id].status === "approved").length;
+
+/** A single document of a single student, addressed as `${studentId}:${type}`. */
+export type ReviewItem = { key: string; student: TeacherStudent; type: TeacherDocType; doc: TeacherDoc };
+
+export const reviewKey = (studentId: string, type: TeacherDocType) => `${studentId}:${type}`;
+
+export function allDocuments(students: TeacherStudent[]): ReviewItem[] {
+  return students.flatMap((student) =>
+    TEACHER_DOC_TYPES.map((t) => ({
+      key: reviewKey(student.id, t.id),
+      student,
+      type: t.id,
+      doc: student.documents[t.id],
+    })),
+  );
+}
+
+/** Uploaded documents waiting for review, oldest upload first. */
+export const reviewQueue = (students: TeacherStudent[]) =>
+  allDocuments(students)
+    .filter((i) => i.doc.status === "uploaded")
+    .sort((a, b) => (a.doc.uploadedAt ?? "").localeCompare(b.doc.uploadedAt ?? ""));
+
+/** Approve or return a document, recording the comment in its history. */
+export function applyReview(
+  students: TeacherStudent[],
+  key: string,
+  action: "approved" | "returned",
+  body: string,
+): TeacherStudent[] {
+  const [studentId, type] = key.split(":") as [string, TeacherDocType];
+  const today = new Date().toISOString().slice(0, 10);
+  return students.map((s) => {
+    if (s.id !== studentId) return s;
+    const doc = s.documents[type];
+    const comments = body.trim()
+      ? [...doc.comments, { id: `cm-${Date.now()}`, author: TEACHER_ME.name, date: today, body: body.trim(), action }]
+      : doc.comments;
+    return { ...s, documents: { ...s.documents, [type]: { ...doc, status: action, comments } } };
+  });
+}
+
+export function addAbsence(students: TeacherStudent[], studentId: string, date: string, reason: string) {
+  return students.map((s) =>
+    s.id === studentId
+      ? {
+          ...s,
+          absences: [
+            { id: `a-${Date.now()}`, date, reason, recordedBy: "Teacher" as const, recorder: TEACHER_ME.name },
+            ...s.absences,
+          ].sort((a, b) => b.date.localeCompare(a.date)),
+        }
+      : s,
+  );
+}
