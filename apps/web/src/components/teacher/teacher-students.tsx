@@ -20,7 +20,7 @@ import {
   UserMinusIcon,
 } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminDropdown, AdminPage, AdminTable, AdminTableEmpty, CELL, formatDate } from "@/components/admin/admin-table";
 import { CHAT_PATH } from "@/constants/chat";
@@ -44,6 +44,7 @@ import { ReviewSheet } from "@/components/teacher/review-sheet";
 import { AddAbsenceDialog } from "@/components/teacher/add-absence-dialog";
 import { StudentSheet } from "@/components/teacher/student-sheet";
 import { useRetained } from "@/hooks/use-retained";
+import { useAttendance, withSessionAbsences } from "@/lib/attendance-store";
 import { cn } from "@/lib/utils";
 import { getRoleHref } from "@/utils/navigation";
 
@@ -59,7 +60,10 @@ export function useMessage() {
 }
 
 export function TeacherStudents() {
-  const [students, setStudents] = useState(TEACHER_STUDENTS);
+  const [own, setStudents] = useState(TEACHER_STUDENTS);
+  // Absences the business mentor marks this session show up here (mock notification).
+  const book = useAttendance();
+  const students = useMemo(() => withSessionAbsences(own, book), [own, book]);
   const [query, setQuery] = useState("");
   const [classId, setClassId] = useState("all");
   const [companyId, setCompanyId] = useState("all");
