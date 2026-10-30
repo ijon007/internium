@@ -3,6 +3,9 @@
 import { ICON_WEIGHT } from "@/constants/navigation";
 import { CheckCircleIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { ReviewSheet } from "@/components/teacher/review-sheet";
+import { useRetained } from "@/hooks/use-retained";
 import { AdminDropdown, AdminPage, AdminTable, AdminTableEmpty, CELL, formatDate } from "@/components/admin/admin-table";
 import { StatusBadge } from "@/components/status-badge";
 import { DocTypeTile } from "@/components/student/student-documents";
@@ -11,6 +14,7 @@ import {
   TEACHER_DOC_TYPES,
   TEACHER_STUDENTS,
   allDocuments,
+  applyReview,
   classOf,
   docTypeLabel,
 } from "@/constants/teacher";
@@ -47,6 +51,29 @@ export function TeacherDocuments() {
         (classId === "all" || i.student.classId === classId),
     )
     .sort((a, b) => (a.doc.uploadedAt ?? "").localeCompare(b.doc.uploadedAt ?? ""));
+
+  const all = allDocuments(students);
+  const openItem = all.find((i) => i.key === openKey) ?? null;
+  const shown = useRetained(openItem);
+  // Navigate within the filtered list; an item opened from elsewhere still gets a position.
+  const keys = visible.map((i) => i.key);
+  const index = shown ? keys.indexOf(shown.key) : -1;
+  const prevKey = index > 0 ? keys[index - 1] : undefined;
+  const nextKey = index >= 0 ? keys[index + 1] : keys[0];
+
+  function review(action: "approved" | "returned", comment: string) {
+    if (!shown) return;
+    const name = shown.student.name;
+    const label = docTypeLabel(shown.type);
+    setStudents((cur) => applyReview(cur, shown.key, action, comment));
+    toast.success(action === "approved" ? "Approved" : "Returned", {
+      description: `${label} · ${name}${action === "returned" ? " — sent back with your comment" : ""}`,
+    });
+    // Fast reviewing: move on to the next waiting document, or close when the queue is empty.
+    const leaves = status !== "all" && status !== action;
+    const after = nextKey ?? (leaves ? prevKey : undefined);
+    setOpenKey(after ?? (leaves ? null : shown.key));
+  }
 
   return (
     <AdminPage title="Documents" description="Review submitted documents, oldest first.">
@@ -110,6 +137,19 @@ export function TeacherDocuments() {
           </tr>
         ))}
       </AdminTable>
+
+      {shown ? (
+        <ReviewSheet
+          open={openItem !== null}
+          item={shown}
+          index={Math.max(index, 0)}
+          total={Math.max(keys.length, 1)}
+          onPrev={prevKey ? () => setOpenKey(prevKey) : undefined}
+          onNext={nextKey && nextKey !== shown.key ? () => setOpenKey(nextKey) : undefined}
+          onClose={() => setOpenKey(null)}
+          onReview={review}
+        />
+      ) : null}
     </AdminPage>
   );
 }

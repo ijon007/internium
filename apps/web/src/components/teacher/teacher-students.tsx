@@ -27,7 +27,9 @@ import { CHAT_PATH } from "@/constants/chat";
 import {
   ABSENCE_THRESHOLD,
   addAbsence,
+  applyReview,
   docTypeLabel,
+  reviewKey,
   TEACHER_CLASSES,
   TEACHER_COMPANIES,
   TEACHER_DOC_TYPES,
@@ -38,11 +40,10 @@ import {
   companyOf,
   docsApproved,
 } from "@/constants/teacher";
-import { DocumentViewer } from "@/components/documents/document-viewer";
+import { ReviewSheet } from "@/components/teacher/review-sheet";
 import { AddAbsenceDialog } from "@/components/teacher/add-absence-dialog";
 import { StudentSheet } from "@/components/teacher/student-sheet";
 import { useRetained } from "@/hooks/use-retained";
-import { sampleUrl, type ViewerFile } from "@/lib/document-files";
 import { cn } from "@/lib/utils";
 import { getRoleHref } from "@/utils/navigation";
 
@@ -66,18 +67,27 @@ export function TeacherStudents() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [tab, setTab] = useState("info");
   const [absenceFor, setAbsenceFor] = useState<string | null>(null);
-  const [viewing, setViewing] = useState<ViewerFile | null>(null);
+  const [docType, setDocType] = useState<TeacherDocType | null>(null);
   const message = useMessage();
   const openStudent = students.find((s) => s.id === openId) ?? null;
   const shown = useRetained(openStudent);
   const absenceStudent = students.find((s) => s.id === absenceFor) ?? null;
   const shownAbsence = useRetained(absenceStudent);
 
-  function openDocument(s: TeacherStudent, type: TeacherDocType) {
-    const v = s.documents[type].versions[0];
-    if (!v) return;
-    setViewing({ name: v.file, url: sampleUrl(type, v.file), meta: `${s.name} · ${docTypeLabel(type)}` });
-  }
+  // Review from the student sheet: prev/next steps through this student's submitted documents.
+  const docItems = shown
+    ? TEACHER_DOC_TYPES.filter((t) => shown.documents[t.id].versions.length > 0).map((t) => ({
+        key: reviewKey(shown.id, t.id),
+        student: shown,
+        type: t.id,
+        doc: shown.documents[t.id],
+      }))
+    : [];
+  const reviewing = docItems.find((i) => i.type === docType) ?? null;
+  const shownReview = useRetained(reviewing);
+  const reviewIndex = shownReview ? docItems.findIndex((i) => i.type === shownReview.type) : -1;
+  const prevDoc = docItems[reviewIndex - 1];
+  const nextDoc = reviewIndex >= 0 ? docItems[reviewIndex + 1] : undefined;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -219,13 +229,32 @@ export function TeacherStudents() {
           student={shown}
           tab={tab}
           onTabChange={setTab}
-          onClose={() => setOpenId(null)}
-          onOpenDocument={(type) => openDocument(shown, type)}
+          onClose={() => {
+            setOpenId(null);
+            setDocType(null);
+          }}
+          onOpenDocument={setDocType}
           onAddAbsence={() => setAbsenceFor(shown.id)}
           onMessage={message}
         />
       ) : null}
-      <DocumentViewer file={viewing} onClose={() => setViewing(null)} />
+      {shownReview ? (
+        <ReviewSheet
+          open={reviewing !== null && openStudent !== null}
+          item={shownReview}
+          index={Math.max(reviewIndex, 0)}
+          total={docItems.length}
+          onPrev={prevDoc ? () => setDocType(prevDoc.type) : undefined}
+          onNext={nextDoc ? () => setDocType(nextDoc.type) : undefined}
+          onClose={() => setDocType(null)}
+          onReview={(action, comment) => {
+            setStudents((cur) => applyReview(cur, shownReview.key, action, comment));
+            toast.success(action === "approved" ? "Approved" : "Returned", {
+              description: `${docTypeLabel(shownReview.type)} · ${shownReview.student.name}`,
+            });
+          }}
+        />
+      ) : null}
 
       <AddAbsenceDialog
         open={absenceStudent !== null}
