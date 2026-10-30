@@ -22,19 +22,27 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { AdminDropdown, AdminPage, AdminTable, AdminTableEmpty, CELL } from "@/components/admin/admin-table";
+import { AdminDropdown, AdminPage, AdminTable, AdminTableEmpty, CELL, formatDate } from "@/components/admin/admin-table";
 import { CHAT_PATH } from "@/constants/chat";
 import {
   ABSENCE_THRESHOLD,
+  addAbsence,
+  docTypeLabel,
   TEACHER_CLASSES,
   TEACHER_COMPANIES,
   TEACHER_DOC_TYPES,
   TEACHER_STUDENTS,
+  type TeacherDocType,
   type TeacherStudent,
   classOf,
   companyOf,
   docsApproved,
 } from "@/constants/teacher";
+import { DocumentViewer } from "@/components/documents/document-viewer";
+import { AddAbsenceDialog } from "@/components/teacher/add-absence-dialog";
+import { StudentSheet } from "@/components/teacher/student-sheet";
+import { useRetained } from "@/hooks/use-retained";
+import { sampleUrl, type ViewerFile } from "@/lib/document-files";
 import { cn } from "@/lib/utils";
 import { getRoleHref } from "@/utils/navigation";
 
@@ -58,7 +66,18 @@ export function TeacherStudents() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [tab, setTab] = useState("info");
   const [absenceFor, setAbsenceFor] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<ViewerFile | null>(null);
   const message = useMessage();
+  const openStudent = students.find((s) => s.id === openId) ?? null;
+  const shown = useRetained(openStudent);
+  const absenceStudent = students.find((s) => s.id === absenceFor) ?? null;
+  const shownAbsence = useRetained(absenceStudent);
+
+  function openDocument(s: TeacherStudent, type: TeacherDocType) {
+    const v = s.documents[type].versions[0];
+    if (!v) return;
+    setViewing({ name: v.file, url: sampleUrl(type, v.file), meta: `${s.name} · ${docTypeLabel(type)}` });
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -193,6 +212,32 @@ export function TeacherStudents() {
           );
         })}
       </AdminTable>
+
+      {shown ? (
+        <StudentSheet
+          open={openStudent !== null}
+          student={shown}
+          tab={tab}
+          onTabChange={setTab}
+          onClose={() => setOpenId(null)}
+          onOpenDocument={(type) => openDocument(shown, type)}
+          onAddAbsence={() => setAbsenceFor(shown.id)}
+          onMessage={message}
+        />
+      ) : null}
+      <DocumentViewer file={viewing} onClose={() => setViewing(null)} />
+
+      <AddAbsenceDialog
+        open={absenceStudent !== null}
+        studentName={shownAbsence?.name ?? ""}
+        onClose={() => setAbsenceFor(null)}
+        onAdd={(date, reason) => {
+          if (!absenceFor) return;
+          setStudents((cur) => addAbsence(cur, absenceFor, date, reason));
+          toast.success("Absence added", { description: `${shownAbsence?.name} · ${formatDate(date)}` });
+          setAbsenceFor(null);
+        }}
+      />
     </AdminPage>
   );
 }
