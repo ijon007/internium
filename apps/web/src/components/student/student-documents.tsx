@@ -60,7 +60,7 @@ const ACCEPT = ".pdf,.doc,.docx";
 const MAX_BYTES = 10 * 1024 * 1024;
 const TODAY = new Date().toISOString().slice(0, 10);
 
-function FileIcon({ name, className }: { name: string; className?: string }) {
+export function FileIcon({ name, className }: { name: string; className?: string }) {
   const Icon = name.endsWith(".pdf") ? FilePdfIcon : name.match(/\.docx?$/) ? FileDocIcon : FileTextIcon;
   return <Icon weight={ICON_WEIGHT} className={className} />;
 }
@@ -78,7 +78,7 @@ function tint(hue: string): CSSProperties {
   return { "--status-color": hue } as CSSProperties;
 }
 
-function DocTypeTile({ id }: { id: StudentDocument["id"] }) {
+export function DocTypeTile({ id }: { id: StudentDocument["id"] }) {
   const { icon: TypeIcon, hue } = DOC_TYPE[id];
   return (
     <span style={tint(hue)} className="status-tint flex size-8 shrink-0 items-center justify-center rounded-[9px]">
@@ -100,7 +100,7 @@ function fileKind(name: string) {
 }
 
 /** Compact attachment row: type tile, name, size · date. Opens in the reader; inline download. */
-function AttachmentCard({ file, onOpen }: { file: ViewerFile; onOpen: () => void }) {
+export function AttachmentCard({ file, onOpen }: { file: ViewerFile; onOpen: () => void }) {
   const kind = fileKind(file.name);
   return (
     <div className="flex items-center gap-1 rounded-xl bg-muted/50 p-1 pr-1.5 transition-colors duration-150 [@media(hover:hover)]:hover:bg-muted">

@@ -31,8 +31,8 @@ export function AdminPage({
   children: ReactNode;
 }) {
   return (
-    <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-5 pt-4 pb-8">
-      <header className="flex items-center justify-between gap-3">
+    <div className="mx-auto flex h-full min-h-0 w-full max-w-5xl flex-1 flex-col gap-5 pt-4 pb-8">
+      <header className="flex shrink-0 items-center justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-1">
           <PageHeading>{title}</PageHeading>
           <p className="text-sm text-muted-foreground">{description}</p>
@@ -59,20 +59,20 @@ export function AdminTable({
     <div
       className={cn(
         SURFACE,
-        "overflow-hidden rounded-xl ring-1 text-xs",
+        "flex min-h-0 flex-col overflow-hidden rounded-xl ring-1 text-xs",
       )}
     >
-      <div className="overflow-x-auto">
+      <div className="min-h-0 overflow-auto overscroll-contain">
         <table className="w-full border-collapse text-left">
           <thead>
-            <tr className="border-b border-border/70">
+            <tr>
               {head.map((cell, index) => (
                 <th
                   // biome-ignore lint/suspicious/noArrayIndexKey: static header
                   key={index}
                   scope="col"
                   className={cn(
-                    "h-8 px-3 text-[11px] font-medium tracking-[0.01em] whitespace-nowrap text-muted-foreground",
+                    "sticky top-0 z-10 h-8 bg-card px-3 shadow-[inset_0_-1px_0_color-mix(in_oklab,var(--color-border)_70%,transparent)] text-[11px] font-medium tracking-[0.01em] whitespace-nowrap text-muted-foreground",
                     cell.className,
                   )}
                 >
