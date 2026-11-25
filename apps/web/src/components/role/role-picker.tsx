@@ -44,36 +44,44 @@ export function RolePicker() {
             </p>
           </div>
         </header>
-        <Card className="w-full">
-          <CardContent>
-            <ItemGroup className="gap-2">
-              {ROLE_PICKER_ORDER.map((role) => {
-                const Icon = ROLE_ICONS[role];
-                return (
-                  <Item
-                    key={role}
-                    variant="outline"
-                    className="active:scale-[0.98] motion-reduce:active:scale-100"
-                    render={<Link href={getRoleHref(role, "")} />}
-                  >
-                    <ItemMedia variant="icon">
-                      <Icon weight={ICON_WEIGHT} />
-                    </ItemMedia>
-                    <ItemContent>
-                      <ItemTitle>{ROLE_LABELS[role]}</ItemTitle>
-                      <ItemDescription>
-                        {ROLE_DESCRIPTIONS[role]}
-                      </ItemDescription>
-                    </ItemContent>
-                    <ItemActions>
-                      <CaretRightIcon weight={ICON_WEIGHT} />
-                    </ItemActions>
-                  </Item>
-                );
-              })}
-            </ItemGroup>
-          </CardContent>
-        </Card>
+        <div className="flex w-full flex-col items-center gap-3">
+          <Card className="w-full">
+            <CardContent>
+              <ItemGroup className="gap-2">
+                {ROLE_PICKER_ORDER.map((role) => {
+                  const Icon = ROLE_ICONS[role];
+                  return (
+                    <Item
+                      key={role}
+                      variant="outline"
+                      className="active:scale-[0.98] motion-reduce:active:scale-100"
+                      render={<Link href={getRoleHref(role, "")} />}
+                    >
+                      <ItemMedia variant="icon">
+                        <Icon weight={ICON_WEIGHT} />
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle>{ROLE_LABELS[role]}</ItemTitle>
+                        <ItemDescription>
+                          {ROLE_DESCRIPTIONS[role]}
+                        </ItemDescription>
+                      </ItemContent>
+                      <ItemActions>
+                        <CaretRightIcon weight={ICON_WEIGHT} />
+                      </ItemActions>
+                    </Item>
+                  );
+                })}
+              </ItemGroup>
+            </CardContent>
+          </Card>
+          <Link
+            href="/sign-in"
+            className="text-muted-foreground text-xs underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Test auth
+          </Link>
+        </div>
       </div>
     </main>
   );
