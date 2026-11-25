@@ -1,4 +1,6 @@
+import { SignIn } from "@clerk/nextjs";
 import type { Metadata } from "next";
+import { AuthPage } from "@/components/auth/auth-page";
 
 export const metadata: Metadata = {
   title: "Sign In",
@@ -6,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function SignInPage() {
-  return <p>Sign In Page</p>;
+  return (
+    <AuthPage>
+      <SignIn />
+    </AuthPage>
+  );
 }

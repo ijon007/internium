@@ -1,4 +1,5 @@
 @import "@internium/ui/globals.css";
+@import "@clerk/ui/themes/shadcn.css";
 
 @keyframes settings-pane {
   from {

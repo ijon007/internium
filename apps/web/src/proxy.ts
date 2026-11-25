@@ -1,0 +1,19 @@
+import { clerkMiddleware } from "@clerk/nextjs/server";
+import { type NextRequest, NextResponse } from "next/server";
+
+const clerkConfigured = Boolean(
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY,
+);
+
+// Without Clerk keys the UI must still boot, so skip the Clerk middleware.
+// No routes are protected yet; add createRouteMatcher here when they are.
+const passthrough = (_request: NextRequest) => NextResponse.next();
+
+export default clerkConfigured ? clerkMiddleware() : passthrough;
+
+export const config = {
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+  ],
+};
