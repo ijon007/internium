@@ -4,6 +4,7 @@ import { Toaster } from "@internium/ui/components/sonner";
 import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
+import { ConvexClientProvider } from "@/components/convex/convex-client-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             signInUrl="/sign-in"
             signUpUrl="/sign-up"
           >
-            {content}
+            <ConvexClientProvider>{content}</ConvexClientProvider>
           </ClerkProvider>
         ) : (
           content
