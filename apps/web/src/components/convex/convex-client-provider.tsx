@@ -2,28 +2,15 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { api } from "@internium/backend/convex/_generated/api";
-import { ConvexReactClient, useMutation } from "convex/react";
+import { ConvexReactClient, useConvexAuth, useMutation } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect } from "react";
+
+const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+const client = url ? new ConvexReactClient(url) : null;
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
-  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
-  const [client, setClient] = useState<ConvexReactClient | null>(null);
-
-  useEffect(() => {
-    if (!url) {
-      return;
-    }
-    const nextClient = new ConvexReactClient(url);
-    setClient(nextClient);
-    return () => {
-      void nextClient.close();
-    };
-  }, [url]);
-
-  if (!client) {
-    return children;
-  }
+  if (!client) return children;
 
   return (
     <ConvexProviderWithClerk client={client} useAuth={useAuth}>
@@ -34,37 +21,16 @@ export function ConvexClientProvider({ children }: { children: ReactNode }) {
 }
 
 function StoreUserOnSignIn() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isAuthenticated } = useConvexAuth();
   const store = useMutation(api.users.store);
-  const storedForSession = useRef(false);
 
   useEffect(() => {
-    if (!isLoaded) {
-      return;
-    }
-    if (!isSignedIn) {
-      storedForSession.current = false;
-      return;
-    }
-    if (storedForSession.current) {
-      return;
-    }
-
-    let cancelled = false;
-    store()
-      .then(() => {
-        if (!cancelled) {
-          storedForSession.current = true;
-        }
-      })
-      .catch(() => {
-        // Auth may not be ready on the first attempt; a later render retries.
+    if (isAuthenticated) {
+      void store().catch(() => {
+        // The access page retries and displays an error if setup fails.
       });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isLoaded, isSignedIn, store]);
+    }
+  }, [isAuthenticated, store]);
 
   return null;
 }

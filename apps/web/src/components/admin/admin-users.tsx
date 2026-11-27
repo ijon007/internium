@@ -1,8 +1,7 @@
 "use client";
 
-import { SheetBody, SheetSection } from "@/components/sheet-section";
-import { ICON_WEIGHT } from "@/constants/navigation";
-
+import { useAuth } from "@clerk/nextjs";
+import { api } from "@internium/backend/convex/_generated/api";
 import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
 import {
@@ -37,6 +36,12 @@ import {
   SheetTitle,
 } from "@internium/ui/components/sheet";
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@internium/ui/components/tabs";
+import {
   ArrowCounterClockwiseIcon,
   CheckIcon,
   CopyIcon,
@@ -50,8 +55,17 @@ import {
   UserPlusIcon,
   UserSwitchIcon,
 } from "@phosphor-icons/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import {
+  addManagedUser,
+  editManagedUser,
+  resetManagedPassword,
+  setManagedUserStatus,
+} from "@/app/dashboard/admin/users/actions";
+import { AdminAccess } from "@/components/admin/admin-access";
 import {
   AdminDropdown,
   AdminPage,
@@ -61,22 +75,26 @@ import {
   formatDate,
   PRESS,
 } from "@/components/admin/admin-table";
-import {
-  ADMIN_CLASSES,
-  ADMIN_USERS,
-  type AdminUser,
-  type AdminUserStatus,
-} from "@/constants/admin-users";
+import { SheetBody, SheetSection } from "@/components/sheet-section";
+import { ADMIN_CLASSES, type AdminUserStatus } from "@/constants/admin-users";
+import { ICON_WEIGHT } from "@/constants/navigation";
 import { ROLE_LABELS, ROLE_PICKER_ORDER, type Role } from "@/constants/roles";
-import { cn } from "@/lib/utils";
 import { useRetained } from "@/hooks/use-retained";
+import { cn } from "@/lib/utils";
+
+type AdminUser = NonNullable<
+  FunctionReturnType<typeof api.users.directory>
+>[number];
 
 type RoleFilter = Role | "all";
 type StatusFilter = AdminUserStatus | "all";
 
 const ROLE_FILTER_ITEMS: { value: RoleFilter; label: string }[] = [
   { value: "all", label: "All roles" },
-  ...ROLE_PICKER_ORDER.map((role) => ({ value: role, label: ROLE_LABELS[role] })),
+  ...ROLE_PICKER_ORDER.map((role) => ({
+    value: role,
+    label: ROLE_LABELS[role],
+  })),
 ];
 const STATUS_FILTER_ITEMS: { value: StatusFilter; label: string }[] = [
   { value: "all", label: "Any status" },
@@ -105,14 +123,12 @@ const EMPTY_DRAFT: Draft = {
   company: "",
 };
 
-function makePassword() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
-  const values = crypto.getRandomValues(new Uint32Array(12));
-  return Array.from(values, (v) => chars[v % chars.length]).join("");
-}
-
 export function AdminUsers() {
-  const [users, setUsers] = useState(ADMIN_USERS);
+  const { isSignedIn } = useAuth();
+  const { isAuthenticated } = useConvexAuth();
+  const enabled = isSignedIn && isAuthenticated;
+  const users = useQuery(api.users.directory, enabled ? {} : "skip");
+  const updateAccount = useMutation(api.users.updateAccount);
   const [query, setQuery] = useState("");
   const [role, setRole] = useState<RoleFilter>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -126,7 +142,7 @@ export function AdminUsers() {
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return users.filter(
+    return (users ?? []).filter(
       (user) =>
         (role === "all" || user.role === role) &&
         (status === "all" || user.status === status) &&
@@ -136,48 +152,38 @@ export function AdminUsers() {
     );
   }, [users, query, role, status]);
 
-  function update(id: string, patch: Partial<AdminUser>) {
-    setUsers((current) =>
-      current.map((user) => (user.id === id ? { ...user, ...patch } : user)),
-    );
+  async function run(action: () => Promise<void>) {
+    try {
+      await action();
+    } catch {
+      toast.error("Could not save the account change.");
+    }
   }
 
-  function save(draft: Draft, invite: boolean) {
-    const extras = {
+  async function save(draft: Draft, invite: boolean) {
+    const profile = {
+      ...draft,
       className: draft.role === "student" ? draft.className : undefined,
       company: draft.role === "business-mentor" ? draft.company : undefined,
     };
-    if (editing && editing !== "new") {
-      update(editing.id, {
-        name: draft.name,
-        email: draft.email,
-        role: draft.role,
-        ...extras,
-      });
-      toast.success("User updated");
-      setEditing(null);
-      return;
-    }
-    setUsers((current) => [
-      {
-        id: `u-${Date.now()}`,
-        name: draft.name,
-        email: draft.email,
-        role: draft.role,
-        status: "active",
-        createdAt: new Date().toISOString(),
-        ...extras,
-      },
-      ...current,
-    ]);
-    setEditing(null);
-    if (invite) {
-      toast.success(`Invite sent to ${draft.email}`);
+    if (!editing) return;
+    if (editing === "new") {
+      const login = await addManagedUser(profile, invite);
+      if (login) setCredentials(login);
+      else toast.success(`Invite sent to ${draft.email}`);
     } else {
-      setCredentials({ email: draft.email, password: makePassword() });
+      const { requiresVerification } = await editManagedUser(
+        editing.id,
+        profile,
+      );
+      toast.success(
+        requiresVerification
+          ? "User updated. Verify the new email in Clerk, then save again to make it the login email."
+          : "User updated",
+      );
     }
+    setEditing(null);
   }
-
   return (
     <AdminPage
       title="Users"
@@ -230,7 +236,13 @@ export function AdminUsers() {
         ]}
         empty={
           visible.length === 0 ? (
-            <AdminTableEmpty>No users match these filters.</AdminTableEmpty>
+            <AdminTableEmpty>
+              {users === undefined
+                ? "Loading users…"
+                : users === null
+                  ? "Administrator access required."
+                  : "No users match these filters."}
+            </AdminTableEmpty>
           ) : undefined
         }
       >
@@ -270,27 +282,30 @@ export function AdminUsers() {
                   inactive && "opacity-60",
                 )}
               >
-                {formatDate(user.createdAt)}
+                {formatDate(new Date(user.createdAt).toISOString())}
               </td>
               <td className={cn(CELL, "px-1 text-right")}>
                 <RowMenu
                   user={user}
                   onEdit={() => setEditing(user)}
-                  onRole={(next) => {
-                    update(user.id, { role: next });
-                    toast.success(`${user.name} is now ${ROLE_LABELS[next]}`);
-                  }}
-                  onReset={() =>
-                    setCredentials({
-                      email: user.email,
-                      password: makePassword(),
+                  onRole={(next) =>
+                    void run(async () => {
+                      await updateAccount({ id: user.id, role: next });
+                      toast.success(`${user.name} is now ${ROLE_LABELS[next]}`);
                     })
                   }
+                  onReset={() =>
+                    void run(async () =>
+                      setCredentials(await resetManagedPassword(user.id)),
+                    )
+                  }
                   onDeactivate={() => setDeactivating(user)}
-                  onReactivate={() => {
-                    update(user.id, { status: "active" });
-                    toast.success(`${user.name} reactivated`);
-                  }}
+                  onReactivate={() =>
+                    void run(async () => {
+                      await setManagedUserStatus(user.id, "active");
+                      toast.success(`${user.name} reactivated`);
+                    })
+                  }
                 />
               </td>
             </tr>
@@ -327,11 +342,12 @@ export function AdminUsers() {
               variant="destructive"
               className={PRESS}
               onClick={() => {
-                if (deactivating) {
-                  update(deactivating.id, { status: "inactive" });
+                if (!deactivating) return;
+                void run(async () => {
+                  await setManagedUserStatus(deactivating.id, "inactive");
                   toast.success(`${deactivating.name} deactivated`);
-                }
-                setDeactivating(null);
+                  setDeactivating(null);
+                });
               }}
             >
               <ProhibitIcon weight={ICON_WEIGHT} />
@@ -477,27 +493,29 @@ function UserSheet({
   open: boolean;
   user: AdminUser | "new" | null;
   onClose: () => void;
-  onSave: (draft: Draft, invite: boolean) => void;
+  onSave: (draft: Draft, invite: boolean) => Promise<void>;
 }) {
   const isNew = user === "new";
-  const initial = (): Draft =>
-    user && user !== "new"
-      ? {
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          className: user.className ?? ADMIN_CLASSES[0],
-          company: user.company ?? "",
-        }
-      : EMPTY_DRAFT;
-  const [draft, setDraft] = useState<Draft>(initial);
+  const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
   const [invite, setInvite] = useState(false);
+  const [tab, setTab] = useState("one");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    setDraft(initial());
+    setDraft(
+      user && user !== "new"
+        ? {
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            className: user.className ?? ADMIN_CLASSES[0],
+            company: user.company ?? "",
+          }
+        : EMPTY_DRAFT,
+    );
     setInvite(false);
-    // biome-ignore lint/correctness/useExhaustiveDependencies: reset when the sheet opens
+    setTab("one");
   }, [open, user]);
   const valid =
     draft.name.trim() !== "" &&
@@ -508,31 +526,34 @@ function UserSheet({
     setDraft((current) => ({ ...current, [key]: value }));
   }
 
-  return (
-    <Sheet
-      open={open}
-      onOpenChange={(open) => {
-        if (!open) onClose();
+  const formHeader = (
+    <SheetHeader>
+      <SheetTitle>{isNew ? "Add user" : "Edit user"}</SheetTitle>
+      <SheetDescription>
+        {isNew
+          ? "Create an account and share the login."
+          : "Update this account's details."}
+      </SheetDescription>
+    </SheetHeader>
+  );
+  const form = (
+    <form
+      className="flex min-h-0 flex-1 flex-col"
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (!valid || saving) return;
+        setSaving(true);
+        void onSave(draft, invite)
+          .catch(() =>
+            toast.error(
+              "Could not save the user. Check the email and try again.",
+            ),
+          )
+          .finally(() => setSaving(false));
       }}
     >
-      <SheetContent>
-        <form
-          className="flex min-h-0 flex-1 flex-col"
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (valid) onSave(draft, invite);
-          }}
-        >
-          <SheetHeader>
-            <SheetTitle>{isNew ? "Add user" : "Edit user"}</SheetTitle>
-            <SheetDescription>
-              {isNew
-                ? "Create an account and share the login."
-                : "Update this account's details."}
-            </SheetDescription>
-          </SheetHeader>
-          <SheetBody>
-          <SheetSection title="Profile">
+      <SheetBody>
+        <SheetSection title="Profile">
           <FieldGroup className="gap-3">
             <Field>
               <FieldLabel htmlFor="user-name">Full name</FieldLabel>
@@ -554,8 +575,8 @@ function UserSheet({
               />
             </Field>
           </FieldGroup>
-          </SheetSection>
-          <SheetSection title="Access">
+        </SheetSection>
+        <SheetSection title="Access">
           <FieldGroup className="gap-3">
             <Field>
               <FieldLabel>Role</FieldLabel>
@@ -601,26 +622,64 @@ function UserSheet({
               </label>
             ) : null}
           </FieldGroup>
-          </SheetSection>
-          </SheetBody>
-          <SheetFooter>
-            <Button type="button" variant="ghost" className={PRESS} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={!valid} className={PRESS}>
-              {isNew ? (
-                invite ? (
-                  <PaperPlaneTiltIcon weight={ICON_WEIGHT} />
-                ) : (
-                  <UserPlusIcon weight={ICON_WEIGHT} />
-                )
-              ) : (
-                <CheckIcon weight={ICON_WEIGHT} />
-              )}
-              {isNew ? (invite ? "Send invite" : "Create user") : "Save"}
-            </Button>
-          </SheetFooter>
-        </form>
+        </SheetSection>
+      </SheetBody>
+      <SheetFooter>
+        <Button
+          type="button"
+          variant="ghost"
+          className={PRESS}
+          onClick={onClose}
+        >
+          Cancel
+        </Button>
+        <Button type="submit" disabled={!valid || saving} className={PRESS}>
+          {isNew ? (
+            invite ? (
+              <PaperPlaneTiltIcon weight={ICON_WEIGHT} />
+            ) : (
+              <UserPlusIcon weight={ICON_WEIGHT} />
+            )
+          ) : (
+            <CheckIcon weight={ICON_WEIGHT} />
+          )}
+          {isNew ? (invite ? "Send invite" : "Create user") : "Save"}
+        </Button>
+      </SheetFooter>
+    </form>
+  );
+
+  return (
+    <Sheet
+      open={open}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <SheetContent>
+        {formHeader}
+        {isNew ? (
+          <Tabs
+            value={tab}
+            onValueChange={(value) => setTab(value as string)}
+            className="min-h-0 flex-1"
+          >
+            <TabsList className="mx-5 w-auto">
+              <TabsTrigger value="one">Add one</TabsTrigger>
+              <TabsTrigger value="batch">Add Batch</TabsTrigger>
+            </TabsList>
+            <TabsContent value="one" className="flex min-h-0 flex-col">
+              {form}
+            </TabsContent>
+            <TabsContent value="batch" className="flex min-h-0 flex-col">
+              <SheetBody>
+                {open && tab === "batch" && <AdminAccess />}
+              </SheetBody>
+            </TabsContent>
+          </Tabs>
+        ) : (
+          form
+        )}
       </SheetContent>
     </Sheet>
   );
