@@ -40,6 +40,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             appearance={{ theme: shadcn }}
             signInUrl="/sign-in"
             signUpUrl="/sign-up"
+            signInFallbackRedirectUrl="/dashboard"
+            signUpFallbackRedirectUrl="/dashboard"
+            afterSignOutUrl="/sign-in"
           >
             <ConvexClientProvider>{content}</ConvexClientProvider>
           </ClerkProvider>
