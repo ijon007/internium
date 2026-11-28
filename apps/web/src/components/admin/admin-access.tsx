@@ -18,7 +18,6 @@ import { ICON_WEIGHT } from "@/constants/navigation";
 import { ROLE_LABELS, ROLES, type Role } from "@/constants/roles";
 
 type Entry = { email: string; role: Role };
-type Mode = "paste" | "file";
 
 function parseBatch(text: string): { entries: Entry[] } | { error: string } {
   const entries: Entry[] = [];
@@ -47,7 +46,6 @@ function parseBatch(text: string): { entries: Entry[] } | { error: string } {
 export function AdminAccess({ onClose }: { onClose: () => void }) {
   const invite = useMutation(api.users.invite);
   const fileRef = useRef<HTMLInputElement>(null);
-  const [mode, setMode] = useState<Mode>("paste");
   const [batch, setBatch] = useState("");
   const [fileName, setFileName] = useState("");
   const [preview, setPreview] = useState<Entry[] | null>(null);
@@ -83,12 +81,7 @@ export function AdminAccess({ onClose }: { onClose: () => void }) {
 
   function submitBatch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const parsed =
-      mode === "file"
-        ? preview
-          ? { entries: preview }
-          : { error: "Upload a text file first." }
-        : parseBatch(batch);
+    const parsed = parseBatch(batch);
     if ("error" in parsed) {
       showError(parsed.error);
       return;
@@ -107,6 +100,7 @@ export function AdminAccess({ onClose }: { onClose: () => void }) {
     reader.onload = () => {
       const text = typeof reader.result === "string" ? reader.result : "";
       const parsed = parseBatch(text);
+      setBatch(text.trimEnd());
       setFileName(file.name);
       if ("error" in parsed) {
         setPreview(null);
@@ -120,9 +114,6 @@ export function AdminAccess({ onClose }: { onClose: () => void }) {
     reader.readAsText(file);
   }
 
-  const canSubmit =
-    !busy && (mode === "paste" ? batch.trim() !== "" : preview !== null);
-
   return (
     <form onSubmit={submitBatch} className="flex min-h-0 flex-1 flex-col">
       <SheetBody>
@@ -134,74 +125,53 @@ export function AdminAccess({ onClose }: { onClose: () => void }) {
               {ROLES.join(", ")}.
             </p>
           </div>
-          <div className="flex gap-1">
-            <Button
-              type="button"
-              size="sm"
-              variant={mode === "paste" ? "secondary" : "ghost"}
-              className={PRESS}
-              onClick={() => setMode("paste")}
-            >
-              Paste text
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant={mode === "file" ? "secondary" : "ghost"}
-              className={PRESS}
-              onClick={() => setMode("file")}
-            >
-              Upload file
-            </Button>
-          </div>
-          {mode === "paste" ? (
-            <Textarea
-              id="access-batch"
-              aria-label="Email and role list"
-              placeholder="student@internium.com, student"
-              value={batch}
-              onChange={(event) => setBatch(event.target.value)}
-            />
-          ) : (
-            <div className="flex flex-col gap-3">
-              <input
-                ref={fileRef}
-                type="file"
-                accept=".txt,.csv,text/plain"
-                className="sr-only"
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  event.target.value = "";
-                  if (file) loadFile(file);
-                }}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                className={`${PRESS} justify-start`}
-                onClick={() => fileRef.current?.click()}
-              >
-                <UploadSimpleIcon weight={ICON_WEIGHT} />
-                {fileName || "Choose a .txt or .csv file"}
-              </Button>
-              {preview ? (
-                <SheetSection title="To invite" count={preview.length}>
-                  <ul className={SHEET_LIST}>
-                    {preview.map((entry) => (
-                      <li key={entry.email} className={SHEET_ROW}>
-                        <span className="min-w-0 flex-1 truncate">
-                          {entry.email}
-                        </span>
-                        <span className="shrink-0 text-muted-foreground">
-                          {ROLE_LABELS[entry.role]}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </SheetSection>
-              ) : null}
-            </div>
-          )}
+          <Textarea
+            id="access-batch"
+            aria-label="Email and role list"
+            placeholder="student@internium.com, student"
+            value={batch}
+            onChange={(event) => {
+              setBatch(event.target.value);
+              setPreview(null);
+              setFileName("");
+            }}
+          />
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".txt,.csv,text/plain"
+            className="sr-only"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (file) loadFile(file);
+            }}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            className={`${PRESS} self-start`}
+            onClick={() => fileRef.current?.click()}
+          >
+            <UploadSimpleIcon weight={ICON_WEIGHT} />
+            {fileName || "Upload file"}
+          </Button>
+          {preview ? (
+            <SheetSection title="To invite" count={preview.length}>
+              <ul className={SHEET_LIST}>
+                {preview.map((entry) => (
+                  <li key={entry.email} className={SHEET_ROW}>
+                    <span className="min-w-0 flex-1 truncate">
+                      {entry.email}
+                    </span>
+                    <span className="shrink-0 text-muted-foreground">
+                      {ROLE_LABELS[entry.role]}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </SheetSection>
+          ) : null}
           {message ? (
             <p
               role="status"
@@ -221,7 +191,11 @@ export function AdminAccess({ onClose }: { onClose: () => void }) {
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={!canSubmit} className={PRESS}>
+        <Button
+          type="submit"
+          disabled={busy || !batch.trim()}
+          className={PRESS}
+        >
           Add batch
         </Button>
       </SheetFooter>
