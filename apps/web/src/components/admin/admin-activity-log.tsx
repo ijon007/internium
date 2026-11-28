@@ -139,7 +139,8 @@ export function AdminActivityLog() {
               selected={range}
               onSelect={setRange}
               defaultMonth={
-                range?.from ?? new Date(results[0]?.at ?? Date.now())
+                range?.from ??
+                (results[0] ? new Date(results[0].at) : undefined)
               }
             />
           </PopoverContent>
