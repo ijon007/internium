@@ -1,4 +1,4 @@
-import { Card, CardContent, CardFooter } from "@internium/ui/components/card";
+import { Card, CardContent } from "@internium/ui/components/card";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -26,20 +26,20 @@ export function SettingsSection({
           {title}
         </h2>
       ) : null}
-      <Card size="sm" className="gap-0 py-0">
-        {children ? (
-          <CardContent
-            className={cn(flush ? "p-0" : "flex flex-col gap-2 px-3 py-2.5")}
-          >
-            {children}
-          </CardContent>
-        ) : null}
+      <div>
+        <Card size="sm" className="gap-0 py-0">
+          {children ? (
+            <CardContent
+              className={cn(flush ? "p-0" : "flex flex-col gap-2 px-3 py-2.5")}
+            >
+              {children}
+            </CardContent>
+          ) : null}
+        </Card>
         {footer ? (
-          <CardFooter className="justify-end border-t py-2">
-            {footer}
-          </CardFooter>
+          <div className="flex justify-end px-3 py-2">{footer}</div>
         ) : null}
-      </Card>
+      </div>
       {caption ? (
         <p className="px-3 text-[11px] leading-snug text-muted-foreground">
           {caption}
