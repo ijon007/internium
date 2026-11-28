@@ -823,9 +823,7 @@ function UserSheet({
               {form}
             </TabsContent>
             <TabsContent value="batch" className="flex min-h-0 flex-col">
-              <SheetBody>
-                {open && tab === "batch" && <AdminAccess />}
-              </SheetBody>
+              {open && tab === "batch" && <AdminAccess onClose={onClose} />}
             </TabsContent>
           </Tabs>
         ) : (
