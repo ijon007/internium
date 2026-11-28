@@ -1,8 +1,7 @@
 "use client";
 
-import { dateFormat } from "@/lib/date-format";
-import { ICON_WEIGHT } from "@/constants/navigation";
-
+import { useAuth } from "@clerk/nextjs";
+import { api } from "@internium/backend/convex/_generated/api";
 import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
 import { Calendar } from "@internium/ui/components/calendar";
@@ -12,7 +11,8 @@ import {
   PopoverTrigger,
 } from "@internium/ui/components/popover";
 import { CalendarBlankIcon } from "@phosphor-icons/react";
-import { useMemo, useState } from "react";
+import { useConvexAuth, usePaginatedQuery } from "convex/react";
+import { useEffect, useMemo, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import {
   AdminDropdown,
@@ -24,10 +24,11 @@ import {
   PRESS,
 } from "@/components/admin/admin-table";
 import {
-  ADMIN_ACTIVITY,
   ADMIN_ACTIVITY_LABELS,
   type AdminActivityAction,
 } from "@/constants/admin-dashboard";
+import { ICON_WEIGHT } from "@/constants/navigation";
+import { dateFormat } from "@/lib/date-format";
 import { cn } from "@/lib/utils";
 
 function toDay(date: Date) {
@@ -38,16 +39,10 @@ function toDay(date: Date) {
 function formatRange(range: DateRange | undefined) {
   if (!range?.from) return "Any date";
   const fmt = dateFormat({ day: "numeric", month: "short" });
-  if (!range.to || toDay(range.to) === toDay(range.from)) return fmt.format(range.from);
+  if (!range.to || toDay(range.to) === toDay(range.from))
+    return fmt.format(range.from);
   return `${fmt.format(range.from)} – ${fmt.format(range.to)}`;
 }
-
-const USER_ITEMS = [
-  { value: "all", label: "All users" },
-  ...Array.from(new Set(ADMIN_ACTIVITY.map((item) => item.actor))).map(
-    (actor) => ({ value: actor, label: actor }),
-  ),
-];
 
 const ACTION_ITEMS = [
   { value: "all", label: "All actions" },
@@ -57,6 +52,29 @@ const ACTION_ITEMS = [
 ];
 
 export function AdminActivityLog() {
+  const { isSignedIn } = useAuth();
+  const { isAuthenticated } = useConvexAuth();
+  const { results, status, loadMore } = usePaginatedQuery(
+    api.users.activityLog,
+    isSignedIn && isAuthenticated ? {} : "skip",
+    { initialNumItems: 50 },
+  );
+
+  useEffect(() => {
+    if (status === "CanLoadMore") loadMore(50);
+  }, [status, loadMore]);
+
+  const userItems = useMemo(() => {
+    const users = new Map<string, string>();
+    for (const event of results) {
+      if (!users.has(event.actorId)) users.set(event.actorId, event.actor);
+    }
+    return [
+      { value: "all", label: "All users" },
+      ...Array.from(users, ([value, label]) => ({ value, label })),
+    ];
+  }, [results]);
+
   const [actor, setActor] = useState("all");
   const [action, setAction] = useState("all");
   const [range, setRange] = useState<DateRange | undefined>();
@@ -65,16 +83,16 @@ export function AdminActivityLog() {
 
   const visible = useMemo(
     () =>
-      ADMIN_ACTIVITY.filter((item) => {
-        const day = item.at.slice(0, 10);
+      results.filter((item) => {
+        const day = toDay(new Date(item.at));
         return (
-          (actor === "all" || item.actor === actor) &&
+          (actor === "all" || item.actorId === actor) &&
           (action === "all" || item.action === action) &&
           (!from || day >= from) &&
           (!to || day <= to)
         );
       }),
-    [actor, action, from, to],
+    [results, actor, action, from, to],
   );
 
   return (
@@ -85,7 +103,7 @@ export function AdminActivityLog() {
       <div className="flex flex-wrap items-center gap-2">
         <AdminDropdown
           label="Filter by user"
-          items={USER_ITEMS}
+          items={userItems}
           value={actor}
           onChange={setActor}
           className="w-36"
@@ -120,7 +138,10 @@ export function AdminActivityLog() {
               numberOfMonths={2}
               selected={range}
               onSelect={setRange}
-              defaultMonth={range?.from ?? new Date(ADMIN_ACTIVITY[0]?.at ?? Date.now())}
+              defaultMonth={
+                range?.from ??
+                (results[0] ? new Date(results[0].at) : undefined)
+              }
             />
           </PopoverContent>
         </Popover>
@@ -146,7 +167,9 @@ export function AdminActivityLog() {
         ]}
         empty={
           visible.length === 0 ? (
-            <AdminTableEmpty>No activity matches these filters.</AdminTableEmpty>
+            <AdminTableEmpty>
+              No activity matches these filters.
+            </AdminTableEmpty>
           ) : undefined
         }
       >
