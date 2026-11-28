@@ -4,6 +4,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { CaretRightIcon, CheckIcon } from "@phosphor-icons/react";
 import { cn } from "cn";
 import type * as React from "react";
+import { popupMotion } from "#lib/popup-motion";
 
 function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
   return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
@@ -13,7 +14,10 @@ function DropdownMenuPortal({ ...props }: MenuPrimitive.Portal.Props) {
   return <MenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />;
 }
 
-function DropdownMenuTrigger({ className, ...props }: MenuPrimitive.Trigger.Props) {
+function DropdownMenuTrigger({
+  className,
+  ...props
+}: MenuPrimitive.Trigger.Props) {
   return (
     <MenuPrimitive.Trigger
       data-slot="dropdown-menu-trigger"
@@ -26,9 +30,6 @@ function DropdownMenuTrigger({ className, ...props }: MenuPrimitive.Trigger.Prop
     />
   );
 }
-
-const dropdownMotion =
-  "origin-(--transform-origin) transition-[opacity,transform] duration-200 ease-out-strong data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 motion-reduce:transition-opacity motion-reduce:data-starting-style:scale-100 motion-reduce:data-ending-style:scale-100";
 
 function DropdownMenuContent({
   align = "start",
@@ -55,7 +56,7 @@ function DropdownMenuContent({
           data-slot="dropdown-menu-content"
           className={cn(
             "z-50 max-h-(--available-height) w-(--anchor-width) min-w-32 overflow-x-hidden overflow-y-auto rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-none data-ending-style:overflow-hidden",
-            dropdownMotion,
+            popupMotion,
             className,
           )}
           {...props}
