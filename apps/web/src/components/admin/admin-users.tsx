@@ -76,7 +76,7 @@ import {
   PRESS,
 } from "@/components/admin/admin-table";
 import { SheetBody, SheetSection } from "@/components/sheet-section";
-import { ADMIN_CLASSES, type AdminUserStatus } from "@/constants/admin-users";
+import { ADMIN_CLASSES } from "@/constants/admin-users";
 import { ICON_WEIGHT } from "@/constants/navigation";
 import { ROLE_LABELS, ROLE_PICKER_ORDER, type Role } from "@/constants/roles";
 import { useRetained } from "@/hooks/use-retained";
@@ -85,9 +85,35 @@ import { cn } from "@/lib/utils";
 type AdminUser = NonNullable<
   FunctionReturnType<typeof api.users.directory>
 >[number];
+type AccessQueue = NonNullable<
+  FunctionReturnType<typeof api.users.accessQueue>
+>;
+
+type AccountRow = AdminUser & { kind: "account" };
+type RequestRow = {
+  kind: "request";
+  id: AccessQueue["requests"][number]["_id"];
+  name: string;
+  email: string;
+  status: "requested";
+  createdAt: number;
+};
+type InvitationRow = {
+  kind: "invitation";
+  id: AccessQueue["invitations"][number]["_id"];
+  name: string;
+  email: string;
+  role: Role;
+  status: "invited";
+  createdAt: number;
+  className?: string;
+  company?: string;
+};
+type DirectoryRow = AccountRow | RequestRow | InvitationRow;
+type RowStatus = DirectoryRow["status"];
 
 type RoleFilter = Role | "all";
-type StatusFilter = AdminUserStatus | "all";
+type StatusFilter = RowStatus | "all";
 
 const ROLE_FILTER_ITEMS: { value: RoleFilter; label: string }[] = [
   { value: "all", label: "All roles" },
@@ -100,6 +126,8 @@ const STATUS_FILTER_ITEMS: { value: StatusFilter; label: string }[] = [
   { value: "all", label: "Any status" },
   { value: "active", label: "Active" },
   { value: "inactive", label: "Inactive" },
+  { value: "requested", label: "Requested" },
+  { value: "invited", label: "Invited" },
 ];
 const CLASS_ITEMS = ADMIN_CLASSES.map((item) => ({ value: item, label: item }));
 const ROLE_ITEMS = ROLE_PICKER_ORDER.map((role) => ({
@@ -128,7 +156,9 @@ export function AdminUsers() {
   const { isAuthenticated } = useConvexAuth();
   const enabled = isSignedIn && isAuthenticated;
   const users = useQuery(api.users.directory, enabled ? {} : "skip");
+  const queue = useQuery(api.users.accessQueue, enabled ? {} : "skip");
   const updateAccount = useMutation(api.users.updateAccount);
+  const approve = useMutation(api.users.approve);
   const [query, setQuery] = useState("");
   const [role, setRole] = useState<RoleFilter>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -140,17 +170,49 @@ export function AdminUsers() {
     password: string;
   } | null>(null);
 
+  const rows = useMemo(() => {
+    if (!users) return [];
+    const accounts: DirectoryRow[] = users.map((user) => ({
+      kind: "account",
+      ...user,
+    }));
+    const requests: DirectoryRow[] = (queue?.requests ?? []).map((request) => ({
+      kind: "request",
+      id: request._id,
+      name: request.name || request.email,
+      email: request.email,
+      status: "requested",
+      createdAt: request.createdAt,
+    }));
+    const invitations: DirectoryRow[] = (queue?.invitations ?? []).map(
+      (entry) => ({
+        kind: "invitation",
+        id: entry._id,
+        name: entry.name || entry.email,
+        email: entry.email,
+        role: entry.role,
+        status: "invited",
+        createdAt: entry._creationTime,
+        className: entry.className,
+        company: entry.company,
+      }),
+    );
+    return [...accounts, ...requests, ...invitations].sort(
+      (a, b) => b.createdAt - a.createdAt,
+    );
+  }, [users, queue]);
+
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return (users ?? []).filter(
-      (user) =>
-        (role === "all" || user.role === role) &&
-        (status === "all" || user.status === status) &&
+    return rows.filter(
+      (row) =>
+        (role === "all" || (row.kind !== "request" && row.role === role)) &&
+        (status === "all" || row.status === status) &&
         (!q ||
-          user.name.toLowerCase().includes(q) ||
-          user.email.toLowerCase().includes(q)),
+          row.name.toLowerCase().includes(q) ||
+          row.email.toLowerCase().includes(q)),
     );
-  }, [users, query, role, status]);
+  }, [rows, query, role, status]);
 
   async function run(action: () => Promise<void>) {
     try {
@@ -187,7 +249,7 @@ export function AdminUsers() {
   return (
     <AdminPage
       title="Users"
-      description="Search, filter, and manage Internium accounts."
+      description="Search, filter, and manage accounts, requests, and invitations."
       actions={
         <Button className={PRESS} onClick={() => setEditing("new")}>
           <PlusIcon weight="bold" />
@@ -221,7 +283,7 @@ export function AdminUsers() {
           items={STATUS_FILTER_ITEMS}
           value={status}
           onChange={setStatus}
-          className="w-32"
+          className="w-36"
         />
       </div>
 
@@ -237,7 +299,7 @@ export function AdminUsers() {
         empty={
           visible.length === 0 ? (
             <AdminTableEmpty>
-              {users === undefined
+              {users === undefined || queue === undefined
                 ? "Loading users…"
                 : users === null
                   ? "Administrator access required."
@@ -246,34 +308,36 @@ export function AdminUsers() {
           ) : undefined
         }
       >
-        {visible.map((user) => {
-          const inactive = user.status === "inactive";
+        {visible.map((row) => {
+          const inactive = row.status === "inactive";
           return (
             <tr
-              key={user.id}
+              key={`${row.kind}-${row.id}`}
               className={cn(
                 "transition-colors hover:bg-muted/40",
                 inactive && "text-muted-foreground",
               )}
             >
               <td className={cn(CELL, "font-medium", inactive && "opacity-60")}>
-                {user.name}
-                {user.className || user.company ? (
-                  <span className="ml-1.5 text-[11px] font-normal text-muted-foreground">
-                    {user.className ?? user.company}
+                {row.name}
+                {row.kind !== "request" && (row.className || row.company) ? (
+                  <span className="ml-1.5 font-normal text-[11px] text-muted-foreground">
+                    {row.className ?? row.company}
                   </span>
                 ) : null}
               </td>
               <td className={cn(CELL, inactive && "opacity-60")}>
-                {user.email}
+                {row.email}
               </td>
               <td className={cn(CELL, inactive && "opacity-60")}>
-                {ROLE_LABELS[user.role]}
+                {row.kind === "request" ? (
+                  <span className="text-muted-foreground">—</span>
+                ) : (
+                  ROLE_LABELS[row.role]
+                )}
               </td>
               <td className={CELL}>
-                <Badge variant={inactive ? "outline" : "secondary"}>
-                  {inactive ? "Inactive" : "Active"}
-                </Badge>
+                <StatusBadge status={row.status} />
               </td>
               <td
                 className={cn(
@@ -282,31 +346,47 @@ export function AdminUsers() {
                   inactive && "opacity-60",
                 )}
               >
-                {formatDate(new Date(user.createdAt).toISOString())}
+                {formatDate(new Date(row.createdAt).toISOString())}
               </td>
               <td className={cn(CELL, "px-1 text-right")}>
-                <RowMenu
-                  user={user}
-                  onEdit={() => setEditing(user)}
-                  onRole={(next) =>
-                    void run(async () => {
-                      await updateAccount({ id: user.id, role: next });
-                      toast.success(`${user.name} is now ${ROLE_LABELS[next]}`);
-                    })
-                  }
-                  onReset={() =>
-                    void run(async () =>
-                      setCredentials(await resetManagedPassword(user.id)),
-                    )
-                  }
-                  onDeactivate={() => setDeactivating(user)}
-                  onReactivate={() =>
-                    void run(async () => {
-                      await setManagedUserStatus(user.id, "active");
-                      toast.success(`${user.name} reactivated`);
-                    })
-                  }
-                />
+                {row.kind === "account" ? (
+                  <RowMenu
+                    user={row}
+                    onEdit={() => setEditing(row)}
+                    onRole={(next) =>
+                      void run(async () => {
+                        await updateAccount({ id: row.id, role: next });
+                        toast.success(
+                          `${row.name} is now ${ROLE_LABELS[next]}`,
+                        );
+                      })
+                    }
+                    onReset={() =>
+                      void run(async () =>
+                        setCredentials(await resetManagedPassword(row.id)),
+                      )
+                    }
+                    onDeactivate={() => setDeactivating(row)}
+                    onReactivate={() =>
+                      void run(async () => {
+                        await setManagedUserStatus(row.id, "active");
+                        toast.success(`${row.name} reactivated`);
+                      })
+                    }
+                  />
+                ) : row.kind === "request" ? (
+                  <ApproveMenu
+                    email={row.email}
+                    onApprove={(next) =>
+                      void run(async () => {
+                        await approve({ userId: row.id, role: next });
+                        toast.success(
+                          `${row.email} approved as ${ROLE_LABELS[next]}`,
+                        );
+                      })
+                    }
+                  />
+                ) : null}
               </td>
             </tr>
           );
@@ -407,6 +487,77 @@ export function AdminUsers() {
         </DialogContent>
       </Dialog>
     </AdminPage>
+  );
+}
+
+const STATUS_BADGE: Record<RowStatus, { label: string; className: string }> = {
+  active: {
+    label: "Active",
+    className:
+      "border-transparent bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  },
+  inactive: {
+    label: "Inactive",
+    className: "border-transparent bg-muted text-muted-foreground",
+  },
+  requested: {
+    label: "Requested",
+    className:
+      "border-transparent bg-amber-500/15 text-amber-800 dark:text-amber-300",
+  },
+  invited: {
+    label: "Invited",
+    className:
+      "border-transparent bg-sky-500/15 text-sky-700 dark:text-sky-300",
+  },
+};
+
+function StatusBadge({ status }: { status: RowStatus }) {
+  const { label, className } = STATUS_BADGE[status];
+  return (
+    <Badge variant="outline" className={className}>
+      {label}
+    </Badge>
+  );
+}
+
+function ApproveMenu({
+  email,
+  onApprove,
+}: {
+  email: string;
+  onApprove: (role: Role) => void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={`Approve ${email}`}
+            className={PRESS}
+          />
+        }
+      >
+        <DotsThreeIcon weight="bold" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-40">
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <CheckIcon weight={ICON_WEIGHT} />
+            Approve as
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            {ROLE_PICKER_ORDER.map((role) => (
+              <DropdownMenuItem key={role} onClick={() => onApprove(role)}>
+                {ROLE_LABELS[role]}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -672,9 +823,7 @@ function UserSheet({
               {form}
             </TabsContent>
             <TabsContent value="batch" className="flex min-h-0 flex-col">
-              <SheetBody>
-                {open && tab === "batch" && <AdminAccess />}
-              </SheetBody>
+              {open && tab === "batch" && <AdminAccess onClose={onClose} />}
             </TabsContent>
           </Tabs>
         ) : (
