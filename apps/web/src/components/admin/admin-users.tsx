@@ -122,12 +122,22 @@ const ROLE_FILTER_ITEMS: { value: RoleFilter; label: string }[] = [
     label: ROLE_LABELS[role],
   })),
 ];
-const STATUS_FILTER_ITEMS: { value: StatusFilter; label: string }[] = [
-  { value: "all", label: "Any status" },
-  { value: "active", label: "Active" },
-  { value: "inactive", label: "Inactive" },
-  { value: "requested", label: "Requested" },
-  { value: "invited", label: "Invited" },
+const STATUS_DOT: Record<RowStatus, string> = {
+  active: "bg-emerald-500",
+  inactive: "bg-muted-foreground",
+  requested: "bg-amber-500",
+  invited: "bg-sky-500",
+};
+const STATUS_FILTER_ITEMS: {
+  value: StatusFilter;
+  label: string;
+  dot: string;
+}[] = [
+  { value: "all", label: "Any status", dot: "bg-muted-foreground/40" },
+  { value: "active", label: "Active", dot: STATUS_DOT.active },
+  { value: "inactive", label: "Inactive", dot: STATUS_DOT.inactive },
+  { value: "requested", label: "Requested", dot: STATUS_DOT.requested },
+  { value: "invited", label: "Invited", dot: STATUS_DOT.invited },
 ];
 const CLASS_ITEMS = ADMIN_CLASSES.map((item) => ({ value: item, label: item }));
 const ROLE_ITEMS = ROLE_PICKER_ORDER.map((role) => ({

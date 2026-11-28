@@ -121,7 +121,7 @@ export function AdminDropdown<T extends string>({
 }: {
   label: string;
   value: T;
-  items: readonly { value: T; label: string }[];
+  items: readonly { value: T; label: string; dot?: string }[];
   onChange: (value: T) => void;
   className?: string;
 }) {
@@ -138,7 +138,15 @@ export function AdminDropdown<T extends string>({
           />
         }
       >
-        <span className="truncate">{current?.label ?? label}</span>
+        <span className="flex min-w-0 items-center gap-1.5">
+          {current?.dot ? (
+            <span
+              aria-hidden
+              className={cn("size-1.5 shrink-0 rounded-full", current.dot)}
+            />
+          ) : null}
+          <span className="truncate">{current?.label ?? label}</span>
+        </span>
         <CaretDownIcon
           weight={ICON_WEIGHT}
           className="size-3 text-muted-foreground"
@@ -151,6 +159,12 @@ export function AdminDropdown<T extends string>({
         >
           {items.map((item) => (
             <DropdownMenuRadioItem key={item.value} value={item.value}>
+              {item.dot ? (
+                <span
+                  aria-hidden
+                  className={cn("size-1.5 shrink-0 rounded-full", item.dot)}
+                />
+              ) : null}
               {item.label}
             </DropdownMenuRadioItem>
           ))}
