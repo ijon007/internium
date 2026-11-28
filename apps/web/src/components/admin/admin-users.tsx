@@ -490,21 +490,35 @@ export function AdminUsers() {
   );
 }
 
+const STATUS_BADGE: Record<RowStatus, { label: string; className: string }> = {
+  active: {
+    label: "Active",
+    className:
+      "border-transparent bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  },
+  inactive: {
+    label: "Inactive",
+    className: "border-transparent bg-muted text-muted-foreground",
+  },
+  requested: {
+    label: "Requested",
+    className:
+      "border-transparent bg-amber-500/15 text-amber-800 dark:text-amber-300",
+  },
+  invited: {
+    label: "Invited",
+    className:
+      "border-transparent bg-sky-500/15 text-sky-700 dark:text-sky-300",
+  },
+};
+
 function StatusBadge({ status }: { status: RowStatus }) {
-  switch (status) {
-    case "active":
-      return <Badge variant="secondary">Active</Badge>;
-    case "inactive":
-      return <Badge variant="outline">Inactive</Badge>;
-    case "requested":
-      return <Badge>Requested</Badge>;
-    case "invited":
-      return <Badge variant="outline">Invited</Badge>;
-    default: {
-      const unreachable: never = status;
-      return unreachable;
-    }
-  }
+  const { label, className } = STATUS_BADGE[status];
+  return (
+    <Badge variant="outline" className={className}>
+      {label}
+    </Badge>
+  );
 }
 
 function ApproveMenu({
