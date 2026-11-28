@@ -39,3 +39,15 @@ export const SETTINGS_PATH = `${DASHBOARD_PATH}/settings`;
 export const LAST_ROLE_STORAGE_KEY = "internium:last-role:v1";
 
 export const ROLE_PATH = "/role";
+
+/** ponytail: two-dev allowlist so we can open any role UI without swapping accounts. Drop when impersonation exists. */
+const DEV_ROLE_SWITCH_EMAILS = new Set([
+  "zuriqienea@gmail.com",
+  "kushta.joni@gmail.com",
+]);
+
+export function canSwitchDashboardRoles(email: string | undefined) {
+  return Boolean(
+    email && DEV_ROLE_SWITCH_EMAILS.has(email.trim().toLowerCase()),
+  );
+}

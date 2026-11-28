@@ -3,7 +3,7 @@ import { api } from "@internium/backend/convex/_generated/api";
 import { fetchQuery } from "convex/nextjs";
 import type { FunctionReturnType } from "convex/server";
 import { type NextRequest, NextResponse } from "next/server";
-import { ROLES } from "@/constants/roles";
+import { canSwitchDashboardRoles, ROLES } from "@/constants/roles";
 
 function isDashboard(pathname: string) {
   return (
@@ -64,9 +64,10 @@ export default clerkConfigured
 
         const segment = pathname.split("/")[2];
         if (
-          pathname === "/role" ||
-          pathname === "/dashboard" ||
-          ROLES.some((role) => role === segment && role !== user.role)
+          !canSwitchDashboardRoles(user.email) &&
+          (pathname === "/role" ||
+            pathname === "/dashboard" ||
+            ROLES.some((role) => role === segment && role !== user.role))
         ) {
           return NextResponse.redirect(
             new URL(`/dashboard/${user.role}`, request.url),
