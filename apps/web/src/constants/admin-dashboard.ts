@@ -6,6 +6,9 @@ export type AdminActivityAction =
   | "reset-password"
   | "deactivated-user"
   | "reactivated-user"
+  | "updated-user"
+  | "invited-user"
+  | "approved-request"
   | "ran-backup";
 
 export type AdminActivity = {
@@ -23,6 +26,9 @@ export const ADMIN_ACTIVITY_LABELS: Record<AdminActivityAction, string> = {
   "deactivated-user": "Deactivated",
   "reactivated-user": "Reactivated",
   "ran-backup": "Ran backup",
+  "updated-user": "Updated user",
+  "invited-user": "Invited user",
+  "approved-request": "Approved request",
 };
 
 export const ADMIN_STATS = {

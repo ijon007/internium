@@ -1,7 +1,5 @@
 "use client";
 
-import { ICON_WEIGHT } from "@/constants/navigation";
-
 import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
 import {
@@ -17,8 +15,7 @@ import {
   DatabaseIcon,
   DownloadSimpleIcon,
 } from "@phosphor-icons/react";
-import { useState } from "react";
-import { toast } from "sonner";
+import Link from "next/link";
 import {
   AdminPage,
   AdminTable,
@@ -27,10 +24,9 @@ import {
   PRESS,
   SURFACE,
 } from "@/components/admin/admin-table";
-import {
-  ADMIN_BACKUPS,
-  type AdminBackupStatus,
-} from "@/constants/admin-users";
+import type { AdminBackupStatus } from "@/constants/admin-users";
+import { ICON_WEIGHT } from "@/constants/navigation";
+import { useAdminBackups } from "@/hooks/use-admin-backups";
 import { cn } from "@/lib/utils";
 
 const STATUS_LABELS: Record<AdminBackupStatus, string> = {
@@ -48,32 +44,12 @@ function StatusBadge({ status }: { status: AdminBackupStatus }) {
 }
 
 export function AdminBackup() {
-  const [backups, setBackups] = useState(ADMIN_BACKUPS);
-  const running = backups[0]?.status === "running";
+  const { backups, running, canStart, runBackup } = useAdminBackups();
   const last = backups.find((backup) => backup.status !== "running");
-
-  function runBackup() {
-    const id = `b-${Date.now()}`;
-    setBackups((current) => [
-      { id, at: new Date().toISOString(), size: "—", status: "running" },
-      ...current,
-    ]);
-    setTimeout(() => {
-      setBackups((current) =>
-        current.map((backup) =>
-          backup.id === id
-            ? { ...backup, size: "24.7 MB", status: "complete" }
-            : backup,
-        ),
-      );
-      toast.success("Backup complete");
-    }, 1600);
-  }
-
   return (
     <AdminPage
       title="Backup"
-      description="Snapshots of users, documents, and settings."
+      description="Snapshots of Internium data in Convex."
     >
       <Card size="sm" className={SURFACE}>
         <CardHeader>
@@ -84,9 +60,12 @@ export function AdminBackup() {
             The most recent finished snapshot.
           </CardDescription>
           <CardAction>
-            <Button className={PRESS} onClick={runBackup} disabled={running}>
+            <Button className={PRESS} onClick={runBackup} disabled={!canStart}>
               {running ? (
-                <CircleNotchIcon weight={ICON_WEIGHT} className="animate-spin" />
+                <CircleNotchIcon
+                  weight={ICON_WEIGHT}
+                  className="animate-spin"
+                />
               ) : (
                 <DatabaseIcon weight={ICON_WEIGHT} />
               )}
@@ -137,7 +116,17 @@ export function AdminBackup() {
                   aria-label="Download backup"
                   disabled={backup.status !== "complete"}
                   className={PRESS}
-                  onClick={() => toast("Download starting")}
+                  nativeButton={backup.status !== "complete"}
+                  render={
+                    backup.status === "complete" ? (
+                      <Link
+                        href={`/api/admin/backups/${backup.id}`}
+                        prefetch={false}
+                        download
+                        aria-label="Download backup"
+                      />
+                    ) : undefined
+                  }
                 >
                   <DownloadSimpleIcon weight={ICON_WEIGHT} />
                 </Button>

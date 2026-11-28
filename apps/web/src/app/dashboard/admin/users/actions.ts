@@ -137,12 +137,15 @@ export async function resetManagedPassword(id: AccountId) {
   const account = await fetchQuery(api.users.managedAccount, { id }, options);
   if (!account?.role || account.status === "inactive")
     throw new Error("Account cannot be reset");
+  const eventKey = process.env.INTERNIUM_ACTIVITY_EVENT_KEY;
+  if (!eventKey) throw new Error("Activity logging is unavailable");
   const password = temporaryPassword();
   const clerkUser = await clerk.users.updateUser(account.clerkId, {
     password,
     signOutOfOtherSessions: true,
   });
   await clerk.users.setPasswordCompromised(account.clerkId);
+  await fetchMutation(api.users.recordPasswordReset, { id, eventKey }, options);
   return {
     email: clerkUser.primaryEmailAddress?.emailAddress ?? account.email,
     password,

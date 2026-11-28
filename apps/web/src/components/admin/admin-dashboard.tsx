@@ -1,6 +1,7 @@
 "use client";
 
-import { dateFormat } from "@/lib/date-format";
+import { useAuth } from "@clerk/nextjs";
+import { api } from "@internium/backend/convex/_generated/api";
 import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
 import {
@@ -14,22 +15,21 @@ import {
 import {
   DatabaseIcon,
   HardDrivesIcon,
-  UsersIcon,
   UserCircleCheckIcon,
+  UsersIcon,
 } from "@phosphor-icons/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { PageHeading } from "@/components/dashboard/page-heading";
 import {
-  ADMIN_ACTIVITY,
   ADMIN_ACTIVITY_LABELS,
-  ADMIN_BACKUP,
-  ADMIN_STATS,
   type AdminActivity,
 } from "@/constants/admin-dashboard";
 import { ICON_WEIGHT } from "@/constants/navigation";
-import { ROLES, ROLE_LABELS } from "@/constants/roles";
+import { ROLE_LABELS, ROLES, type Role } from "@/constants/roles";
+import { useAdminBackups } from "@/hooks/use-admin-backups";
+import { dateFormat } from "@/lib/date-format";
 import { cn } from "@/lib/utils";
 import { getRoleHref } from "@/utils/navigation";
 
@@ -68,30 +68,31 @@ function formatRelative(iso: string, now: number) {
 }
 
 export function AdminDashboard() {
-  const [backup, setBackup] = useState(ADMIN_BACKUP);
-  const [activity, setActivity] = useState(ADMIN_ACTIVITY);
+  const { backups, running, canStart, runBackup } = useAdminBackups();
+  const backup = backups.find((item) => item.status === "complete");
   const [now, setNow] = useState<number | null>(null);
-  const peakRoleCount = Math.max(...Object.values(ADMIN_STATS.usersByRole));
+  const { isSignedIn } = useAuth();
+  const { isAuthenticated } = useConvexAuth();
+  const users = useQuery(
+    api.users.directory,
+    isSignedIn && isAuthenticated ? {} : "skip",
+  );
+  const activity =
+    useQuery(
+      api.users.recentActivity,
+      isSignedIn && isAuthenticated ? {} : "skip",
+    ) ?? [];
+  const usersByRole: Partial<Record<Role, number>> = {};
+  let activeUsers = 0;
+  for (const user of users ?? []) {
+    usersByRole[user.role] = (usersByRole[user.role] ?? 0) + 1;
+    if (user.status === "active") activeUsers += 1;
+  }
+  const peakRoleCount = Math.max(1, ...Object.values(usersByRole));
 
   useEffect(() => {
     setNow(Date.now());
   }, []);
-
-  function runBackup() {
-    const at = new Date().toISOString();
-    setBackup({ at, size: backup.size, status: "Complete" });
-    setActivity((current) => [
-      {
-        id: `act-${at}`,
-        at,
-        actor: "Jane Doe",
-        action: "ran-backup",
-        target: "Manual snapshot",
-      },
-      ...current,
-    ]);
-    toast.success("Backup complete");
-  }
 
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-5 pt-4 pb-8">
@@ -105,20 +106,20 @@ export function AdminDashboard() {
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Total users"
-          value={ADMIN_STATS.totalUsers}
+          value={users?.length ?? "—"}
           hint="Everyone with an Internium account"
           icon={UsersIcon}
         />
         <StatCard
           label="Active users"
-          value={ADMIN_STATS.activeUsers}
-          hint={`${ADMIN_STATS.totalUsers - ADMIN_STATS.activeUsers} deactivated, still listed`}
+          value={users ? activeUsers : "—"}
+          hint={`${users ? users.length - activeUsers : "—"} deactivated, still listed`}
           icon={UserCircleCheckIcon}
         />
         <StatCard
           label="Last backup"
-          value={formatWhen(backup.at)}
-          hint={`${backup.size} · ${backup.status}`}
+          value={backup ? formatWhen(backup.at) : "Never"}
+          hint={backup ? `${backup.size} · Complete` : "No completed snapshots"}
           icon={HardDrivesIcon}
           numeric={false}
         />
@@ -130,7 +131,7 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             {ROLES.map((role) => {
-              const count = ADMIN_STATS.usersByRole[role];
+              const count = usersByRole[role] ?? 0;
               return (
                 <div key={role} className="flex items-center gap-2">
                   <span className="w-[5.5rem] shrink-0 text-[11px] leading-none text-muted-foreground">
@@ -146,7 +147,7 @@ export function AdminDashboard() {
                     />
                   </div>
                   <span className="w-7 text-right text-[11px] leading-none font-medium tabular-nums">
-                    {count}
+                    {users ? count : "—"}
                   </span>
                 </div>
               );
@@ -159,7 +160,9 @@ export function AdminDashboard() {
         <Card size="sm" className={cn(SURFACE, "gap-0 py-0")}>
           <CardHeader className="border-b py-3">
             <CardTitle>Recent activity</CardTitle>
-            <CardDescription>The last actions across the school.</CardDescription>
+            <CardDescription>
+              The last actions across the school.
+            </CardDescription>
             <CardAction>
               <Button
                 variant="ghost"
@@ -190,7 +193,7 @@ export function AdminDashboard() {
           <CardHeader>
             <CardTitle>Backup</CardTitle>
             <CardDescription>
-              Take a snapshot of users, documents, and settings.
+              Take a snapshot of Internium data in Convex.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
@@ -199,15 +202,21 @@ export function AdminDashboard() {
                 Last snapshot
               </p>
               <p className="mt-1 text-sm font-medium tracking-tight">
-                {formatWhen(backup.at)}
+                {backup ? formatWhen(backup.at) : "Never"}
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                {backup.size} · {backup.status}
+                {backup
+                  ? `${backup.size} · Complete`
+                  : "No completed snapshots"}
               </p>
             </div>
-            <Button className={cn("w-full", PRESS)} onClick={runBackup}>
+            <Button
+              className={cn("w-full", PRESS)}
+              onClick={runBackup}
+              disabled={!canStart}
+            >
               <DatabaseIcon weight={ICON_WEIGHT} />
-              Run backup
+              {running ? "Backing up…" : "Run backup"}
             </Button>
             <Button
               variant="ghost"
@@ -253,7 +262,9 @@ function StatCard({
         <p
           className={cn(
             "font-heading font-semibold tracking-[-0.02em]",
-            numeric ? "text-[1.75rem] leading-none tabular-nums" : "text-lg leading-tight",
+            numeric
+              ? "text-[1.75rem] leading-none tabular-nums"
+              : "text-lg leading-tight",
           )}
         >
           {value}

@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "@internium/backend/convex/_generated/api";
 import {
   Avatar,
   AvatarFallback,
@@ -9,7 +10,8 @@ import { Badge } from "@internium/ui/components/badge";
 import { Button } from "@internium/ui/components/button";
 import { Input } from "@internium/ui/components/input";
 import { CameraIcon, CheckIcon } from "@phosphor-icons/react";
-import { useRef, useState } from "react";
+import { useMutation } from "convex/react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   SettingsFieldRow,
@@ -18,23 +20,60 @@ import {
   SettingsSection,
 } from "@/components/settings/settings-section";
 import { ROLE_LABELS } from "@/constants/roles";
-import { MOCK_USER } from "@/constants/user";
-import { useCurrentRole } from "@/hooks/use-current-role";
+import { useAccountProfile } from "@/hooks/use-account-profile";
 import { getInitials } from "@/utils/chat";
 
 const ROW_INPUT =
   "h-8 border-0 bg-transparent px-0 text-xs shadow-none focus-visible:ring-0 md:text-xs";
 
 export function AccountSettings() {
-  const role = useCurrentRole();
+  const profile = useAccountProfile();
+  return <AccountFields key={profile.user?.id} profile={profile} />;
+}
+
+function AccountFields({
+  profile,
+}: {
+  profile: ReturnType<typeof useAccountProfile>;
+}) {
+  const updateProfile = useMutation(api.users.updateOwnProfile);
   const fileRef = useRef<HTMLInputElement>(null);
-  const [name, setName] = useState(MOCK_USER.name);
-  const [phone, setPhone] = useState(MOCK_USER.phone);
-  const [avatar, setAvatar] = useState(MOCK_USER.avatar);
+  const [draftName, setName] = useState<string>();
+  const [draftPhone, setPhone] = useState<string>();
+  const [photo, setPhoto] = useState<{ file: File; preview: string } | null>();
+  const [saving, setSaving] = useState(false);
+  const name = draftName ?? profile.name;
+  const phone = draftPhone ?? profile.phone;
+  const avatar = photo === undefined ? profile.avatar : (photo?.preview ?? "");
+  const preview = photo?.preview;
   const dirty =
-    name !== MOCK_USER.name ||
-    phone !== MOCK_USER.phone ||
-    avatar !== MOCK_USER.avatar;
+    name !== profile.name || phone !== profile.phone || photo !== undefined;
+
+  useEffect(() => {
+    if (preview) return () => URL.revokeObjectURL(preview);
+  }, [preview]);
+
+  async function save() {
+    if (!profile.user || !profile.ready || saving) return;
+    setSaving(true);
+    try {
+      if (name !== profile.name || phone !== profile.phone) {
+        await updateProfile({ name, phone });
+      }
+      if (photo !== undefined) {
+        await profile.user.setProfileImage({ file: photo?.file ?? null });
+        await profile.user.reload();
+      }
+      setName(undefined);
+      setPhone(undefined);
+      setPhoto(undefined);
+      toast.success("Profile saved");
+    } catch {
+      toast.error("Could not save your profile. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <SettingsPane>
@@ -45,8 +84,10 @@ export function AccountSettings() {
         footer={
           <Button
             type="button"
-            disabled={!dirty || name.trim().length === 0}
-            onClick={() => toast.success("Profile saved")}
+            disabled={
+              !profile.ready || saving || !dirty || name.trim().length === 0
+            }
+            onClick={() => void save()}
           >
             <CheckIcon weight="fill" data-icon="inline-start" />
             Save
@@ -59,7 +100,7 @@ export function AccountSettings() {
               <Avatar className="size-10" size="lg">
                 <AvatarImage src={avatar} alt={name} />
                 <AvatarFallback>
-                  {getInitials(name || MOCK_USER.name)}
+                  {getInitials(name || profile.email || "Account")}
                 </AvatarFallback>
               </Avatar>
               <Button
@@ -67,6 +108,7 @@ export function AccountSettings() {
                 size="icon-xs"
                 variant="outline"
                 className="absolute -right-1 -bottom-1 rounded-full bg-background"
+                disabled={!profile.ready || saving}
                 onClick={() => fileRef.current?.click()}
               >
                 <CameraIcon />
@@ -81,7 +123,7 @@ export function AccountSettings() {
                   const file = event.target.files?.[0];
                   event.target.value = "";
                   if (!file) return;
-                  setAvatar(URL.createObjectURL(file));
+                  setPhoto({ file, preview: URL.createObjectURL(file) });
                 }}
               />
             </div>
@@ -90,7 +132,7 @@ export function AccountSettings() {
                 {name || "Your name"}
               </p>
               <p className="truncate text-[11px] leading-snug text-muted-foreground">
-                {MOCK_USER.email}
+                {profile.email}
               </p>
             </div>
             {avatar ? (
@@ -98,7 +140,8 @@ export function AccountSettings() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => setAvatar("")}
+                disabled={!profile.ready || saving}
+                onClick={() => setPhoto(profile.avatar ? null : undefined)}
               >
                 Remove
               </Button>
@@ -107,6 +150,7 @@ export function AccountSettings() {
           <SettingsFieldRow id="account-name" label="Name">
             <Input
               id="account-name"
+              disabled={!profile.ready || saving}
               value={name}
               autoComplete="name"
               className={ROW_INPUT}
@@ -116,6 +160,7 @@ export function AccountSettings() {
           <SettingsFieldRow id="account-phone" label="Phone">
             <Input
               id="account-phone"
+              disabled={!profile.ready || saving}
               type="tel"
               value={phone}
               autoComplete="tel"
@@ -138,12 +183,14 @@ export function AccountSettings() {
               id="account-email"
               className="truncate text-xs text-muted-foreground"
             >
-              {MOCK_USER.email}
+              {profile.email}
             </p>
           </SettingsFieldRow>
           <SettingsFieldRow id="account-role" label="Role">
             <div id="account-role" className="flex justify-end">
-              <Badge variant="secondary">{ROLE_LABELS[role]}</Badge>
+              <Badge variant="secondary">
+                {profile.role ? ROLE_LABELS[profile.role] : "—"}
+              </Badge>
             </div>
           </SettingsFieldRow>
         </SettingsList>
